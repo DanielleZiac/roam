@@ -22,6 +22,7 @@ import {
   index,
   int,
   json,
+  mediumtext,
   mysqlEnum,
   mysqlTable,
   text,
@@ -184,8 +185,11 @@ export const activityLog = mysqlTable(
 );
 
 // --- Reviews --------------------------------------------------------------------
-// Written by shoppers on the storefront. A review is only shown on the store
-// after the merchant approves it in the app.
+// Written on the storefront by signed-in customers who bought the product.
+// customerId is the Shopify customer who wrote it, kept so each customer can
+// review a product once. It is the only customer identifier the app stores.
+// A review is shown on the store after the merchant approves it, unless the
+// shop has turned approval off.
 
 export const reviewStatuses = ["pending", "approved", "rejected"] as const;
 
@@ -197,6 +201,8 @@ export const reviews = mysqlTable(
     productId: int("product_id")
       .notNull()
       .references(() => products.id, { onDelete: "cascade" }),
+    customerId: varchar("customer_id", { length: 32 }),
+    verifiedBuyer: boolean("verified_buyer").notNull().default(false),
     rating: int("rating").notNull(),
     authorName: varchar("author_name", { length: 60 }).notNull(),
     body: text("body").notNull(),
@@ -207,14 +213,44 @@ export const reviews = mysqlTable(
   (table) => [
     index("reviews_shop_status_idx").on(table.shop, table.status),
     index("reviews_product_idx").on(table.productId),
+    uniqueIndex("reviews_product_customer_unique").on(table.productId, table.customerId),
   ],
 );
+
+// Photos a shopper attached to a review. Stored as base64 text and served to
+// the storefront through the app proxy, only once the review is approved.
+export const reviewPhotos = mysqlTable(
+  "review_photos",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    reviewId: int("review_id")
+      .notNull()
+      .references(() => reviews.id, { onDelete: "cascade" }),
+    mimeType: varchar("mime_type", { length: 32 }).notNull(),
+    data: mediumtext("data").notNull(),
+  },
+  (table) => [index("review_photos_review_idx").on(table.reviewId)],
+);
+
+// --- Shop settings --------------------------------------------------------------
+// One row per shop. Reviews wait for approval unless the merchant turns that off.
+
+export const shopSettings = mysqlTable("shop_settings", {
+  shop: varchar("shop", { length: 255 }).primaryKey(),
+  autoPublishReviews: boolean("auto_publish_reviews").notNull().default(false),
+  updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow().onUpdateNow(),
+});
 
 // --- Relations ----------------------------------------------------------------
 // These let queries fetch related rows together, e.g. an event with its needs and picks.
 
-export const reviewsRelations = relations(reviews, ({ one }) => ({
+export const reviewsRelations = relations(reviews, ({ one, many }) => ({
   product: one(products, { fields: [reviews.productId], references: [products.id] }),
+  photos: many(reviewPhotos),
+}));
+
+export const reviewPhotosRelations = relations(reviewPhotos, ({ one }) => ({
+  review: one(reviews, { fields: [reviewPhotos.reviewId], references: [reviews.id] }),
 }));
 
 export const productsRelations = relations(products, ({ many }) => ({

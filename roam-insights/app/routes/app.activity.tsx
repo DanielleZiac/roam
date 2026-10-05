@@ -27,6 +27,8 @@ const ACTION_LABELS: Record<string, string> = {
   "storefront.page_created": "Page created",
   "review.approved": "Review approved",
   "review.rejected": "Review rejected",
+  "review.auto_published": "Review published",
+  "settings.reviews": "Setting changed",
   "alert.raised": "Alert raised",
   "alert.acknowledged": "Alert acknowledged",
   "alert.resolved": "Alert resolved",

@@ -3,14 +3,40 @@
 
   Reviews are managed in the Roam Insights app. Approved reviews are stored on
   the product as "roam" metafields (rating, rating_count, reviews), so this
-  section renders them without calling the app. A new review is posted to the
-  app through the app proxy and stays hidden until the merchant approves it.
+  section renders their text without calling the app. Review photos are loaded
+  from the app through the app proxy. A new review is posted to the app the
+  same way, and stays hidden until the merchant approves it unless the
+  merchant has turned approval off.
+
+  Buyers only: the form is shown to signed-in customers who have an order
+  containing this product. The name comes from their account, so there is no
+  name box. The app repeats the purchase check when the review arrives.
 {% endcomment %}
 
 {% liquid
   assign rating = product.metafields.roam.rating.value
   assign rating_count = product.metafields.roam.rating_count.value | default: 0
   assign review_list = product.metafields.roam.reviews.value
+
+  # Buyers only. This decides what the page shows. The app checks again on its
+  # side when a review is sent, so it cannot be bypassed from the browser.
+  assign has_bought = false
+  if customer
+    for order in customer.orders
+      unless order.cancelled
+        for line in order.line_items
+          if line.product_id == product.id
+            assign has_bought = true
+          endif
+        endfor
+      endunless
+    endfor
+    assign last_initial = customer.last_name | slice: 0
+    assign reviewer_name = customer.first_name | append: ' ' | append: last_initial | strip
+    if last_initial != blank
+      assign reviewer_name = reviewer_name | append: '.'
+    endif
+  endif
 %}
 
 <div class="reviews" id="reviews">
@@ -41,8 +67,31 @@
           {% capture review_label %}{{ review.rating }} out of 5{% endcapture %}
           <p class="review__rating">{% render 'stars', rating: review.rating, label: review_label %}</p>
           <p class="review__body">{{ review.body | escape }}</p>
+          {% if review.photos.size > 0 %}
+            <ul class="review__photos" role="list">
+              {% for photo_id in review.photos %}
+                <li>
+                  <a href="{{ routes.root_url }}apps/roam/photos/{{ photo_id }}" target="_blank" rel="noopener">
+                    <img
+                      src="{{ routes.root_url }}apps/roam/photos/{{ photo_id }}"
+                      alt="Photo {{ forloop.index }} from {{ review.name | escape }}'s review (opens in a new tab)"
+                      loading="lazy"
+                      width="120"
+                      height="120"
+                    >
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
           <p class="review__meta">
             {{ review.name | escape }}, {{ review.date | date: '%B %-d, %Y' }}
+            {% if review.verified %}
+              <span class="review__verified">
+                {{ 'icon-badge-check.svg' | inline_asset_content }}
+                Verified buyer
+              </span>
+            {% endif %}
           </p>
         </li>
       {% endfor %}
@@ -51,46 +100,79 @@
 
   <div class="review-form scheme-panel" data-review-form-wrapper>
     <h3>{{ section.settings.form_heading }}</h3>
-    <noscript><p>Writing a review needs JavaScript switched on.</p></noscript>
+    {% if customer == blank %}
+      <p>Reviews are written by customers who have bought this product. Sign in to write yours.</p>
+      <a class="button" href="{{ routes.account_login_url }}">Sign in</a>
+    {% elsif has_bought == false %}
+      <p>Only customers who have bought this product can review it. Once you have ordered it, come back and tell others how it worked for you.</p>
+    {% else %}
+      <p class="review-form__as">Reviewing as {{ reviewer_name | escape }}, verified buyer.</p>
+      <noscript><p>Writing a review needs JavaScript switched on.</p></noscript>
 
-    <form data-review-form data-handle="{{ product.handle }}" hidden novalidate>
-      <fieldset class="review-form__rating">
-        <legend>Your rating</legend>
-        <div class="review-form__choices">
-          {% for i in (1..5) %}
-            <label class="chip review-form__choice">
-              <input type="radio" name="rating" value="{{ i }}" required>
-              {{ i }}
-              <span class="visually-hidden">out of 5</span>
-            </label>
-          {% endfor %}
+      <form
+        data-review-form
+        data-handle="{{ product.handle }}"
+        data-name="{{ reviewer_name | escape }}"
+        hidden
+        novalidate
+      >
+        {% comment %}
+          The rating is five real radio buttons drawn as stars. Choosing the fourth
+          fills the first four. It works with a mouse, touch, the arrow keys and
+          screen readers, which hear "4 stars".
+        {% endcomment %}
+        <fieldset class="star-input">
+          <legend>Your rating</legend>
+          <div class="star-input__stars">
+            {% for i in (1..5) %}
+              <label class="star-input__star">
+                <input type="radio" name="rating" value="{{ i }}" required>
+                <span class="visually-hidden">{{ i }} {% if i == 1 %}star{% else %}stars{% endif %}</span>
+                {{ 'icon-star.svg' | inline_asset_content }}
+              </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="ReviewBody-{{ section.id }}">Your review</label>
+          <textarea id="ReviewBody-{{ section.id }}" name="body" rows="4" maxlength="1000" required></textarea>
         </div>
-      </fieldset>
 
-      <div class="field">
-        <label for="ReviewName-{{ section.id }}">Your name (optional)</label>
-        <input id="ReviewName-{{ section.id }}" type="text" name="name" maxlength="60" autocomplete="name">
-      </div>
+        <div class="field">
+          <label for="ReviewPhotos-{{ section.id }}">Add photos (optional, up to 3)</label>
+          <input
+            id="ReviewPhotos-{{ section.id }}"
+            class="review-form__file"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            data-review-photos
+          >
+          <ul class="review-form__previews" role="list" hidden data-review-previews></ul>
+        </div>
 
-      <div class="field">
-        <label for="ReviewBody-{{ section.id }}">Your review</label>
-        <textarea id="ReviewBody-{{ section.id }}" name="body" rows="4" maxlength="1000" required></textarea>
-      </div>
+        {% # Hidden from people and left empty by them. Automated spam tends to fill it in. %}
+        <div class="visually-hidden" aria-hidden="true">
+          <label for="ReviewWebsite-{{ section.id }}">Leave this empty</label>
+          <input id="ReviewWebsite-{{ section.id }}" type="text" name="website" tabindex="-1" autocomplete="off">
+        </div>
 
-      {% # Hidden from people and left empty by them. Automated spam tends to fill it in. %}
-      <div class="visually-hidden" aria-hidden="true">
-        <label for="ReviewWebsite-{{ section.id }}">Leave this empty</label>
-        <input id="ReviewWebsite-{{ section.id }}" type="text" name="website" tabindex="-1" autocomplete="off">
-      </div>
+        <p class="review-form__status" role="alert" hidden data-review-error></p>
+        <button class="button" type="submit">Send review</button>
+        <p class="review-form__note">{{ section.settings.form_note }}</p>
+      </form>
+    {% endif %}
 
-      <p class="review-form__status" role="alert" hidden data-review-error></p>
-      <button class="button" type="submit">Send review</button>
-      <p class="review-form__note">{{ section.settings.form_note }}</p>
-    </form>
-
-    <p class="review-form__status review-form__status--done" role="status" tabindex="-1" hidden data-review-done>
-      {{ section.settings.success_text }}
-    </p>
+    <p
+      class="review-form__status review-form__status--done"
+      role="status"
+      tabindex="-1"
+      hidden
+      data-review-done
+      data-pending="{{ section.settings.success_text | escape }}"
+      data-published="{{ section.settings.published_text | escape }}"
+    ></p>
   </div>
 </div>
 
@@ -138,7 +220,28 @@
     margin-block: 0.5rem !important;
   }
   .review__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
     font-size: 0.9375rem;
+  }
+  .review__verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.625rem 0.125rem 0.375rem;
+    border-radius: 999px;
+    background-color: var(--color-highlight);
+    font-weight: 500;
+  }
+  .review__verified svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  .review-form__as {
+    margin-bottom: 1rem;
+    font-weight: 500;
   }
   .review-form {
     padding: clamp(1.25rem, 4vw, 2rem);
@@ -152,31 +255,30 @@
     display: grid;
     gap: 1rem;
   }
-  .review-form__rating {
+  .star-input {
     min-width: 0;
     margin: 0;
     padding: 0;
     border: 0;
   }
-  .review-form__rating legend {
+  .star-input legend {
     margin-bottom: 0.375rem;
     padding: 0;
     font-weight: 500;
   }
-  .review-form__choices {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  .star-input__stars {
+    display: inline-flex;
   }
-  /* Each rating is a pill holding a real radio button, which is hidden but still focusable. */
-  .review-form__choice {
+  /* Each star is a 48px target holding a real radio button, hidden but still focusable. */
+  .star-input__star {
     position: relative;
-    justify-content: center;
-    min-width: 3rem;
-    background-color: var(--color-background);
+    display: inline-grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
     cursor: pointer;
   }
-  .review-form__choice input {
+  .star-input__star input {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -186,13 +288,66 @@
     opacity: 0;
     cursor: pointer;
   }
-  .review-form__choice:has(input:checked) {
-    background-color: var(--color-dark);
-    color: var(--color-background);
+  .star-input__star svg {
+    width: 2.25rem;
+    height: 2.25rem;
   }
-  .review-form__choice:has(input:focus-visible) {
+  /* Fill the chosen star and every star before it. */
+  .star-input__star:has(input:checked) svg,
+  .star-input__star:has(~ .star-input__star input:checked) svg {
+    fill: currentcolor;
+  }
+  /* While pointing, preview the rating up to the star under the pointer. */
+  .star-input__stars:hover .star-input__star svg {
+    fill: none;
+  }
+  .star-input__stars:hover .star-input__star:hover svg,
+  .star-input__stars:hover .star-input__star:has(~ .star-input__star:hover) svg {
+    fill: currentcolor;
+  }
+  .star-input__star:has(input:focus-visible) {
     outline: 3px solid var(--color-focus);
-    outline-offset: 3px;
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+  .review__photos,
+  .review-form__previews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .review__photos img,
+  .review-form__previews img {
+    width: 6rem;
+    height: 6rem;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 0.75rem;
+    object-fit: cover;
+  }
+  .review-form__file {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+    background-color: var(--color-background);
+  }
+  .review-form__previews li {
+    display: grid;
+    gap: 0.25rem;
+    justify-items: center;
+  }
+  .review-form__remove {
+    min-height: 2.75rem;
+    padding: 0 0.5rem;
+    border: 0;
+    background: none;
+    color: var(--color-action);
+    font: inherit;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    cursor: pointer;
   }
   .review-form :is(input[type='text'], textarea) {
     width: 100%;
@@ -229,20 +384,80 @@
 {% endstylesheet %}
 
 {% javascript %}
-  // Sends a new review to the Roam Insights app through the app proxy.
+  // Sends a new review, with any photos, to the Roam Insights app through the app proxy.
   (() => {
     const form = document.querySelector('[data-review-form]');
     if (!form) return;
 
+    const MAX_PHOTOS = 3;
+    const MAX_SIDE = 1200;
+
     const error = form.querySelector('[data-review-error]');
     const done = form.parentElement.querySelector('[data-review-done]');
     const button = form.querySelector('button[type="submit"]');
+    const fileInput = form.querySelector('[data-review-photos]');
+    const previews = form.querySelector('[data-review-previews]');
+    let photos = [];
     form.hidden = false;
 
     function fail(message) {
       error.textContent = message;
       error.hidden = false;
     }
+
+    // Phone photos are several megabytes. Each one is shrunk in the browser to a
+    // JPEG no wider or taller than MAX_SIDE before it is sent.
+    async function shrink(file) {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.82);
+    }
+
+    function drawPreviews() {
+      previews.replaceChildren(
+        ...photos.map((photo, index) => {
+          const item = document.createElement('li');
+          const image = document.createElement('img');
+          image.src = photo;
+          image.alt = `Photo ${index + 1} to be sent with your review`;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'review-form__remove';
+          remove.textContent = 'Remove';
+          remove.setAttribute('aria-label', `Remove photo ${index + 1}`);
+          remove.addEventListener('click', () => {
+            photos.splice(index, 1);
+            drawPreviews();
+            fileInput.focus();
+          });
+          item.append(image, remove);
+          return item;
+        })
+      );
+      previews.hidden = photos.length === 0;
+    }
+
+    fileInput.addEventListener('change', async () => {
+      error.hidden = true;
+      const chosen = [...fileInput.files];
+      fileInput.value = '';
+      for (const file of chosen) {
+        if (photos.length >= MAX_PHOTOS) {
+          fail(`You can add up to ${MAX_PHOTOS} photos.`);
+          break;
+        }
+        try {
+          photos.push(await shrink(file));
+        } catch {
+          fail('One of those files is not a photo we can read. Use JPEG, PNG or WebP.');
+        }
+      }
+      drawPreviews();
+    });
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -251,7 +466,7 @@
       const data = new FormData(form);
       const rating = data.get('rating');
       const body = String(data.get('body') || '').trim();
-      if (!rating) return fail('Choose a rating from 1 to 5.');
+      if (!rating) return fail('Choose a star rating.');
       if (body.length < 10) return fail('Write at least a short sentence about the product.');
 
       button.disabled = true;
@@ -262,8 +477,9 @@
           body: JSON.stringify({
             handle: form.dataset.handle,
             rating: Number(rating),
-            name: data.get('name'),
+            name: form.dataset.name,
             body,
+            photos,
             website: data.get('website'),
           }),
         });
@@ -271,6 +487,7 @@
         if (!result.ok) return fail(result.error || 'Your review was not sent. Please try again.');
 
         form.hidden = true;
+        done.textContent = result.published ? done.dataset.published : done.dataset.pending;
         done.hidden = false;
         done.focus();
       } catch {
@@ -309,13 +526,19 @@
       "type": "text",
       "id": "form_note",
       "label": "Note under the form",
-      "default": "We read every review before it appears, so yours will show up after a short wait."
+      "default": "Your first name and last initial are shown with your review. Photos are optional."
     },
     {
       "type": "text",
       "id": "success_text",
-      "label": "Message after sending",
+      "label": "Message after sending, when reviews wait for approval",
       "default": "Thank you. Your review has been sent and will appear once it is approved."
+    },
+    {
+      "type": "text",
+      "id": "published_text",
+      "label": "Message after sending, when reviews appear straight away",
+      "default": "Thank you. Your review is live. Refresh the page to see it."
     }
   ],
   "enabled_on": {

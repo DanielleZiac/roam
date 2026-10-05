@@ -15,6 +15,20 @@
       "when": 1791214395492,
       "tag": "0001_reviews",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1791217484136,
+      "tag": "0002_review_photos_and_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1791217889846,
+      "tag": "0003_verified_buyer_reviews",
+      "breakpoints": true
     }
   ]
 }
