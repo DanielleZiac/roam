@@ -275,6 +275,20 @@
     padding-block: 0.625rem;
     border-top: 1.5px solid var(--color-foreground);
   }
+  /* Phones: quantity, Add to cart and Save share one row. */
+  @media (max-width: 35.99rem) {
+    .product__buy {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+    }
+    .product__buy .field--quantity input {
+      width: 4.25rem;
+    }
+    .product__add {
+      min-width: 0;
+      padding-inline: 1rem;
+    }
+  }
   @media (min-width: 60rem) {
     .product {
       grid-template-columns: 1fr 1fr;

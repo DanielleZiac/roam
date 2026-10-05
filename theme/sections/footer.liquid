@@ -1,3 +1,9 @@
+{% comment %}
+  Site footer: brand line, the need-group collections, help links, the store's
+  contact details and social links (from Theme settings > Store contact details),
+  then payment icons and the copyright line.
+{% endcomment %}
+
 <footer class="footer full-width on-dark">
   <div class="footer__inner">
     <div class="footer__brand">
@@ -6,64 +12,139 @@
         {{ 'logo-roam.svg' | inline_asset_content }}
       </p>
       <p>{{ 'footer.tagline' | t }}</p>
+
+      <ul class="footer__social" role="list">
+        {% if settings.social_instagram != blank %}
+          <li><a href="{{ settings.social_instagram }}">Instagram</a></li>
+        {% endif %}
+        {% if settings.social_facebook != blank %}
+          <li><a href="{{ settings.social_facebook }}">Facebook</a></li>
+        {% endif %}
+        {% if settings.social_tiktok != blank %}
+          <li><a href="{{ settings.social_tiktok }}">TikTok</a></li>
+        {% endif %}
+      </ul>
     </div>
 
-    {% if section.settings.menu.links.size > 0 %}
-      <nav aria-label="{{ 'accessibility.footer_menu' | t }}">
-        <ul class="footer__links">
-          {% for link in section.settings.menu.links %}
-            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-          {% endfor %}
-        </ul>
-      </nav>
+    <nav class="footer__column" aria-labelledby="FooterShop">
+      <h2 id="FooterShop" class="footer__heading">{{ 'footer.shop' | t }}</h2>
+      <ul role="list">
+        <li><a href="{{ routes.all_products_collection_url }}">{{ 'footer.all_gear' | t }}</a></li>
+        {% for collection in collections %}
+          {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
+            <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+          {% endunless %}
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <nav class="footer__column" aria-labelledby="FooterHelp">
+      <h2 id="FooterHelp" class="footer__heading">{{ 'footer.help' | t }}</h2>
+      <ul role="list">
+        <li><a href="{{ routes.root_url }}pages/find-my-gear">{{ 'footer.find_my_gear' | t }}</a></li>
+        <li><a href="{{ routes.root_url }}pages/contact">{{ 'footer.contact' | t }}</a></li>
+        <li><a href="{{ routes.root_url }}pages/contact#shipping">{{ 'contact.shipping_title' | t }}</a></li>
+        <li><a href="{{ routes.root_url }}pages/contact#returns">{{ 'contact.returns_title' | t }}</a></li>
+        <li><a href="{{ routes.root_url }}pages/contact#accessibility">{{ 'contact.accessibility_title' | t }}</a></li>
+        {% for link in section.settings.menu.links %}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="footer__column">
+      <h2 class="footer__heading">{{ 'footer.reach_us' | t }}</h2>
+      <ul role="list">
+        <li>{{ 'contact.chat' | t }}: {{ settings.contact_chat }}</li>
+        <li><a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></li>
+        <li>{{ settings.contact_phone }}</li>
+        <li>{{ settings.contact_address | newline_to_br }}</li>
+        <li>{{ settings.contact_hours }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    {% if section.settings.show_payment_icons %}
+      <ul class="footer__payment" role="list">
+        {% for type in shop.enabled_payment_types %}
+          <li>{{ type | payment_type_svg_tag }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
 
-    <div class="footer__meta">
-      {% if section.settings.show_payment_icons %}
-        <ul class="footer__payment" role="list">
-          {% for type in shop.enabled_payment_types %}
-            <li>{{ type | payment_type_svg_tag }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-
-      <p class="footer__copyright">
-        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'footer.rights' | t }}
-      </p>
-    </div>
+    <p class="footer__copyright">
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'footer.rights' | t }}
+    </p>
   </div>
 </footer>
 
 {% stylesheet %}
-  .footer__inner {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 2rem;
+  .footer__inner,
+  .footer__bottom {
     max-width: var(--page-width);
     margin-inline: auto;
-    padding: 3rem var(--page-margin);
+    padding-inline: var(--page-margin);
+  }
+  .footer__inner {
+    display: grid;
+    gap: 2.5rem 2rem;
+    padding-block: 3rem 2rem;
   }
   .footer__logo svg {
     width: auto;
     height: 2.25rem;
   }
-  .footer__links,
-  .footer__payment {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    margin: 0 0 1rem;
+  .footer__heading {
+    margin-bottom: 0.75rem;
+    font-size: 1.125rem;
+  }
+  .footer ul {
+    margin: 0;
     padding: 0;
     list-style: none;
   }
-  .footer__links a {
-    display: inline-flex;
+  .footer__column li {
+    padding-block: 0.375rem;
+  }
+  .footer__column a,
+  .footer__social a {
+    display: inline-block;
+    padding-block: 0.25rem;
+  }
+  .footer__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin-top: 1rem;
+  }
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    min-height: 3rem;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-block: 1.25rem 2rem;
+    border-top: 1.5px solid var(--color-background);
+  }
+  .footer__payment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
   .footer__copyright {
+    margin: 0;
     font-size: 0.9375rem;
+  }
+  @media (min-width: 36rem) {
+    .footer__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 60rem) {
+    .footer__inner {
+      grid-template-columns: 1.3fr 1fr 1fr 1.2fr;
+    }
   }
 {% endstylesheet %}
 
@@ -74,8 +155,8 @@
     {
       "type": "link_list",
       "id": "menu",
-      "default": "footer",
-      "label": "t:labels.menu"
+      "label": "Extra help links",
+      "info": "Added to the end of the Help column."
     },
     {
       "type": "checkbox",

@@ -109,11 +109,18 @@
     "listen_text": "Hear any text read aloud when you point at it or tab to it. Product pages also get a Listen button. Press Escape to stop. If you use a screen reader, leave this off.",
     "dyslexia_title": "Dyslexia-friendly text",
     "dyslexia_text": "Larger text in a plainer font, with wider spacing, shorter lines and a cream background.",
-    "listen_unsupported": "Read it to me is not available in this browser."
+    "listen_unsupported": "Read it to me is not available in this browser.",
+    "menu_button": "Menu"
   },
   "footer": {
     "tagline": "Gear built around you.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "shop": "Shop",
+    "all_gear": "All gear",
+    "help": "Help",
+    "find_my_gear": "Find my gear",
+    "contact": "Contact us",
+    "reach_us": "Reach us"
   },
   "products": {
     "from_price_html": "From {{ price }}",
@@ -128,8 +135,8 @@
     "listen": "Listen",
     "listen_stop": "Stop listening",
     "listen_reading": "Reading the product details aloud.",
-    "save": "Save {{ title }}",
-    "unsave": "Remove {{ title }} from saved",
+    "save": "Add {{ title }} to wishlist",
+    "unsave": "Remove {{ title }} from wishlist",
     "quick_add": "Add {{ title }} to cart"
   },
   "general": {
@@ -151,11 +158,37 @@
     "home_tech": "Home tech"
   },
   "saved": {
-    "title": "Saved gear",
+    "title": "Wishlist",
     "intro": "Kept on this device. No account needed.",
-    "empty": "Nothing saved yet. Tap the heart on any product to keep it here.",
-    "added": "Saved {{ title }}",
-    "removed": "Removed {{ title }} from saved",
-    "button": "Saved gear: {{ count }}"
+    "empty": "Your wishlist is empty. Tap the heart on any product to keep it here.",
+    "added": "Added {{ title }} to your wishlist",
+    "removed": "Removed {{ title }} from your wishlist",
+    "button": "Wishlist: {{ count }}"
+  },
+  "contact": {
+    "details_title": "Reach us your way",
+    "details_note": "We answer text, chat and email first. You never have to make a phone call to get help.",
+    "chat": "Text or chat",
+    "email": "Email",
+    "phone": "Phone",
+    "visit": "Visit",
+    "hours": "Hours",
+    "form_title": "Send a message",
+    "form_name": "Name",
+    "form_email": "Email",
+    "form_reply": "How should we reply?",
+    "reply_email": "By email",
+    "reply_text": "By text or chat",
+    "reply_call": "By phone call",
+    "form_message": "Message",
+    "form_send": "Send message",
+    "form_success": "Thanks. Your message is sent and we will reply within one working day.",
+    "form_error": "Your message was not sent. Check these and try again:",
+    "shipping_title": "Shipping",
+    "shipping_text": "We ship across the Philippines. Metro Manila orders arrive in 1 to 3 working days, other areas in 3 to 7. Shipping is free on orders over ₱5,000.",
+    "returns_title": "Returns",
+    "returns_text": "Not the right fit? Send it back within 30 days in its original condition for a refund or an exchange. We cover return shipping on faulty items.",
+    "accessibility_title": "Accessibility",
+    "accessibility_text": "This store is built to meet WCAG 2.2 AA and works with screen readers and keyboards. Tell us if something gets in your way and we will fix it."
   }
 }

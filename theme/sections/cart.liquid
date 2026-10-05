@@ -207,6 +207,15 @@
     min-height: 3rem;
     margin-top: 0.5rem;
   }
+  /* Phones: the product name gets the full width beside the photo. */
+  @media (max-width: 35.99rem) {
+    .cart-item {
+      grid-template-columns: 4.5rem 1fr auto;
+    }
+    .cart-item__details {
+      grid-column: 2 / -1;
+    }
+  }
   @media (min-width: 60rem) {
     .cart__form {
       grid-template-columns: 1fr 22rem;

@@ -19,37 +19,50 @@
   {% render 'accessibility-panel' %}
 {% enddoc %}
 
-<button class="a11y-trigger" type="button" aria-haspopup="dialog" hidden data-a11y-open>
-  {{ 'accessibility.panel_button' | t }}
+<button
+  class="a11y-trigger"
+  type="button"
+  aria-haspopup="dialog"
+  aria-label="{{ 'accessibility.panel_button' | t }}"
+  hidden
+  data-a11y-open
+>
+  {{ 'icon-accessibility.svg' | inline_asset_content }}
+  <span class="a11y-trigger__text">{{ 'accessibility.panel_button' | t }}</span>
 </button>
 
 <dialog class="a11y-panel" aria-labelledby="A11yPanelTitle" data-a11y-panel>
   <div class="a11y-panel__header">
     <h2 id="A11yPanelTitle">{{ 'accessibility.panel_title' | t }}</h2>
-    <button class="a11y-panel__close" type="button" data-a11y-close>
-      {{ 'accessibility.panel_close' | t }}
+    <button class="close-button" type="button" aria-label="{{ 'accessibility.panel_close' | t }}" data-a11y-close>
+      {{ 'icon-x.svg' | inline_asset_content }}
     </button>
   </div>
 
   <p>{{ 'accessibility.panel_intro' | t }}</p>
 
-  <div class="choices">
-    <label class="choice a11y-option">
-      <input type="checkbox" data-a11y-toggle="dyslexia">
-      <span class="a11y-option__icon" aria-hidden="true">{{ 'icon-eye.svg' | inline_asset_content }}</span>
-      <span class="a11y-option__text">
-        <strong>{{ 'accessibility.dyslexia_title' | t }}</strong>
-        <small>{{ 'accessibility.dyslexia_text' | t }}</small>
+  {% comment %}
+    Each option is one large label: the icon, the name and the checkbox share the
+    first line, with the explanation underneath. The whole box changes colour
+    when its option is on.
+  {% endcomment %}
+  <div class="a11y-options">
+    <label class="a11y-option">
+      <span class="a11y-option__head">
+        <span class="a11y-option__icon" aria-hidden="true">{{ 'icon-eye.svg' | inline_asset_content }}</span>
+        <strong class="a11y-option__title">{{ 'accessibility.dyslexia_title' | t }}</strong>
+        <input type="checkbox" data-a11y-toggle="dyslexia">
       </span>
+      <span class="a11y-option__text">{{ 'accessibility.dyslexia_text' | t }}</span>
     </label>
 
-    <label class="choice a11y-option">
-      <input type="checkbox" data-a11y-toggle="listen">
-      <span class="a11y-option__icon" aria-hidden="true">{{ 'icon-volume-2.svg' | inline_asset_content }}</span>
-      <span class="a11y-option__text">
-        <strong>{{ 'accessibility.listen_title' | t }}</strong>
-        <small>{{ 'accessibility.listen_text' | t }}</small>
+    <label class="a11y-option">
+      <span class="a11y-option__head">
+        <span class="a11y-option__icon" aria-hidden="true">{{ 'icon-volume-2.svg' | inline_asset_content }}</span>
+        <strong class="a11y-option__title">{{ 'accessibility.listen_title' | t }}</strong>
+        <input type="checkbox" data-a11y-toggle="listen">
       </span>
+      <span class="a11y-option__text">{{ 'accessibility.listen_text' | t }}</span>
     </label>
   </div>
 
@@ -64,6 +77,7 @@
   .a11y-trigger {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
     min-height: 3rem;
     padding: 0.5rem 1.125rem;
     border: 1.5px solid var(--color-foreground);
@@ -73,6 +87,11 @@
     font: inherit;
     font-weight: 500;
     cursor: pointer;
+  }
+  .a11y-trigger svg {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
   }
   .a11y-trigger[hidden] {
     display: none;
@@ -93,7 +112,7 @@
   }
   .a11y-panel__header {
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.75rem;
@@ -101,49 +120,105 @@
   .a11y-panel__header h2 {
     font-size: 1.75rem;
   }
-  .a11y-panel__close {
-    min-height: 3rem;
-    padding: 0.25rem 0.75rem;
-    border: 0;
-    background: none;
-    color: var(--color-action);
-    font: inherit;
-    font-weight: 500;
-    text-decoration: underline;
-    cursor: pointer;
+  .a11y-options {
+    display: grid;
+    gap: 0.75rem;
   }
   .a11y-option {
+    --option-padding: 1rem;
+    display: grid;
+    gap: 0.625rem;
+    padding: var(--option-padding);
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 1rem;
+    cursor: pointer;
+  }
+  .a11y-option__head {
+    display: flex;
     align-items: center;
+    gap: 0.75rem;
   }
   .a11y-option__icon {
     flex: none;
     display: grid;
     place-items: center;
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     background-color: var(--color-panel);
+  }
+  .a11y-option__icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .a11y-option__title {
+    font-size: 1.125rem;
+  }
+  /*
+   * The checkbox sits at the far right of the first line, drawn as a circle:
+   * an empty ring when off, a filled dot when on. It is still a real checkbox.
+   */
+  .a11y-option input {
+    appearance: none;
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    min-height: 0;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 2px solid var(--color-foreground);
+    border-radius: 50%;
+    background-color: var(--color-background);
+    cursor: pointer;
+  }
+  .a11y-option input:checked {
+    background-color: var(--color-foreground);
+    box-shadow: inset 0 0 0 4px var(--color-background);
+  }
+  .a11y-option input:disabled {
+    border-style: dashed;
+    cursor: not-allowed;
+  }
+  /* Phones: tighter spacing so the icon, name and circle stay on one line. */
+  @media (max-width: 30rem) {
+    .a11y-panel {
+      padding: 1.25rem;
+    }
+    .a11y-option {
+      --option-padding: 0.875rem;
+    }
+    .a11y-option__head {
+      gap: 0.5rem;
+    }
+    .a11y-option__icon {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+    .a11y-option__title {
+      font-size: 1rem;
+    }
+  }
+  .a11y-option__text {
+    font-size: 0.9375rem;
+  }
+  .a11y-option:hover {
+    background-color: var(--color-panel);
+  }
+  /* On: the whole box turns teal, with a thicker border so colour is not the only cue. */
+  .a11y-option:has(input:checked) {
+    padding: calc(var(--option-padding) - 1.5px);
+    border-width: 3px;
+    background-color: var(--color-highlight);
   }
   .a11y-option:has(input:checked) .a11y-option__icon {
     background-color: var(--color-background);
   }
-  .a11y-option__icon svg {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-  .a11y-option__text {
-    display: grid;
-    gap: 0.25rem;
-  }
-  /* The piece of text currently being read aloud. */
-  .is-being-read {
-    outline: 3px solid var(--color-action);
+  .a11y-option:has(input:focus-visible) {
+    outline: 3px solid var(--color-focus);
     outline-offset: 3px;
-    border-radius: 2px;
   }
-  .a11y-option small {
-    font-size: 0.9375rem;
-    font-weight: 400;
+  .a11y-option input:focus-visible {
+    outline: none;
   }
   .a11y-panel__note {
     margin-top: 1rem;
@@ -159,9 +234,10 @@
   (() => {
     const STORAGE_KEY = 'roam:a11y';
     const root = document.documentElement;
-    const trigger = document.querySelector('[data-a11y-open]');
+    // The panel can be opened from the header button and from the phone menu.
+    const triggers = [...document.querySelectorAll('[data-a11y-open]')];
     const panel = document.querySelector('[data-a11y-panel]');
-    if (!trigger || !panel || typeof panel.showModal !== 'function') return;
+    if (triggers.length === 0 || !panel || typeof panel.showModal !== 'function') return;
 
     const canSpeak = 'speechSynthesis' in window;
     let prefs = {};
@@ -175,11 +251,15 @@
       if (!prefs.listen && canSpeak) window.speechSynthesis.cancel();
     }
 
-    panel.querySelectorAll('[data-a11y-toggle]').forEach((input) => {
+    const toggles = [...panel.querySelectorAll('[data-a11y-toggle]')];
+    toggles.forEach((input) => {
       const name = input.dataset.a11yToggle;
       input.checked = Boolean(prefs[name]);
       input.addEventListener('change', () => {
         prefs[name] = input.checked;
+        toggles.forEach((other) => {
+          if (other.dataset.a11yToggle === name) other.checked = input.checked;
+        });
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
         } catch {
@@ -190,14 +270,18 @@
     });
 
     if (!canSpeak) {
-      const listen = panel.querySelector('[data-a11y-toggle="listen"]');
-      listen.checked = false;
-      listen.disabled = true;
+      toggles.forEach((input) => {
+        if (input.dataset.a11yToggle !== 'listen') return;
+        input.checked = false;
+        input.disabled = true;
+      });
       panel.querySelector('[data-a11y-no-speech]').hidden = false;
     }
 
-    trigger.hidden = false;
-    trigger.addEventListener('click', () => panel.showModal());
+    triggers.forEach((trigger) => {
+      trigger.hidden = false;
+      trigger.addEventListener('click', () => panel.showModal());
+    });
     panel.querySelectorAll('[data-a11y-close]').forEach((button) => {
       button.addEventListener('click', () => panel.close());
     });

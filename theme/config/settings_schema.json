@@ -115,5 +115,68 @@
         "default": 12
       }
     ]
+  },
+  {
+    "name": "Store contact details",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Shown in the footer and on the Contact page. The defaults are placeholders: replace them with real details before launch."
+      },
+      {
+        "type": "text",
+        "id": "contact_email",
+        "label": "Email",
+        "default": "hello@roam.example"
+      },
+      {
+        "type": "text",
+        "id": "contact_chat",
+        "label": "Text or chat number",
+        "default": "+63 000 000 0000"
+      },
+      {
+        "type": "text",
+        "id": "contact_chat_apps",
+        "label": "Chat apps",
+        "default": "SMS, Viber and WhatsApp"
+      },
+      {
+        "type": "text",
+        "id": "contact_phone",
+        "label": "Phone",
+        "default": "(02) 0000 0000"
+      },
+      {
+        "type": "textarea",
+        "id": "contact_address",
+        "label": "Address",
+        "default": "Roam Showroom\nUnit 5, 100 Example Avenue\nQuezon City 1100, Philippines"
+      },
+      {
+        "type": "text",
+        "id": "contact_hours",
+        "label": "Opening hours",
+        "default": "Monday to Saturday, 9 am to 6 pm"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram link",
+        "default": "https://example.com/instagram"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook link",
+        "default": "https://example.com/facebook"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok link",
+        "default": "https://example.com/tiktok"
+      }
+    ]
   }
 ]

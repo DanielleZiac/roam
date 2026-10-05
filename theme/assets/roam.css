@@ -1,5 +1,10 @@
 /** Roam brand styles. Loaded on every page after critical.css. */
 
+/* The hidden attribute always wins, even on elements with their own display rule (buttons, grids). */
+[hidden] {
+  display: none !important;
+}
+
 /* Base type: large, open body text; bold, tightly set headings in sentence case. */
 body {
   font-size: 1.0625rem;
@@ -186,7 +191,46 @@ select {
   list-style: none;
 }
 
-@media (max-width: 26rem) {
+/* Phones: two compact cards per row, so a page of products is not a long single column. */
+@media (max-width: 47.99rem) {
+  .product-grid {
+    gap: 0.625rem;
+  }
+
+  .product-grid .product-card {
+    border-radius: 1rem;
+  }
+
+  .product-grid .product-card__content {
+    padding: 0.75rem;
+  }
+
+  /* The need group label is left off on phones to keep the small cards uncluttered. */
+  .product-grid .product-card__type {
+    display: none;
+  }
+
+  .product-grid .product-card__title {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .product-grid .product-card__price {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .product-grid .product-card__actions {
+    margin-left: 0;
+  }
+
+  .product-grid .icon-button {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+@media (max-width: 19.99rem) {
   .product-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -423,6 +467,7 @@ select {
     .footer__copyright,
     .about-you-intro__privacy,
     .a11y-panel__note,
+    .a11y-option__text,
     .header__cart-count
   ) {
   font-size: 1rem;
@@ -506,8 +551,8 @@ select {
 }
 
 .icon-button svg {
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .icon-button:hover {
@@ -566,4 +611,29 @@ select {
   min-width: 12rem;
   border-radius: 999px;
   padding-inline: 1.25rem;
+}
+
+/* Pop-up close button: just the x, with a 48px tap area around it. */
+.close-button {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: -0.5rem -0.5rem -0.5rem 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+
+.close-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.close-button:hover {
+  background-color: var(--color-panel);
 }

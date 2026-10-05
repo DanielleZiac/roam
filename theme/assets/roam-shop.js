@@ -117,8 +117,9 @@
 
   // --- Saved gear ---
 
-  const savedButton = document.querySelector('[data-saved-open]');
-  const savedCount = document.querySelector('[data-saved-count]');
+  // The wishlist button and count appear in the bar and again in the phone menu.
+  const savedButtons = [...document.querySelectorAll('[data-saved-open]')];
+  const savedCounts = [...document.querySelectorAll('[data-saved-count]')];
   const savedPanel = document.querySelector('[data-saved-panel]');
   const savedList = document.querySelector('[data-saved-list]');
   const savedEmpty = document.querySelector('[data-saved-empty]');
@@ -131,11 +132,13 @@
       button.setAttribute('aria-pressed', String(saved));
       button.setAttribute('aria-label', text(saved ? 'unsave' : 'save', product.title));
     });
-    if (savedCount) {
-      savedCount.textContent = handles.length;
-      savedCount.hidden = handles.length === 0;
-    }
-    if (savedButton) savedButton.setAttribute('aria-label', text('savedButton').replace('[count]', handles.length));
+    savedCounts.forEach((count) => {
+      count.textContent = handles.length;
+      count.hidden = handles.length === 0;
+    });
+    savedButtons.forEach((button) => {
+      button.setAttribute('aria-label', text('savedButton').replace('[count]', handles.length));
+    });
   }
 
   function renderSaved() {
@@ -166,11 +169,13 @@
     else renderSaved();
   });
 
-  if (savedButton && savedPanel && typeof savedPanel.showModal === 'function') {
-    savedButton.hidden = false;
-    savedButton.addEventListener('click', () => {
-      renderSaved();
-      savedPanel.showModal();
+  if (savedPanel && typeof savedPanel.showModal === 'function') {
+    savedButtons.forEach((button) => {
+      button.hidden = false;
+      button.addEventListener('click', () => {
+        renderSaved();
+        savedPanel.showModal();
+      });
     });
     savedPanel.querySelectorAll('[data-saved-close]').forEach((button) => {
       button.addEventListener('click', () => savedPanel.close());
@@ -183,17 +188,19 @@
   // --- Quick add to cart ---
 
   function updateCartCount(count) {
-    const link = document.querySelector('[data-cart-link]');
-    if (!link) return;
-    link.setAttribute('aria-label', text(count === 1 ? 'cartOne' : 'cartOther').replace('[count]', count));
-    let badge = link.querySelector('[data-cart-count]');
-    if (!badge) {
-      badge = node('span', 'header__cart-count');
-      badge.dataset.cartCount = '';
-      badge.setAttribute('aria-hidden', 'true');
-      link.append(badge);
-    }
-    badge.textContent = count;
+    document.querySelectorAll('[data-cart-link]').forEach((link) => {
+      link.setAttribute('aria-label', text(count === 1 ? 'cartOne' : 'cartOther').replace('[count]', count));
+      let badge = link.querySelector('[data-cart-count]');
+      if (!badge) {
+        badge = node('span', 'header__cart-count');
+        badge.dataset.cartCount = '';
+        badge.setAttribute('aria-hidden', 'true');
+        link.append(badge);
+      }
+      badge.textContent = count;
+    });
+    const menuDot = document.querySelector('[data-menu-dot]');
+    if (menuDot) menuDot.hidden = count === 0;
   }
 
   document.addEventListener('submit', async (event) => {

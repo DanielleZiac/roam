@@ -1,17 +1,273 @@
 {% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
+  Store pages such as About or Contact: a colour-block header, then the page's
+  own content.
+
+  On the page whose handle is "contact" it also shows the store's contact
+  details (from Theme settings > Store contact details), a contact form, and
+  three short help panels the footer links to.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<h1>{{ page.title }}</h1>
+<div class="page-header full-width scheme-{{ section.settings.color_scheme }}">
+  <div class="page-header__inner">
+    <h1>{{ page.title }}</h1>
+    {% if page.handle == 'contact' and section.settings.contact_intro != blank %}
+      <p class="page-header__lead">{{ section.settings.contact_intro }}</p>
+    {% endif %}
+  </div>
+</div>
 
-{{ page.content }}
+<div class="page-body">
+  {% if page.content != blank %}
+    <div class="rte page-content">{{ page.content }}</div>
+  {% endif %}
+
+  {% if page.handle == 'contact' %}
+    <div class="contact">
+      <section class="contact__details" aria-labelledby="ContactDetails">
+        <h2 id="ContactDetails">{{ 'contact.details_title' | t }}</h2>
+        <p>{{ 'contact.details_note' | t }}</p>
+
+        <ul class="contact__list" role="list">
+          <li>
+            {{ 'icon-message-circle.svg' | inline_asset_content }}
+            <div>
+              <h3>{{ 'contact.chat' | t }}</h3>
+              <p>{{ settings.contact_chat }}<br>{{ settings.contact_chat_apps }}</p>
+            </div>
+          </li>
+          <li>
+            {{ 'icon-mail.svg' | inline_asset_content }}
+            <div>
+              <h3>{{ 'contact.email' | t }}</h3>
+              <p><a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></p>
+            </div>
+          </li>
+          <li>
+            {{ 'icon-phone.svg' | inline_asset_content }}
+            <div>
+              <h3>{{ 'contact.phone' | t }}</h3>
+              <p>{{ settings.contact_phone }}</p>
+            </div>
+          </li>
+          <li>
+            {{ 'icon-map-pin.svg' | inline_asset_content }}
+            <div>
+              <h3>{{ 'contact.visit' | t }}</h3>
+              <p>{{ settings.contact_address | newline_to_br }}</p>
+            </div>
+          </li>
+          <li>
+            {{ 'icon-clock.svg' | inline_asset_content }}
+            <div>
+              <h3>{{ 'contact.hours' | t }}</h3>
+              <p>{{ settings.contact_hours }}</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="contact__form scheme-panel" aria-labelledby="ContactForm">
+        <h2 id="ContactForm">{{ 'contact.form_title' | t }}</h2>
+
+        {% form 'contact', class: 'contact-form' %}
+          {% if form.posted_successfully? %}
+            <p class="contact-form__status" role="status" tabindex="-1" autofocus>{{ 'contact.form_success' | t }}</p>
+          {% endif %}
+          {% if form.errors %}
+            <div class="contact-form__status contact-form__status--error" role="alert">
+              <p>{{ 'contact.form_error' | t }}</p>
+              {{ form.errors | default_errors }}
+            </div>
+          {% endif %}
+
+          <div class="field">
+            <label for="ContactName">{{ 'contact.form_name' | t }}</label>
+            <input id="ContactName" type="text" name="contact[name]" autocomplete="name" value="{{ form.name }}">
+          </div>
+
+          <div class="field">
+            <label for="ContactEmail">{{ 'contact.form_email' | t }}</label>
+            <input
+              id="ContactEmail"
+              type="email"
+              name="contact[email]"
+              autocomplete="email"
+              required
+              value="{{ form.email }}"
+            >
+          </div>
+
+          <div class="field">
+            <label for="ContactReply">{{ 'contact.form_reply' | t }}</label>
+            <select id="ContactReply" name="contact[{{ 'contact.form_reply' | t }}]">
+              <option>{{ 'contact.reply_email' | t }}</option>
+              <option>{{ 'contact.reply_text' | t }}</option>
+              <option>{{ 'contact.reply_call' | t }}</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="ContactMessage">{{ 'contact.form_message' | t }}</label>
+            <textarea id="ContactMessage" name="contact[body]" rows="5" required>{{ form.body }}</textarea>
+          </div>
+
+          <button class="button" type="submit">{{ 'contact.form_send' | t }}</button>
+        {% endform %}
+      </section>
+    </div>
+
+    <div class="help">
+      <section class="help__panel" id="shipping" aria-labelledby="HelpShipping">
+        <h2 id="HelpShipping">{{ 'contact.shipping_title' | t }}</h2>
+        <p>{{ 'contact.shipping_text' | t }}</p>
+      </section>
+      <section class="help__panel" id="returns" aria-labelledby="HelpReturns">
+        <h2 id="HelpReturns">{{ 'contact.returns_title' | t }}</h2>
+        <p>{{ 'contact.returns_text' | t }}</p>
+      </section>
+      <section class="help__panel" id="accessibility" aria-labelledby="HelpAccessibility">
+        <h2 id="HelpAccessibility">{{ 'contact.accessibility_title' | t }}</h2>
+        <p>{{ 'contact.accessibility_text' | t }}</p>
+      </section>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .page-header__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(2.5rem, 7vw, 5rem) var(--page-margin);
+  }
+  .page-header h1 {
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    line-height: 1;
+  }
+  .page-header__lead {
+    max-width: 44ch;
+    margin: 1.25rem 0 0;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  }
+  .page-body {
+    padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem);
+  }
+  .page-content {
+    max-width: 44rem;
+    margin-bottom: 2.5rem;
+  }
+  .contact {
+    display: grid;
+    gap: 2rem;
+    align-items: start;
+  }
+  .contact h2,
+  .help h2 {
+    margin-bottom: 0.75rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+  .contact__list {
+    display: grid;
+    gap: 0;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1.5px solid var(--color-foreground);
+  }
+  .contact__list li {
+    display: flex;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-bottom: 1.5px solid var(--color-foreground);
+  }
+  .contact__list svg {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.125rem;
+  }
+  .contact__list h3 {
+    font-size: 1.125rem;
+  }
+  .contact__list p {
+    margin: 0.25rem 0 0;
+  }
+  .contact__form {
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border-radius: 1.25rem;
+  }
+  .contact-form {
+    display: grid;
+    gap: 1rem;
+  }
+  .contact-form :is(input, select, textarea) {
+    width: 100%;
+    border-radius: 0.75rem;
+  }
+  .contact-form .button {
+    justify-self: start;
+  }
+  .contact-form__status {
+    margin: 0;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--color-foreground);
+    border-radius: 0.75rem;
+    background-color: var(--color-highlight);
+    font-weight: 500;
+  }
+  .contact-form__status--error {
+    background-color: var(--color-background);
+  }
+  .help {
+    display: grid;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  .help__panel {
+    padding: 1.5rem;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 1.25rem;
+    scroll-margin-top: 1rem;
+  }
+  .help__panel p {
+    margin: 0;
+  }
+  @media (min-width: 60rem) {
+    .contact {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+    .help {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.page",
-  "settings": []
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Header colour block",
+      "options": [
+        { "value": "panel", "label": "Soft lilac" },
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "action", "label": "Violet" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "panel"
+    },
+    {
+      "type": "text",
+      "id": "contact_intro",
+      "label": "Contact page intro",
+      "info": "Shown under the title on the Contact page only.",
+      "default": "Text, chat, email or call. Pick whatever works for you and we'll reply the same way."
+    }
+  ]
 }
 {% endschema %}

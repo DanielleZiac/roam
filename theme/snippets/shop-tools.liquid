@@ -10,7 +10,9 @@
 <dialog class="saved-panel" aria-labelledby="SavedPanelTitle" data-saved-panel>
   <div class="saved-panel__header">
     <h2 id="SavedPanelTitle">{{ 'saved.title' | t }}</h2>
-    <button class="saved-panel__close" type="button" data-saved-close>{{ 'accessibility.panel_close' | t }}</button>
+    <button class="close-button" type="button" aria-label="{{ 'accessibility.panel_close' | t }}" data-saved-close>
+      {{ 'icon-x.svg' | inline_asset_content }}
+    </button>
   </div>
   <p>{{ 'saved.intro' | t }}</p>
 
@@ -57,21 +59,10 @@
   }
   .saved-panel__header {
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.5rem;
-  }
-  .saved-panel__close {
-    min-height: 3rem;
-    padding: 0.25rem 0.75rem;
-    border: 0;
-    background: none;
-    color: var(--color-action);
-    font: inherit;
-    font-weight: 500;
-    text-decoration: underline;
-    cursor: pointer;
   }
   .saved-panel__list {
     margin-top: 1.5rem;

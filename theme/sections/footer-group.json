@@ -5,7 +5,6 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "menu": "footer",
         "show_payment_icons": true
       }
     }
