@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
+    "theme_name": "Roam",
     "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_author": "Roam",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -16,9 +16,15 @@
       },
       {
         "type": "font_picker",
+        "id": "type_heading_font",
+        "default": "space_grotesk_n7",
+        "label": "Headings"
+      },
+      {
+        "type": "font_picker",
         "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "default": "inter_n4",
+        "label": "Body text"
       }
     ]
   },
@@ -31,15 +37,15 @@
         "label": "t:labels.page_width",
         "options": [
           {
-            "value": "90rem",
+            "value": "80rem",
             "label": "t:options.page_width.narrow"
           },
           {
-            "value": "110rem",
+            "value": "100rem",
             "label": "t:options.page_width.wide"
           }
         ],
-        "default": "90rem"
+        "default": "80rem"
       },
       {
         "type": "range",
@@ -57,26 +63,56 @@
     "name": "t:general.colors",
     "settings": [
       {
+        "type": "paragraph",
+        "content": "The default Roam palette passes WCAG AA contrast. If you change a colour, re-check text contrast."
+      },
+      {
         "type": "color",
         "id": "background_color",
         "default": "#FFFFFF",
-        "label": "t:labels.background"
+        "label": "Page background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
-        "label": "t:labels.foreground"
+        "default": "#101418",
+        "label": "Text"
+      },
+      {
+        "type": "color",
+        "id": "dark_color",
+        "default": "#101418",
+        "label": "Dark areas (footer, buttons)"
+      },
+      {
+        "type": "color",
+        "id": "highlight_color",
+        "default": "#19D3C5",
+        "label": "Highlight (bright teal)",
+        "info": "Only used behind dark text. It is too pale to read as text on white."
+      },
+      {
+        "type": "color",
+        "id": "panel_color",
+        "default": "#DCD6F7",
+        "label": "Panels (soft lilac)"
+      },
+      {
+        "type": "color",
+        "id": "action_color",
+        "default": "#4B2BE0",
+        "label": "Accent (violet)",
+        "info": "Links and hover states. Readable as text on white and on panels."
       },
       {
         "type": "range",
         "id": "input_corner_radius",
         "min": 0,
-        "max": 10,
-        "step": 1,
+        "max": 24,
+        "step": 2,
         "unit": "px",
         "label": "t:labels.input_corner_radius",
-        "default": 4
+        "default": 12
       }
     ]
   }

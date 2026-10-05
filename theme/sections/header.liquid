@@ -1,0 +1,127 @@
+<header class="header full-width">
+  <div class="header__inner">
+    <a class="header__logo heading" href="{{ routes.root_url }}">{{ shop.name }}</a>
+
+    <nav class="header__menu" aria-label="{{ 'accessibility.main_menu' | t }}">
+      <ul>
+        {% for link in section.settings.menu.links %}
+          <li>
+            <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="header__icons">
+      {% if shop.customer_accounts_enabled %}
+        <a href="{{ routes.account_url }}" aria-label="{{ 'accessibility.account' | t }}">
+          {{ 'icon-account.svg' | inline_asset_content }}
+        </a>
+      {% endif %}
+
+      {% liquid
+        if cart.item_count > 0
+          assign cart_label = 'cart.link_count' | t: count: cart.item_count
+        else
+          assign cart_label = 'cart.link_empty' | t
+        endif
+      %}
+      <a class="header__cart" href="{{ routes.cart_url }}" aria-label="{{ cart_label }}">
+        {{ 'icon-cart.svg' | inline_asset_content }}
+        {% if cart.item_count > 0 %}
+          <span class="header__cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+</header>
+
+{% stylesheet %}
+  .header {
+    border-bottom: 2px solid var(--color-foreground);
+  }
+  .header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: 0.75rem var(--page-margin);
+  }
+  .header a {
+    text-decoration: none;
+  }
+  .header__logo {
+    font-size: 1.875rem;
+    color: var(--color-foreground);
+  }
+  .header__menu ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .header__menu a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding-inline: 0.75rem;
+    color: var(--color-foreground);
+    font-weight: 500;
+  }
+  .header__menu a:hover,
+  .header__menu a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 0.18em;
+    text-decoration-color: var(--color-action);
+    text-underline-offset: 0.4em;
+  }
+  .header__icons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .header__icons a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    min-height: 3rem;
+    color: var(--color-foreground);
+  }
+  .header__icons svg {
+    width: 2rem;
+  }
+  .header__cart-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 1.5rem;
+    padding: 0 0.3rem;
+    border-radius: 1rem;
+    background-color: var(--color-highlight);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    font-weight: bold;
+    line-height: 1.5rem;
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "t:labels.menu"
+    }
+  ]
+}
+{% endschema %}

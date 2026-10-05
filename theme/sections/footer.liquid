@@ -1,0 +1,84 @@
+<footer class="footer full-width on-dark">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <p class="footer__logo heading">{{ shop.name }}</p>
+      <p>{{ 'footer.tagline' | t }}</p>
+    </div>
+
+    {% if section.settings.menu.links.size > 0 %}
+      <nav aria-label="{{ 'accessibility.footer_menu' | t }}">
+        <ul class="footer__links">
+          {% for link in section.settings.menu.links %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+
+    <div class="footer__meta">
+      {% if section.settings.show_payment_icons %}
+        <ul class="footer__payment" role="list">
+          {% for type in shop.enabled_payment_types %}
+            <li>{{ type | payment_type_svg_tag }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <p class="footer__copyright">
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'footer.rights' | t }}
+      </p>
+    </div>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: 3rem var(--page-margin);
+  }
+  .footer__logo {
+    font-size: 1.875rem;
+  }
+  .footer__links,
+  .footer__payment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+  }
+  .footer__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+  }
+  .footer__copyright {
+    font-size: 0.9375rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.footer",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "footer",
+      "label": "t:labels.menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "t:labels.show_payment_icons",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

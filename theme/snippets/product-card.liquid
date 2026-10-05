@@ -1,0 +1,130 @@
+{% doc %}
+  Renders one product as a card: image, need group, title and price.
+  The whole card is one link (the title), so keyboard users tab once per product.
+
+  @param {product} product - The product to show
+  @param {string} [heading_tag] - Heading tag for the title, defaults to h3
+
+  @example
+  {% render 'product-card', product: product %}
+{% enddoc %}
+
+{% liquid
+  assign heading_tag = heading_tag | default: 'h3'
+%}
+
+<article class="product-card">
+  <div class="product-card__media">
+    {% if product.featured_image %}
+      {{
+        product.featured_image
+        | image_url: width: 800, height: 800, crop: 'center'
+        | image_tag: loading: 'lazy', sizes: '(min-width: 60rem) 25vw, 50vw', widths: '300, 500, 800'
+      }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+    {% endif %}
+  </div>
+
+  <div class="product-card__content">
+    {% if product.type != blank %}
+      <p class="product-card__type">{{ product.type }}</p>
+    {% endif %}
+
+    <{{ heading_tag }} class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </{{ heading_tag }}>
+
+    <p class="product-card__price">
+      {% if product.price_varies %}
+        {{ 'products.from_price_html' | t: price: product.price_min | money }}
+      {% else %}
+        {{ product.price | money }}
+      {% endif %}
+      {% unless product.available %}
+        <span class="product-card__badge">{{ 'products.sold_out' | t }}</span>
+      {% endunless %}
+    </p>
+  </div>
+</article>
+
+{% stylesheet %}
+  .product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 1.25rem;
+    background-color: #fff;
+  }
+  .product-card__media {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-bottom: 1.5px solid var(--color-foreground);
+    background-color: #fff;
+  }
+  .product-card__media img,
+  .product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .product-card__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+  }
+  .product-card__content p {
+    margin: 0;
+  }
+  .product-card__type {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .product-card__title {
+    font-size: 1.25rem;
+  }
+  .product-card__title a {
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+  /* Stretch the title link over the whole card. */
+  .product-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .product-card:hover .product-card__title a {
+    text-decoration: underline;
+  }
+  .product-card:has(a:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .product-card:hover {
+    border-color: var(--color-action);
+    box-shadow: 0 0 0 1.5px var(--color-action);
+  }
+  .product-card__title a:focus-visible {
+    outline: none;
+  }
+  .product-card__price {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: bold;
+  }
+  .product-card__badge {
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    font-size: 0.875rem;
+  }
+{% endstylesheet %}

@@ -1,0 +1,71 @@
+{
+  "sections": {
+    "hero": {
+      "type": "roam-hero",
+      "settings": {}
+    },
+    "goals": {
+      "type": "shop-by-goal",
+      "blocks": {
+        "get-around": {
+          "type": "goal",
+          "settings": {
+            "title": "Get around",
+            "text": "Power assist, rollators and canes for the daily route.",
+            "link": "/collections/all/get-around"
+          }
+        },
+        "sports": {
+          "type": "goal",
+          "settings": {
+            "title": "Play sports",
+            "text": "Court wheels, grip aids and recovery for training days.",
+            "link": "/collections/all/sports"
+          }
+        },
+        "travel": {
+          "type": "goal",
+          "settings": {
+            "title": "Travel",
+            "text": "Gear that folds, clips on and packs down.",
+            "link": "/collections/all/travel"
+          }
+        },
+        "everyday": {
+          "type": "goal",
+          "settings": {
+            "title": "Everyday carry",
+            "text": "The small things that make home, work and school easier.",
+            "link": "/collections/all/everyday"
+          }
+        }
+      },
+      "block_order": [
+        "get-around",
+        "sports",
+        "travel",
+        "everyday"
+      ],
+      "settings": {}
+    },
+    "featured": {
+      "type": "featured-products",
+      "settings": {}
+    },
+    "ticker": {
+      "type": "ticker",
+      "settings": {}
+    },
+    "callout": {
+      "type": "callout",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "ticker",
+    "goals",
+    "featured",
+    "callout"
+  ]
+}

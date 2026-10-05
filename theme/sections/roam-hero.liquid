@@ -1,0 +1,237 @@
+{% comment %}
+  Home page hero: one huge headline, a supporting line and up to two buttons
+  on a full-width colour block. Without a photo it shows a large wheel graphic.
+{% endcomment %}
+
+<div class="hero full-width scheme-{{ section.settings.color_scheme }}{% if section.settings.image %} hero--with-image{% endif %}">
+  <div class="hero__inner">
+    <div class="hero__text">
+      {% if section.settings.eyebrow != blank %}
+        <p class="hero__eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+
+      <h1 class="hero__heading">
+        {{ section.settings.heading }}
+        {% if section.settings.heading_accent != blank %}
+          <span class="hero__accent">{{ section.settings.heading_accent }}</span>
+        {% endif %}
+      </h1>
+
+      {% if section.settings.text != blank %}
+        <p class="hero__lead">{{ section.settings.text }}</p>
+      {% endif %}
+
+      <div class="hero__buttons">
+        {% if section.settings.button_label != blank %}
+          <a class="button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+            {{ section.settings.button_label }}
+          </a>
+        {% endif %}
+        {% if section.settings.button_2_label != blank %}
+          <a class="button button--secondary" href="{{ section.settings.button_2_link | default: routes.collections_url }}">
+            {{ section.settings.button_2_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if section.settings.image %}
+      <div class="hero__media">
+        {{
+          section.settings.image
+          | image_url: width: 1600
+          | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 60rem) 50vw, 100vw', widths: '600, 900, 1200, 1600'
+        }}
+      </div>
+    {% else %}
+      {% # Decorative wheel: three rings and a hub, cropped by the edge of the hero. %}
+      <div class="hero__wheel" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero {
+    overflow: hidden;
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(3.5rem, 10vw, 8rem) var(--page-margin);
+  }
+  .hero__text {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .hero__heading {
+    max-width: 12ch;
+    font-size: clamp(3rem, 10vw, 7.5rem);
+    line-height: 0.98;
+  }
+  /* The last word sits in an inverted block: background and text colours swap. */
+  .hero__accent {
+    display: inline-block;
+    margin-top: 0.08em;
+    padding: 0 0.14em 0.06em;
+    border-radius: 0.14em;
+    background-color: var(--scheme-text);
+    color: var(--scheme-background);
+    transform: rotate(-2deg);
+  }
+  .hero__lead {
+    max-width: 30ch;
+    margin-block: 1.75rem 2rem;
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+    font-weight: 500;
+  }
+  .hero__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .hero__media img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 1.5rem;
+  }
+  .hero__wheel {
+    position: absolute;
+    top: 50%;
+    right: -12rem;
+    width: clamp(22rem, 55vw, 46rem);
+    aspect-ratio: 1;
+    translate: 0 -50%;
+  }
+  .hero__wheel span {
+    position: absolute;
+    inset: 0;
+    border: clamp(1.25rem, 3vw, 2.5rem) solid var(--scheme-text);
+    border-radius: 50%;
+    opacity: 0.14;
+  }
+  .hero__wheel span:nth-child(2) {
+    inset: 22%;
+    border-style: dashed;
+  }
+  .hero__wheel span:nth-child(3) {
+    inset: 42%;
+    background-color: var(--scheme-text);
+  }
+  @media (max-width: 47.99rem) {
+    .hero__wheel {
+      top: auto;
+      right: -9rem;
+      bottom: -11rem;
+      translate: none;
+    }
+  }
+  @media (min-width: 60rem) {
+    .hero--with-image .hero__inner {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+  /* The wheel turns slowly, only for visitors who have not asked for reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__wheel {
+      animation: hero-wheel 90s linear infinite;
+    }
+  }
+  @keyframes hero-wheel {
+    to {
+      rotate: 360deg;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Roam hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour block",
+      "options": [
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "action", "label": "Violet" },
+        { "value": "panel", "label": "Soft lilac" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "plain", "label": "White" }
+      ],
+      "default": "highlight"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small line above the headline",
+      "default": "Mobility and assistive gear"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Headline",
+      "default": "Revolutionize the way you"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Highlighted end of the headline",
+      "info": "Shown in an inverted block.",
+      "default": "move."
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Supporting line",
+      "default": "Mobility and sports gear, configured to fit you."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Main button label",
+      "default": "Shop all gear"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Main button link"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "label": "Second button label",
+      "default": "Browse by need"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Second button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photo",
+      "info": "Optional. Add alt text to the image in Files so screen readers can describe it."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Roam hero"
+    }
+  ]
+}
+{% endschema %}

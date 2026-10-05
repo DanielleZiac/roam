@@ -1,0 +1,165 @@
+{% comment %}
+  A band of large scrolling words. Screen readers get one plain list; the moving
+  copy is hidden from them. It only moves if the visitor allows motion, pauses
+  on hover and keyboard focus, and has a pause button (WCAG 2.2.2).
+{% endcomment %}
+
+{% liquid
+  assign items = section.settings.items | newline_to_br | split: '<br />'
+%}
+
+<div class="ticker full-width scheme-{{ section.settings.color_scheme }}" data-ticker>
+  <ul class="visually-hidden">
+    {% for item in items %}
+      {% assign word = item | strip %}
+      {% if word != blank %}
+        <li>{{ word }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <div class="ticker__viewport" aria-hidden="true">
+    <div class="ticker__track">
+      {% for i in (1..2) %}
+        {% for item in items %}
+          {% assign word = item | strip %}
+          {% if word != blank %}
+            <span class="ticker__item heading">{{ word }}</span>
+            <span class="ticker__dot"></span>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <button class="ticker__pause" type="button" aria-pressed="false" hidden data-ticker-pause>
+    <span data-ticker-label data-pause="{{ 'ticker.pause' | t }}" data-play="{{ 'ticker.play' | t }}">
+      {{- 'ticker.pause' | t -}}
+    </span>
+  </button>
+</div>
+
+{% stylesheet %}
+  .ticker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-block: 1.25rem;
+  }
+  .ticker__viewport {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .ticker__track {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+    padding-inline: var(--page-margin);
+  }
+  .ticker__item {
+    color: inherit;
+    font-size: clamp(1.5rem, 4vw, 2.75rem);
+    white-space: nowrap;
+  }
+  .ticker__dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    flex: none;
+    border-radius: 50%;
+    background-color: var(--scheme-accent);
+  }
+  .ticker__pause {
+    flex: none;
+    margin-inline: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.25rem 1rem;
+    border: 2px solid currentcolor;
+    border-radius: 999px;
+    background-color: var(--scheme-background);
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ticker.is-moving .ticker__track {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: max-content;
+      padding-inline: 0;
+      animation: ticker 40s linear infinite;
+    }
+    .ticker.is-moving .ticker__dot:last-child {
+      margin-right: 1.5rem;
+    }
+    .ticker.is-moving:hover .ticker__track,
+    .ticker.is-moving:focus-within .ticker__track,
+    .ticker.is-paused .ticker__track {
+      animation-play-state: paused;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker__pause {
+      display: none;
+    }
+    /* Without motion the second copy is not needed. */
+    .ticker__track > :nth-child(n + 13) {
+      display: none;
+    }
+  }
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-ticker]').forEach((ticker) => {
+    const button = ticker.querySelector('[data-ticker-pause]');
+    const label = ticker.querySelector('[data-ticker-label]');
+    ticker.classList.add('is-moving');
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      const paused = ticker.classList.toggle('is-paused');
+      button.setAttribute('aria-pressed', String(paused));
+      label.textContent = paused ? label.dataset.play : label.dataset.pause;
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Scrolling words",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "items",
+      "label": "Words",
+      "info": "One per line. Up to six.",
+      "default": "Power assist\nSports wheels\nBraille keys\nVoice devices\nFlash alerts\nLight-touch keys"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour block",
+      "options": [
+        { "value": "dark", "label": "Dark" },
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "action", "label": "Violet" },
+        { "value": "panel", "label": "Soft lilac" }
+      ],
+      "default": "dark"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling words"
+    }
+  ]
+}
+{% endschema %}

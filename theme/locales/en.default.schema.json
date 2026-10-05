@@ -11,15 +11,13 @@
     "collections_grid": "Collections grid",
     "colors": "Colors",
     "column": "Column",
-    "container": "Container",
     "content": "Content",
+    "custom_section": "Custom section",
     "fonts": "Fonts",
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
-    "hello_world": "Hello world",
     "layout": "Layout",
-    "liquid_tips": "Liquid tips",
     "main": "Main",
     "page": "Page",
     "password": "Password",
@@ -28,8 +26,10 @@
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
+    "section": "Section",
     "settings": "Settings",
     "sidebar": "Sidebar",
+    "text": "Text",
     "theme": "Theme",
     "typography": "Typography"
   },
@@ -42,11 +42,12 @@
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
     "menu": "Menu",
-    "customer_account_menu": "Customer account menu",
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
-    "show_payment_icons": "Show payment icons"
+    "show_payment_icons": "Show payment icons",
+    "text_style": "Text style",
+    "text": "Text"
   },
   "options": {
     "alignment": {
@@ -65,6 +66,11 @@
     "size": {
       "large": "Large",
       "small": "Small"
-    }
+    },
+    "text_style": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "normal": "Normal text"
+    },
   }
 }

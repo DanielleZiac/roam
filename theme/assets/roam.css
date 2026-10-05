@@ -1,0 +1,272 @@
+/** Roam brand styles. Loaded on every page after critical.css. */
+
+/* Base type: large, open body text; bold, tightly set headings in sentence case. */
+body {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+main {
+  flex: 1;
+}
+
+h1,
+h2,
+h3,
+.heading {
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+  font-weight: var(--font-heading--weight);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+}
+
+h1 {
+  font-size: clamp(2.25rem, 6vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+h3 {
+  font-size: 1.375rem;
+}
+
+p,
+ul,
+ol {
+  margin-block: 0 1rem;
+}
+
+/* Links use the violet accent: 7.7:1 on white, 5.5:1 on lilac panels. */
+a {
+  color: var(--color-action);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 0.18em;
+}
+
+/* Focus: one thick, high-contrast ring everywhere. Dark areas flip its colour. */
+:root {
+  --color-focus: var(--color-foreground);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.on-dark {
+  --color-focus: var(--color-background);
+  background-color: var(--color-dark);
+  color: var(--color-background);
+}
+
+.on-dark :is(h1, h2, h3, .heading, a) {
+  color: var(--color-background);
+}
+
+.on-panel {
+  background-color: var(--color-panel);
+}
+
+/* Small technical labels: need groups, numbers, specs. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Skip link: first thing keyboard users reach. */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -10rem;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  background-color: var(--color-highlight);
+  color: var(--color-foreground);
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Buttons: dark pill with white text (18.5:1). At least 48px tall for easy tapping. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.75rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 999px;
+  background-color: var(--color-dark);
+  color: var(--color-background);
+  font-family: var(--font-heading--family);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Hover turns teal with dark text (9.8:1). */
+.button:hover {
+  border-color: var(--color-foreground);
+  background-color: var(--color-highlight);
+  color: var(--color-foreground);
+}
+
+.button--secondary {
+  background-color: transparent;
+  color: var(--color-foreground);
+}
+
+.on-dark .button {
+  border-color: var(--color-highlight);
+  background-color: var(--color-highlight);
+  color: var(--color-foreground);
+}
+
+.on-dark .button:hover {
+  border-color: var(--color-background);
+  background-color: var(--color-background);
+}
+
+.on-dark .button--secondary {
+  border-color: var(--color-background);
+  background-color: transparent;
+  color: var(--color-background);
+}
+
+/* Form fields */
+input,
+textarea,
+select {
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--color-foreground);
+  background-color: #fff;
+  color: var(--color-foreground);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button,
+  a {
+    transition: background-color 0.15s, color 0.15s;
+  }
+}
+
+/* Product grid: used on the home page, collection pages and suggestions. */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 26rem) {
+  .product-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 48rem) {
+  .product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/*
+ * Colour blocks. Each scheme sets a background, a text colour and an accent,
+ * and adjusts buttons, links and the focus ring so every pairing passes AA.
+ *   plain:     dark on white 18.5:1     panel:  dark on lilac 13.2:1
+ *   highlight: dark on teal 9.8:1       action: white on violet 7.7:1
+ *   dark:      white on dark 18.5:1
+ */
+[class*='scheme-'] {
+  --scheme-background: var(--color-background);
+  --scheme-text: var(--color-foreground);
+  --scheme-accent: var(--color-highlight);
+  background-color: var(--scheme-background);
+  color: var(--scheme-text);
+}
+
+.scheme-panel {
+  --scheme-background: var(--color-panel);
+}
+
+.scheme-highlight {
+  --scheme-background: var(--color-highlight);
+  --scheme-accent: var(--color-foreground);
+}
+
+.scheme-action {
+  --scheme-background: var(--color-action);
+  --scheme-text: var(--color-background);
+  --color-focus: var(--color-background);
+}
+
+.scheme-dark {
+  --scheme-background: var(--color-dark);
+  --scheme-text: var(--color-background);
+  --color-focus: var(--color-background);
+}
+
+[class*='scheme-'] :is(h1, h2, h3, .heading) {
+  color: inherit;
+}
+
+:is(.scheme-highlight, .scheme-action, .scheme-dark) a:not(.button) {
+  color: inherit;
+}
+
+/* Buttons on colour blocks */
+.scheme-highlight .button:hover {
+  background-color: var(--color-background);
+}
+
+:is(.scheme-action, .scheme-dark) .button {
+  border-color: var(--color-background);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+:is(.scheme-action, .scheme-dark) .button:hover {
+  border-color: var(--color-highlight);
+  background-color: var(--color-highlight);
+}
+
+:is(.scheme-action, .scheme-dark) .button--secondary {
+  background-color: transparent;
+  color: var(--color-background);
+}
+
+:is(.scheme-action, .scheme-dark) .button--secondary:hover {
+  color: var(--color-foreground);
+}
+
+:is(.scheme-highlight, .scheme-panel) .button--secondary {
+  background-color: transparent;
+}

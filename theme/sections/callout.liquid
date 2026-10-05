@@ -1,0 +1,107 @@
+{% comment %}
+  A full-width colour block with one big statement and a button.
+  Used on the home page to invite shoppers into "Tell us about you".
+{% endcomment %}
+
+<div class="callout full-width scheme-{{ section.settings.color_scheme }}">
+  <div class="callout__inner">
+    <div>
+      {% if section.settings.eyebrow != blank %}
+        <p class="label">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      <h2 class="callout__heading">{{ section.settings.heading }}</h2>
+    </div>
+
+    <div class="callout__side">
+      {% if section.settings.text != blank %}
+        <p class="callout__text">{{ section.settings.text }}</p>
+      {% endif %}
+      {% if section.settings.button_label != blank %}
+        <a class="button" href="{{ section.settings.button_link | default: routes.collections_url }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .callout__inner {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(3.5rem, 8vw, 6.5rem) var(--page-margin);
+  }
+  .callout__heading {
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    line-height: 1;
+  }
+  .callout__text {
+    max-width: 34ch;
+    margin-bottom: 1.5rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  }
+  @media (min-width: 60rem) {
+    .callout__inner {
+      grid-template-columns: 1.4fr 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Callout",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour block",
+      "options": [
+        { "value": "action", "label": "Violet" },
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "panel", "label": "Soft lilac" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "action"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small line above the heading",
+      "default": "Optional. Takes a minute."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tell us about you. We'll find your gear."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Answer a few questions about how you move, hear, see and communicate. Your answers stay on your device."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Find my gear"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Callout"
+    }
+  ]
+}
+{% endschema %}

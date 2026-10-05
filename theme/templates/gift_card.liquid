@@ -8,17 +8,25 @@
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
-    {{ 'base.css' | asset_url | stylesheet_tag }}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
+    {% style %}
+      main {
+        text-align: center;
+      }
+      main img {
+        display: unset;
+      }
+    {% endstyle %}
+
     {{ content_for_header }}
   </head>
 
-  <body class="template-gift-card">
+  <body>
     <main>
-      <div>
+      <div class="shopify-section">
         <h1>{{ gift_card.balance | money }}</h1>
 
         {% if gift_card.enabled == false or gift_card.expired %}
