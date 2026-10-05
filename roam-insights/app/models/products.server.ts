@@ -56,17 +56,51 @@ export function parseDescription(html: string): { summary: string | null; keyFac
   return { summary: paragraph ? stripTags(paragraph[1]) : null, keyFacts };
 }
 
+const ADD_TAGS = `#graphql
+  mutation RoamAddProductTags($id: ID!, $tags: [String!]!) {
+    tagsAdd(id: $id, tags: $tags) {
+      userErrors {
+        message
+      }
+    }
+  }
+`;
+
+const REMOVE_TAGS = `#graphql
+  mutation RoamRemoveProductTags($id: ID!, $tags: [String!]!) {
+    tagsRemove(id: $id, tags: $tags) {
+      userErrors {
+        message
+      }
+    }
+  }
+`;
+
+/*
+ * Keeps a product's Shopify tags in step with its need tags. The storefront's
+ * catalog filters work on Shopify tags, so without this a need removed in the
+ * app would still show up under that filter. Only tags from the need
+ * vocabulary are touched: category tags and anything else are left alone.
+ */
+async function syncShopifyTags(graphql: AdminGraphql, shopifyProductId: string, add: string[], remove: string[]) {
+  if (add.length > 0) await graphql(ADD_TAGS, { variables: { id: shopifyProductId, tags: add } });
+  if (remove.length > 0) await graphql(REMOVE_TAGS, { variables: { id: shopifyProductId, tags: remove } });
+}
+
 /*
  * Copies the store's products into the app's own table.
  *
  * New products start with need tags taken from their Shopify tags and key
  * facts parsed from the description. Products the app already knows keep
  * their need tags and key facts, because the merchant may have edited them
- * here: only the title, handle and type are refreshed.
+ * here: only the title, handle and type are refreshed. For those products the
+ * app is the source of truth, so their Shopify tags are corrected to match.
  */
 export async function syncProducts(graphql: AdminGraphql, shop: string) {
   let cursor: string | null = null;
   let synced = 0;
+
+  const known = new Map((await listProducts(shop)).map((product) => [product.shopifyProductId, product]));
 
   do {
     const response: Response = await graphql(PRODUCTS_QUERY, { variables: { cursor } });
@@ -92,6 +126,17 @@ export async function syncProducts(graphql: AdminGraphql, shop: string) {
         .onDuplicateKeyUpdate({
           set: { handle: node.handle, title: node.title, productType: node.productType },
         });
+
+      const existing = known.get(node.id);
+      if (existing) {
+        const shopifyNeeds = node.tags.filter(isNeedTag) as string[];
+        await syncShopifyTags(
+          graphql,
+          node.id,
+          existing.needTags.filter((tag) => !shopifyNeeds.includes(tag)),
+          shopifyNeeds.filter((tag) => !existing.needTags.includes(tag)),
+        );
+      }
       synced += 1;
     }
 
@@ -172,7 +217,8 @@ export type MatchingInput = { needTags: string[]; keyFactsText: string; summary:
  *   1. Validates the input against the need vocabulary.
  *   2. Works out what actually changed.
  *   3. Writes the new values to the product's metafields in Shopify (namespace
- *      "roam"), which is what the storefront reads.
+ *      "roam"), which is what the storefront quiz and product page read, and
+ *      updates the product's Shopify tags, which the catalog filters read.
  *   4. Updates the app's own row.
  *   5. Adds an activity log entry holding the before and after values.
  *
@@ -219,6 +265,8 @@ export async function updateProductMatching(
   if (!body.data || errors.length > 0) {
     return { ok: false, error: errors.map((error) => error.message).join("; ") || "Shopify did not accept the change" };
   }
+
+  await syncShopifyTags(graphql, product.shopifyProductId, added, removed);
 
   await db.update(products).set({ needTags, keyFacts, summary }).where(eq(products.id, id));
 
