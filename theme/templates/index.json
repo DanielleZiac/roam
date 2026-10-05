@@ -58,7 +58,9 @@
     },
     "callout": {
       "type": "callout",
-      "settings": {}
+      "settings": {
+        "button_link": "/pages/find-my-gear"
+      }
     }
   },
   "order": [

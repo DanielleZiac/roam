@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "about-you",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

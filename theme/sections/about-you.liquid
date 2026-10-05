@@ -1,0 +1,661 @@
+{% comment %}
+  "Tell us about you": an optional, four-question flow that suggests products.
+
+  How matching works
+  - Every answer carries "signals": need tags with a weight, written on the input
+    as data-signals="tag:weight,tag:weight". data-support holds weaker signals that
+    add to the score but are not shown as a reason.
+  - Every product carries need tags. They come from the roam.need_tags metafield
+    (managed in the Roam Insights app) and fall back to the product's tags.
+  - A product's score is the sum of the weights of the signals it matches.
+    The top four products with a score above zero are shown, each with the
+    answers that earned it its place.
+  - Goals (get around, sports, travel, everyday) only break ties once a need is
+    named: a product has to match a need before a goal can lift it.
+
+  Privacy: answers are scored in the browser and saved only in localStorage.
+  Nothing is sent to a server from this file.
+
+  Without JavaScript the page says so and links to the full catalog.
+{% endcomment %}
+
+<div class="about-you-intro full-width scheme-{{ section.settings.color_scheme }}">
+  <div class="about-you-intro__inner">
+    <p class="label">{{ section.settings.eyebrow }}</p>
+    <h1>{{ section.settings.heading }}</h1>
+    <p class="about-you-intro__lead">{{ section.settings.text }}</p>
+    <p class="about-you-intro__privacy">{{ section.settings.privacy_note }}</p>
+  </div>
+</div>
+
+<div class="about-you" data-about-you>
+  <noscript>
+    <p class="about-you__noscript">
+      This tool needs JavaScript. You can still
+      <a href="{{ routes.all_products_collection_url }}">browse all gear</a>.
+    </p>
+  </noscript>
+
+  <form class="about-you__form" data-form novalidate hidden>
+    <fieldset class="about-you__step" data-step>
+      <legend tabindex="-1">
+        <span class="label">Question 1 of 4</span>
+        <span class="about-you__question">Which of these describe you?</span>
+      </legend>
+      <p class="about-you__hint">Choose any that apply. You can skip this one.</p>
+
+      <div class="choices">
+        <label class="choice">
+          <input type="checkbox" name="describe" value="deaf_hoh" data-signals="deaf-hoh:3" data-reason="Deaf or hard of hearing">
+          <span>I'm Deaf or hard of hearing</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="describe" value="nonspeaking" data-signals="nonspeaking:3" data-reason="nonspeaking">
+          <span>I'm nonspeaking, or speech is hard for me</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="describe" value="blind_low_vision" data-signals="blind-low-vision:3" data-reason="blind or low vision">
+          <span>I'm blind or have low vision</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="describe" value="limited_mobility" data-signals="mobility:3" data-reason="limited mobility">
+          <span>I have limited mobility</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="describe" value="rather_not_say" data-exclusive>
+          <span>I'd rather not say</span>
+        </label>
+      </div>
+
+      <div class="field about-you__other">
+        <label for="AboutYouOther">Something else? Tell us in your own words (optional)</label>
+        <input id="AboutYouOther" type="text" name="other" maxlength="120" autocomplete="off" data-other>
+      </div>
+    </fieldset>
+
+    <fieldset class="about-you__step" data-step>
+      <legend tabindex="-1">
+        <span class="label">Question 2 of 4</span>
+        <span class="about-you__question">Do any of these sound like you?</span>
+      </legend>
+      <p class="about-you__hint">No labels needed. Choose any that apply.</p>
+
+      <div class="choices">
+        <label class="choice">
+          <input type="checkbox" name="prefer" value="text_chat" data-signals="deaf-hoh:2,nonspeaking:2" data-reason="text or chat over calls">
+          <span>I prefer text or chat to phone calls</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="prefer" value="captions" data-signals="deaf-hoh:2" data-reason="captions and visual alerts">
+          <span>Captions, transcripts or visual alerts help me</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="prefer" value="read_aloud" data-signals="blind-low-vision:2" data-reason="read-aloud or larger text">
+          <span>Read-aloud or larger text helps me</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="prefer" value="small_buttons" data-signals="dexterity:3" data-reason="easier buttons and grip">
+          <span>Tapping small buttons or gripping things is hard</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="about-you__step" data-step>
+      <legend tabindex="-1">
+        <span class="label">Question 3 of 4</span>
+        <span class="about-you__question">How do you usually get around?</span>
+      </legend>
+      <p class="about-you__hint">Choose one, or skip.</p>
+
+      <div class="choices">
+        <label class="choice">
+          <input type="radio" name="move" value="on_foot">
+          <span>On foot</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="move" value="walking_aid" data-signals="walking-aid:3" data-support="mobility:1" data-reason="using a cane or walker">
+          <span>With a cane, crutches or a walker</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="move" value="manual_chair" data-signals="wheelchair:3" data-support="mobility:1" data-reason="using a manual wheelchair">
+          <span>In a manual wheelchair</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="move" value="power_chair" data-signals="wheelchair:1" data-support="mobility:1" data-reason="using a power chair or scooter">
+          <span>In a power chair or scooter</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="move" value="varies" data-signals="mobility:1" data-reason="mobility that varies">
+          <span>It varies day to day</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="about-you__step" data-step>
+      <legend tabindex="-1">
+        <span class="label">Question 4 of 4</span>
+        <span class="about-you__question">What do you want gear for?</span>
+      </legend>
+      <p class="about-you__hint">Choose any that apply.</p>
+
+      <div class="choices">
+        <label class="choice">
+          <input type="checkbox" name="goal" value="get_around" data-signals="get-around:2" data-reason="getting around">
+          <span>Getting around</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="goal" value="sports" data-signals="sports:2" data-reason="sports">
+          <span>Playing sports</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="goal" value="travel" data-signals="travel:2" data-reason="travel">
+          <span>Travel</span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="goal" value="everyday" data-signals="everyday:2" data-reason="everyday life">
+          <span>Everyday life at home, work or school</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="about-you__nav">
+      <button class="button button--secondary" type="button" data-back>Back</button>
+      <button class="button" type="button" data-next>Next</button>
+      <button class="button" type="submit" data-submit>Show my picks</button>
+      <a class="about-you__skip" href="{{ routes.all_products_collection_url }}">Skip and browse all gear</a>
+    </div>
+  </form>
+
+  <section class="about-you__results" data-results aria-labelledby="AboutYouResults" hidden>
+    <h2 id="AboutYouResults" tabindex="-1" data-results-heading>We think you'll like…</h2>
+    <p class="about-you__results-note" data-results-note></p>
+
+    <ul class="product-grid" role="list" data-results-list></ul>
+
+    <div class="about-you__nav">
+      <button class="button" type="button" data-edit>Change my answers</button>
+      <button class="button button--secondary" type="button" data-clear>Clear my answers</button>
+      <a class="about-you__skip" href="{{ routes.all_products_collection_url }}">Browse all gear</a>
+    </div>
+  </section>
+
+  <script type="application/json" data-products>
+    {%- paginate collections.all.products by 50 -%}
+      [
+        {%- for product in collections.all.products -%}
+          {%- liquid
+            assign needs = product.metafields.roam.need_tags.value | default: product.tags
+            assign image = nil
+            if product.featured_image
+              assign image = product.featured_image | image_url: width: 600, height: 600, crop: 'center'
+            endif
+            assign price = product.price | money
+          -%}
+          {
+            "handle": {{ product.handle | json }},
+            "title": {{ product.title | json }},
+            "url": {{ product.url | json }},
+            "type": {{ product.type | json }},
+            "price": {{ price | json }},
+            "image": {{ image | json }},
+            "needs": {{ needs | json }}
+          }
+          {%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    {%- endpaginate -%}
+  </script>
+</div>
+
+{% stylesheet %}
+  .about-you-intro__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(2.5rem, 7vw, 5rem) var(--page-margin);
+  }
+  .about-you-intro h1 {
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    line-height: 1;
+  }
+  .about-you-intro__lead {
+    max-width: 40ch;
+    margin-block: 1.25rem 0.75rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  }
+  .about-you-intro__privacy {
+    max-width: 48ch;
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  .about-you {
+    padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem);
+  }
+  .about-you__form {
+    max-width: 46rem;
+  }
+  .about-you__step {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  /* With JavaScript, one question shows at a time. */
+  .about-you.is-enhanced .about-you__step:not(.is-current) {
+    display: none;
+  }
+  .about-you__step legend {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0;
+  }
+  .about-you__step legend:focus-visible {
+    outline: none;
+  }
+  .about-you__question {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+  .about-you__hint {
+    margin-block: 0.75rem 1.5rem;
+  }
+  .choices {
+    display: grid;
+    gap: 0.75rem;
+  }
+  /* Each answer is one large target: the whole row is the label. */
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-height: 3.5rem;
+    padding: 0.75rem 1.125rem;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 1rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .choice input {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--color-dark);
+  }
+  .choice:hover {
+    background-color: var(--color-panel);
+  }
+  /* Selected answers turn teal and get a thicker border, so colour is not the only cue. */
+  .choice:has(input:checked) {
+    border-width: 3px;
+    padding: calc(0.75rem - 1.5px) calc(1.125rem - 1.5px);
+    background-color: var(--color-highlight);
+  }
+  .choice:has(input:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .choice input:focus-visible {
+    outline: none;
+  }
+  .about-you__other {
+    margin-top: 1.5rem;
+  }
+  .about-you__other input {
+    width: 100%;
+    border-radius: 1rem;
+  }
+  .about-you__nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-top: 2rem;
+  }
+  .about-you__skip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    margin-left: auto;
+  }
+  .about-you__results-note {
+    max-width: 52ch;
+    margin-block: 0.75rem 2rem;
+  }
+  .about-you__results h2:focus-visible {
+    outline: none;
+  }
+  .product-card__why {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1.5px solid var(--color-foreground);
+    font-size: 0.9375rem;
+  }
+  .product-card__why strong {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const root = document.querySelector('[data-about-you]');
+    if (!root) return;
+
+    const STORAGE_KEY = 'roam:about-you';
+    const MAX_PICKS = 4;
+
+    // Words in the free-text answer that point to a need tag. Matched on the device only.
+    // Needs weigh 3 and goals weigh 2, the same as the matching checkboxes.
+    const KEYWORDS = [
+      [/hear|deaf|caption/i, 'deaf-hoh', 3],
+      [/speak|speech|talk|voice/i, 'nonspeaking', 3],
+      [/see|sight|vision|blind|read/i, 'blind-low-vision', 3],
+      [/hand|grip|finger|arthritis|tremor|shak|button/i, 'dexterity', 3],
+      [/wheelchair/i, 'wheelchair', 3],
+      [/walk|balance|cane|stairs/i, 'walking-aid', 3],
+      [/sport|gym|train|basketball|tennis/i, 'sports', 2],
+      [/travel|trip|flight|commute/i, 'travel', 2],
+    ];
+
+    const form = root.querySelector('[data-form]');
+    const steps = [...root.querySelectorAll('[data-step]')];
+    const backButton = root.querySelector('[data-back]');
+    const nextButton = root.querySelector('[data-next]');
+    const submitButton = root.querySelector('[data-submit]');
+    const results = root.querySelector('[data-results]');
+    const resultsHeading = root.querySelector('[data-results-heading]');
+    const resultsNote = root.querySelector('[data-results-note]');
+    const resultsList = root.querySelector('[data-results-list]');
+    const otherInput = root.querySelector('[data-other]');
+    const products = JSON.parse(root.querySelector('[data-products]').textContent);
+    let current = 0;
+
+    // --- Saving and restoring answers (this device only) ---
+
+    function load() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY));
+      } catch {
+        return null;
+      }
+    }
+
+    function save(answers) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+      } catch {
+        // Storage can be blocked. The flow still works, it just is not remembered.
+      }
+    }
+
+    function clear() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
+    }
+
+    function readAnswers() {
+      const checked = [...form.querySelectorAll('input:checked')].map((input) => `${input.name}:${input.value}`);
+      return { checked, other: otherInput.value.trim() };
+    }
+
+    function restoreAnswers(answers) {
+      form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((input) => {
+        input.checked = answers.checked.includes(`${input.name}:${input.value}`);
+      });
+      otherInput.value = answers.other || '';
+    }
+
+    // --- Scoring ---
+
+    // Turns the current answers into a list of { tag, weight, reason }.
+    // data-signals are quoted back as the reason for a pick. data-support signals
+    // add to the score but are never quoted, so a walker is never explained with
+    // "using a manual wheelchair".
+    function collectSignals() {
+      const signals = [];
+      const add = (list, reason) => {
+        if (!list) return;
+        list.split(',').forEach((pair) => {
+          const [tag, weight] = pair.split(':');
+          signals.push({ tag, weight: Number(weight), reason });
+        });
+      };
+      form.querySelectorAll('input:checked[data-signals]').forEach((input) => {
+        add(input.dataset.signals, input.dataset.reason);
+        add(input.dataset.support, null);
+      });
+      KEYWORDS.forEach(([pattern, tag, weight]) => {
+        if (pattern.test(otherInput.value)) {
+          signals.push({ tag, weight, reason: 'what you wrote' });
+        }
+      });
+      return signals;
+    }
+
+    const GOALS = ['get-around', 'sports', 'travel', 'everyday'];
+
+    function rank(signals) {
+      // If the shopper named a need, every pick must match a need. A goal alone
+      // ("travel") is not enough to suggest gear made for a different need.
+      const hasNeed = signals.some((signal) => !GOALS.includes(signal.tag));
+
+      return products
+        .map((product) => {
+          const matched = signals.filter((signal) => product.needs.includes(signal.tag));
+          if (hasNeed && matched.every((signal) => GOALS.includes(signal.tag))) {
+            return { product, score: 0, reasons: [] };
+          }
+          const score = matched.reduce((total, signal) => total + signal.weight, 0);
+          const reasons = [
+            ...new Set(
+              matched
+                .filter((signal) => signal.reason)
+                .sort((a, b) => b.weight - a.weight)
+                .map((signal) => signal.reason)
+            ),
+          ];
+          return { product, score, reasons };
+        })
+        // A product needs at least one quotable reason, so every pick can be explained.
+        .filter((entry) => entry.score > 0 && entry.reasons.length > 0)
+        .sort((a, b) => b.score - a.score || b.reasons.length - a.reasons.length)
+        .slice(0, MAX_PICKS);
+    }
+
+    // --- Showing results ---
+
+    function element(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text) node.textContent = text;
+      return node;
+    }
+
+    function card({ product, reasons }) {
+      const item = element('li');
+      const article = element('article', 'product-card');
+
+      const media = element('div', 'product-card__media');
+      if (product.image) {
+        const image = element('img');
+        image.src = product.image;
+        image.alt = '';
+        image.loading = 'lazy';
+        image.width = 600;
+        image.height = 600;
+        media.append(image);
+      }
+
+      const content = element('div', 'product-card__content');
+      const title = element('h3', 'product-card__title');
+      const link = element('a', '', product.title);
+      link.href = product.url;
+      title.append(link);
+
+      const why = element('p', 'product-card__why');
+      why.append(element('strong', '', 'Why we picked this'), `Fits ${reasons.slice(0, 2).join(' and ')}.`);
+
+      content.append(
+        element('p', 'product-card__type', product.type),
+        title,
+        element('p', 'product-card__price', product.price),
+        why
+      );
+      // Products without a photo show as a text-only card.
+      if (product.image) article.append(media);
+      article.append(content);
+      item.append(article);
+      return item;
+    }
+
+    function showResults({ moveFocus }) {
+      const signals = collectSignals();
+      const picks = rank(signals);
+
+      resultsList.replaceChildren(...picks.map(card));
+      if (picks.length > 0) {
+        resultsHeading.textContent = 'We think you’ll like…';
+        resultsNote.textContent = `${picks.length} ${
+          picks.length === 1 ? 'pick' : 'picks'
+        } based on your answers. Your answers are saved on this device only.`;
+      } else {
+        resultsHeading.textContent = 'No answers, no problem';
+        resultsNote.textContent =
+          'We have nothing to go on yet, and that is fine. Browse all gear, or change your answers to get suggestions.';
+      }
+
+      form.hidden = true;
+      results.hidden = false;
+      if (moveFocus) resultsHeading.focus();
+
+      // Anonymous summary for analytics: need tags and product handles only. Never the free text.
+      document.dispatchEvent(
+        new CustomEvent('roam:suggestions', {
+          detail: {
+            needs: [...new Set(signals.map((signal) => signal.tag))],
+            picks: picks.map((entry) => entry.product.handle),
+          },
+        })
+      );
+    }
+
+    // --- Moving between questions ---
+
+    function showStep(index, { moveFocus }) {
+      current = index;
+      steps.forEach((step, i) => step.classList.toggle('is-current', i === index));
+      backButton.hidden = index === 0;
+      nextButton.hidden = index === steps.length - 1;
+      submitButton.hidden = index !== steps.length - 1;
+      if (moveFocus) steps[index].querySelector('legend').focus();
+    }
+
+    backButton.addEventListener('click', () => showStep(current - 1, { moveFocus: true }));
+    nextButton.addEventListener('click', () => showStep(current + 1, { moveFocus: true }));
+
+    // "I'd rather not say" and the other descriptions cancel each other out.
+    form.addEventListener('change', (event) => {
+      const input = event.target;
+      if (input.name !== 'describe' || !input.checked) return;
+      form.querySelectorAll('input[name="describe"]').forEach((other) => {
+        if (other === input) return;
+        if (input.hasAttribute('data-exclusive') || other.hasAttribute('data-exclusive')) other.checked = false;
+      });
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      save(readAnswers());
+      showResults({ moveFocus: true });
+    });
+
+    root.querySelector('[data-edit]').addEventListener('click', () => {
+      results.hidden = true;
+      form.hidden = false;
+      showStep(0, { moveFocus: true });
+    });
+
+    root.querySelector('[data-clear]').addEventListener('click', () => {
+      clear();
+      form.reset();
+      results.hidden = true;
+      form.hidden = false;
+      showStep(0, { moveFocus: true });
+    });
+
+    // --- Start ---
+
+    root.classList.add('is-enhanced');
+    const saved = load();
+    if (saved && Array.isArray(saved.checked)) {
+      restoreAnswers(saved);
+      showStep(0, { moveFocus: false });
+      showResults({ moveFocus: false });
+    } else {
+      form.hidden = false;
+      showStep(0, { moveFocus: false });
+    }
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Tell us about you",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Header colour block",
+      "options": [
+        { "value": "action", "label": "Violet" },
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "panel", "label": "Soft lilac" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "action"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small line above the heading",
+      "default": "Four questions. About a minute."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tell us about you"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Answer what you like, skip what you don't. We'll suggest gear that fits and tell you why."
+    },
+    {
+      "type": "textarea",
+      "id": "privacy_note",
+      "label": "Privacy note",
+      "default": "Totally optional. Your answers stay on your device and are only used for suggestions."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tell us about you"
+    }
+  ]
+}
+{% endschema %}
