@@ -1,6 +1,8 @@
 import type { ActionFunctionArgs } from "react-router";
+import { eq } from "drizzle-orm";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+import { sessionTable } from "../db/schema";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { shop, session, topic } = await authenticate.webhook(request);
@@ -10,7 +12,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Webhook requests can trigger multiple times and after an app has already been uninstalled.
   // If this webhook already ran, the session may have been deleted previously.
   if (session) {
-    await db.session.deleteMany({ where: { shop } });
+    await db.delete(sessionTable).where(eq(sessionTable.shop, shop));
   }
 
   return new Response();

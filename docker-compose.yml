@@ -1,0 +1,30 @@
+# Local MySQL for the Roam Insights app.
+#
+#   Start:  docker compose up -d
+#   Stop:   docker compose down          (data is kept)
+#   Reset:  docker compose down -v       (deletes the data)
+#
+# The credentials below are for local development only. The port is bound to
+# 127.0.0.1, so the database is reachable from this computer and nowhere else.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: roam-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: roam_insights
+      MYSQL_USER: roam
+      MYSQL_PASSWORD: roam_local_dev
+      MYSQL_ROOT_PASSWORD: roam_local_root
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - roam-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u roam -proam_local_dev --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  roam-mysql-data:
