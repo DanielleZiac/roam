@@ -37,7 +37,8 @@
 
     <p class="product-card__price">
       {% if product.price_varies %}
-        {{ 'products.from_price_html' | t: price: product.price_min | money }}
+        {% assign from_price = product.price_min | money %}
+        {{ 'products.from_price_html' | t: price: from_price }}
       {% else %}
         {{ product.price | money }}
       {% endif %}

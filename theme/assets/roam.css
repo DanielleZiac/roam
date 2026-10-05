@@ -270,3 +270,90 @@ select {
 :is(.scheme-highlight, .scheme-panel) .button--secondary {
   background-color: transparent;
 }
+
+/* Small button, filter chips, form fields, rich text and pagination. */
+.button--small {
+  min-height: 3rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+}
+
+.button[disabled] {
+  border-style: dashed;
+  background-color: transparent;
+  color: var(--color-foreground);
+  cursor: not-allowed;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.5rem 1.125rem;
+  border: 1.5px solid var(--color-foreground);
+  border-radius: 999px;
+  color: var(--color-foreground);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.chip:hover {
+  background-color: var(--color-panel);
+}
+
+/* The active chip is filled, and also marked with aria-current for screen readers. */
+.chip[aria-current='true'] {
+  background-color: var(--color-dark);
+  color: var(--color-background);
+}
+
+.field {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.field label {
+  font-weight: 500;
+}
+
+.field--quantity input {
+  width: 6.5rem;
+}
+
+.rte > :last-child {
+  margin-bottom: 0;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 2.5rem 0;
+}
+
+.pagination .page a,
+.pagination .page.current,
+.pagination .next a,
+.pagination .prev a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding-inline: 0.75rem;
+  border: 1.5px solid var(--color-foreground);
+  border-radius: 999px;
+  color: var(--color-foreground);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pagination .page.current {
+  background-color: var(--color-dark);
+  color: var(--color-background);
+}
+
+.pagination a:hover {
+  background-color: var(--color-panel);
+}

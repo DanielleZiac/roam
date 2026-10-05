@@ -16,13 +16,25 @@
   "cart": {
     "checkout": "Checkout",
     "title": "Cart",
-    "update": "Update",
+    "update": "Update quantities",
     "remove": "Remove",
     "link_empty": "Cart, empty",
     "link_count": {
       "one": "Cart, {{ count }} item",
       "other": "Cart, {{ count }} items"
-    }
+    },
+    "empty_title": "Your cart is empty",
+    "empty_text": "Find gear that fits how you move.",
+    "empty_button": "Shop all gear",
+    "each": "{{ price }} each",
+    "quantity": "Quantity",
+    "quantity_for": "for {{ title }}",
+    "line_total": "Line total",
+    "summary": "Order summary",
+    "items": "Items",
+    "subtotal": "Subtotal",
+    "taxes_note": "Shipping and taxes are worked out at checkout.",
+    "continue": "Keep shopping"
   },
   "customers": {
     "login": {
@@ -33,7 +45,20 @@
     }
   },
   "collections": {
-    "title": "Collections"
+    "title": "Collections",
+    "label": "Collection",
+    "filter_label": "Filter by goal",
+    "filter_all": "All",
+    "sort_label": "Sort by",
+    "sort_apply": "Sort",
+    "count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "empty_title": "No gear matches that yet",
+    "empty_text": "Try a different goal, or see everything in this collection.",
+    "empty_button": "Show all",
+    "pagination_label": "Pages"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -58,7 +83,8 @@
     "skip_to_content": "Skip to content",
     "main_menu": "Main",
     "footer_menu": "Footer",
-    "account": "Account"
+    "account": "Account",
+    "breadcrumb": "Breadcrumb"
   },
   "footer": {
     "tagline": "Gear built around you.",
@@ -66,10 +92,26 @@
   },
   "products": {
     "from_price_html": "From {{ price }}",
-    "sold_out": "Sold out"
+    "sold_out": "Sold out",
+    "price": "Price",
+    "was": "Was",
+    "option": "Option",
+    "quantity": "Quantity",
+    "add_to_cart": "Add to cart",
+    "key_facts": "Key facts",
+    "view_all": "View all"
   },
   "ticker": {
     "pause": "Pause scrolling",
     "play": "Resume scrolling"
+  },
+  "general": {
+    "home": "Home"
+  },
+  "goals": {
+    "get_around": "Get around",
+    "sports": "Play sports",
+    "travel": "Travel",
+    "everyday": "Everyday carry"
   }
 }

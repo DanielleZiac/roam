@@ -1,6 +1,8 @@
 <header class="header full-width">
   <div class="header__inner">
-    <a class="header__logo heading" href="{{ routes.root_url }}">{{ shop.name }}</a>
+    <a class="header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+      {{ 'logo-roam.svg' | inline_asset_content }}
+    </a>
 
     <nav class="header__menu" aria-label="{{ 'accessibility.main_menu' | t }}">
       <ul>
@@ -54,8 +56,14 @@
     text-decoration: none;
   }
   .header__logo {
-    font-size: 1.875rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
     color: var(--color-foreground);
+  }
+  .header__logo svg {
+    width: auto;
+    height: 1.75rem;
   }
   .header__menu ul {
     display: flex;

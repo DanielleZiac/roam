@@ -1,7 +1,10 @@
 <footer class="footer full-width on-dark">
   <div class="footer__inner">
     <div class="footer__brand">
-      <p class="footer__logo heading">{{ shop.name }}</p>
+      <p class="footer__logo">
+        <span class="visually-hidden">{{ shop.name }}</span>
+        {{ 'logo-roam.svg' | inline_asset_content }}
+      </p>
       <p>{{ 'footer.tagline' | t }}</p>
     </div>
 
@@ -41,8 +44,9 @@
     margin-inline: auto;
     padding: 3rem var(--page-margin);
   }
-  .footer__logo {
-    font-size: 1.875rem;
+  .footer__logo svg {
+    width: auto;
+    height: 2.25rem;
   }
   .footer__links,
   .footer__payment {

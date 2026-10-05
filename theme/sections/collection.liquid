@@ -1,47 +1,179 @@
 {% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+  Collection page: a colour-block header, goal filters, a sort control and the
+  product grid. Filtering and sorting are plain links and a normal form, so the
+  page works without JavaScript.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+{% liquid
+  assign goal_tags = 'get-around,sports,travel,everyday' | split: ','
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+%}
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
-      </div>
-    {% endfor %}
-
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
+<div class="collection-header full-width scheme-{{ section.settings.color_scheme }}">
+  <div class="collection-header__inner">
+    <p class="label">{{ 'collections.label' | t }}</p>
+    <h1>{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="collection-header__description">{{ collection.description }}</div>
+    {% endif %}
+  </div>
 </div>
 
+<div class="collection-tools">
+  <nav class="collection-filters" aria-label="{{ 'collections.filter_label' | t }}">
+    <span class="label" aria-hidden="true">{{ 'collections.filter_label' | t }}</span>
+    <ul role="list">
+      <li>
+        <a class="chip" href="{{ collection.url }}" {% if current_tags == blank %}aria-current="true"{% endif %}>
+          {{ 'collections.filter_all' | t }}
+        </a>
+      </li>
+      {% for tag in goal_tags %}
+        {% if collection.all_tags contains tag %}
+          {% assign tag_key = 'goals.' | append: tag | replace: '-', '_' %}
+          <li>
+            <a
+              class="chip"
+              href="{{ collection.url }}/{{ tag }}"
+              {% if current_tags contains tag %}
+                aria-current="true"
+              {% endif %}
+            >
+              {{ tag_key | t }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <form class="collection-sort" method="get">
+    <label for="SortBy-{{ section.id }}">{{ 'collections.sort_label' | t }}</label>
+    <select id="SortBy-{{ section.id }}" name="sort_by">
+      {% for option in collection.sort_options %}
+        <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>
+          {{ option.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button class="button button--secondary button--small" type="submit">{{ 'collections.sort_apply' | t }}</button>
+  </form>
+</div>
+
+{% paginate collection.products by section.settings.per_page %}
+  <p class="collection-count" role="status">
+    {{ 'collections.count' | t: count: collection.products_count }}
+  </p>
+
+  {% if collection.products.size > 0 %}
+    <ul class="product-grid" role="list">
+      {% for product in collection.products %}
+        <li>{% render 'product-card', product: product, heading_tag: 'h2' %}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="collection-empty scheme-panel">
+      <h2>{{ 'collections.empty_title' | t }}</h2>
+      <p>{{ 'collections.empty_text' | t }}</p>
+      <a class="button" href="{{ collection.url }}">{{ 'collections.empty_button' | t }}</a>
+    </div>
+  {% endif %}
+
+  {% if paginate.pages > 1 %}
+    <nav class="pagination" aria-label="{{ 'collections.pagination_label' | t }}">
+      {{ paginate | default_pagination }}
+    </nav>
+  {% endif %}
+{% endpaginate %}
+
 {% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  .collection-header__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(2.5rem, 7vw, 5rem) var(--page-margin);
+  }
+  .collection-header h1 {
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    line-height: 1;
+  }
+  .collection-header__description {
+    max-width: 44ch;
+    margin-top: 1.25rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  }
+  .collection-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-block: 2rem 1rem;
+  }
+  .collection-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+  .collection-filters ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .collection-sort {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .collection-sort label {
+    font-weight: 500;
+  }
+  .collection-count {
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  .collection-empty {
+    padding: clamp(2rem, 6vw, 4rem);
+    border-radius: 1.25rem;
+  }
+  .collection-empty h2 {
+    margin-bottom: 0.5rem;
   }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.collection",
-  "settings": []
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Header colour block",
+      "options": [
+        { "value": "panel", "label": "Soft lilac" },
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "action", "label": "Violet" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "panel"
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "min": 8,
+      "max": 24,
+      "step": 4,
+      "label": "Products per page",
+      "default": 12
+    }
+  ]
 }
 {% endschema %}
