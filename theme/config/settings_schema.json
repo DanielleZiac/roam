@@ -127,13 +127,13 @@
         "type": "text",
         "id": "contact_email",
         "label": "Email",
-        "default": "hello@roam.example"
+        "default": "roamph@gmail.com"
       },
       {
         "type": "text",
         "id": "contact_chat",
         "label": "Text or chat number",
-        "default": "+63 000 000 0000"
+        "default": "+63 917 555 0142"
       },
       {
         "type": "text",
@@ -145,19 +145,19 @@
         "type": "text",
         "id": "contact_phone",
         "label": "Phone",
-        "default": "(02) 0000 0000"
+        "default": "(02) 8555 0142"
       },
       {
         "type": "textarea",
         "id": "contact_address",
         "label": "Address",
-        "default": "Roam Showroom\nUnit 5, 100 Example Avenue\nQuezon City 1100, Philippines"
+        "default": "Roam Showroom\nUnit 5, 128 Kalayaan Avenue\nDiliman, Quezon City 1101"
       },
       {
         "type": "text",
         "id": "contact_hours",
         "label": "Opening hours",
-        "default": "Monday to Saturday, 9 am to 6 pm"
+        "default": "Mon - Sat (9AM - 6PM)"
       },
       {
         "type": "text",

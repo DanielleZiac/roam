@@ -473,6 +473,16 @@ select {
   font-size: 1rem;
 }
 
+/* The footer is set smaller than the page; here it matches the body text again. */
+.a11y-dyslexia .footer {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.a11y-dyslexia .footer__heading {
+  font-size: 1.25rem;
+}
+
 /* Moving text is harder to read, so the scrolling words and the wheel hold still. */
 .a11y-dyslexia .hero__wheel {
   animation-play-state: paused;

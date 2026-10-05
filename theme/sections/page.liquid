@@ -48,7 +48,11 @@
             {{ 'icon-phone.svg' | inline_asset_content }}
             <div>
               <h3>{{ 'contact.phone' | t }}</h3>
-              <p>{{ settings.contact_phone }}</p>
+              <p>
+                <a href="tel:{{ settings.contact_phone | remove: ' ' | remove: '(' | remove: ')' }}">
+                  {{- settings.contact_phone -}}
+                </a>
+              </p>
             </div>
           </li>
           <li>

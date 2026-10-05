@@ -101,9 +101,14 @@
       flex-wrap: nowrap;
       padding: 0 1.5rem 0 0;
     }
-    /* Stops while the pointer is over the band or a link in it has keyboard focus. */
-    .ticker:hover .ticker__track,
+    /* Stops while a link in the band has keyboard focus. */
     .ticker:focus-within .ticker__track {
+      animation-play-state: paused;
+    }
+  }
+  /* Also stops under a mouse pointer. Touch screens are left out: there a tap leaves hover stuck on. */
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .ticker:hover .ticker__track {
       animation-play-state: paused;
     }
   }
