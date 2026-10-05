@@ -251,6 +251,21 @@
     writeList(VIEWED_KEY, viewed.slice(0, MAX_VIEWED));
   }
 
+  // --- Anonymous suggestion events for the Roam Insights app ---
+  // "Tell us about you" announces each submitted result. It is forwarded to the
+  // app through Shopify's app proxy. It carries need tags and product handles
+  // only. If the app is not installed or the request fails, nothing happens.
+  document.addEventListener('roam:suggestions', (event) => {
+    const { needs, picks } = event.detail || {};
+    if (!Array.isArray(needs) || needs.length === 0) return;
+    fetch(strings.eventsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ needs, picks }),
+      keepalive: true,
+    }).catch(() => {});
+  });
+
   // Other scripts announce when they have drawn new cards (catalog search results).
   document.addEventListener('roam:cards-updated', syncSaveButtons);
 

@@ -44,6 +44,13 @@ api_version = "2027-01"
   uri = "/webhooks/app/scopes_update"
   topics = [ "app/scopes_update" ]
 
+# The storefront reaches the app at /apps/roam/... on the shop's own domain.
+# Shopify forwards those requests to /proxy/... here and signs them.
+[app_proxy]
+url = "https://example.com/proxy"
+subpath = "roam"
+prefix = "apps"
+
 [auth]
 redirect_urls = [ "https://example.com/api/auth" ]
 

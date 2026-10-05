@@ -14,7 +14,10 @@
     named: a product has to match a need before a goal can lift it.
 
   Privacy: answers are scored in the browser and saved only in localStorage.
-  Nothing is sent to a server from this file.
+  When a shopper submits, an anonymous summary (need tags and suggested product
+  handles, never the free text or anything identifying) is announced as a
+  "roam:suggestions" event, which assets/roam-shop.js forwards to the Roam
+  Insights app.
 
   Without JavaScript the page says so and links to the full catalog.
 {% endcomment %}
@@ -478,7 +481,7 @@
       return item;
     }
 
-    function showResults({ moveFocus }) {
+    function showResults({ moveFocus, report }) {
       const signals = collectSignals();
       const picks = rank(signals);
 
@@ -499,6 +502,8 @@
       if (moveFocus) resultsHeading.focus();
 
       // Anonymous summary for analytics: need tags and product handles only. Never the free text.
+      // Only a freshly submitted set of answers is reported, not answers restored from an earlier visit.
+      if (!report) return;
       document.dispatchEvent(
         new CustomEvent('roam:suggestions', {
           detail: {
@@ -536,7 +541,7 @@
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       save(readAnswers());
-      showResults({ moveFocus: true });
+      showResults({ moveFocus: true, report: true });
     });
 
     root.querySelector('[data-edit]').addEventListener('click', () => {
@@ -560,7 +565,7 @@
     if (saved && Array.isArray(saved.checked)) {
       restoreAnswers(saved);
       showStep(0, { moveFocus: false });
-      showResults({ moveFocus: false });
+      showResults({ moveFocus: false, report: false });
     } else {
       form.hidden = false;
       showStep(0, { moveFocus: false });

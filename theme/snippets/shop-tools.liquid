@@ -33,6 +33,7 @@
   {
     "cartAddUrl": {{ routes.cart_add_url | json }},
     "cartUrl": {{ routes.cart_url | append: '.js' | json }},
+    "eventsUrl": {{ routes.root_url | append: 'apps/roam/events' | json }},
     "save": {{ 'products.save' | t: title: '[title]' | json }},
     "unsave": {{ 'products.unsave' | t: title: '[title]' | json }},
     "quickAdd": {{ 'products.quick_add' | t: title: '[title]' | json }},
