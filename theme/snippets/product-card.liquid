@@ -58,6 +58,20 @@
       <a href="{{ product.url }}">{{ product.title }}</a>
     </{{ heading_tag }}>
 
+    {% liquid
+      assign card_rating = product.metafields.roam.rating.value
+      assign card_rating_count = product.metafields.roam.rating_count.value | default: 0
+    %}
+    {% if card_rating_count > 0 %}
+      <p class="product-card__rating">
+        <span class="visually-hidden">Rated {{ card_rating }} out of 5 from {{ card_rating_count }} reviews</span>
+        <span aria-hidden="true">
+          <span class="product-card__star">{{ 'icon-star.svg' | inline_asset_content }}</span>
+          {{ card_rating }} ({{ card_rating_count }})
+        </span>
+      </p>
+    {% endif %}
+
     <div class="product-card__footer">
       <p class="product-card__price">
         {% if product.price_varies %}
@@ -166,6 +180,22 @@
   }
   .product-card__title a:focus-visible {
     outline: none;
+  }
+  .product-card__rating {
+    font-size: 0.9375rem;
+  }
+  .product-card__rating > span[aria-hidden] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .product-card__star {
+    display: inline-grid;
+  }
+  .product-card__star svg {
+    width: 1rem;
+    height: 1rem;
+    fill: currentcolor;
   }
   .product-card__footer {
     display: flex;

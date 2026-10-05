@@ -90,6 +90,18 @@
 
     <h1 class="product__title" data-read>{{ product.title }}</h1>
 
+    {% liquid
+      assign page_rating = product.metafields.roam.rating.value
+      assign page_rating_count = product.metafields.roam.rating_count.value | default: 0
+    %}
+    {% if page_rating_count > 0 %}
+      {% capture page_rating_label %}Rated {{ page_rating }} out of 5{% endcapture %}
+      <p class="product__rating">
+        {% render 'stars', rating: page_rating, label: page_rating_label %}
+        <a href="#reviews">{{ page_rating }} ({{ page_rating_count }} reviews)</a>
+      </p>
+    {% endif %}
+
     <p class="product__price" data-read>
       <span class="visually-hidden">{{ 'products.price' | t }}</span>
       {{ current_variant.price | money }}
@@ -245,6 +257,13 @@
   .product__title {
     margin-block: 0.5rem 1rem;
     font-size: clamp(2.25rem, 5vw, 4rem);
+  }
+  .product__rating {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
   }
   .product__price {
     font-family: var(--font-heading--family);

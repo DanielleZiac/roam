@@ -8,6 +8,7 @@
  *
  *   products ──< event_picks >── suggestion_events ──< event_needs
  *      │                               (one storefront "Tell us about you" result)
+ *      ├──< reviews
  *      ├──< alerts
  *      └──< activity_log >── alerts
  *
@@ -182,10 +183,42 @@ export const activityLog = mysqlTable(
   (table) => [index("activity_log_shop_created_idx").on(table.shop, table.createdAt)],
 );
 
+// --- Reviews --------------------------------------------------------------------
+// Written by shoppers on the storefront. A review is only shown on the store
+// after the merchant approves it in the app.
+
+export const reviewStatuses = ["pending", "approved", "rejected"] as const;
+
+export const reviews = mysqlTable(
+  "reviews",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    shop: varchar("shop", { length: 255 }).notNull(),
+    productId: int("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    rating: int("rating").notNull(),
+    authorName: varchar("author_name", { length: 60 }).notNull(),
+    body: text("body").notNull(),
+    status: mysqlEnum("status", reviewStatuses).notNull().default("pending"),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+    moderatedAt: timestamp("moderated_at", { mode: "date" }),
+  },
+  (table) => [
+    index("reviews_shop_status_idx").on(table.shop, table.status),
+    index("reviews_product_idx").on(table.productId),
+  ],
+);
+
 // --- Relations ----------------------------------------------------------------
 // These let queries fetch related rows together, e.g. an event with its needs and picks.
 
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  product: one(products, { fields: [reviews.productId], references: [products.id] }),
+}));
+
 export const productsRelations = relations(products, ({ many }) => ({
+  reviews: many(reviews),
   picks: many(eventPicks),
   alerts: many(alerts),
   activity: many(activityLog),

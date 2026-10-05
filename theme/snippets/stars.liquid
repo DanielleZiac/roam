@@ -1,0 +1,46 @@
+{% doc %}
+  Five stars showing a rating. The stars are decoration: the same rating is
+  always given as text for screen readers.
+
+  @param {number} rating - The rating, from 0 to 5
+  @param {string} [label] - Text read by screen readers, e.g. "4.5 out of 5"
+
+  @example
+  {% render 'stars', rating: 4.5, label: '4.5 out of 5' %}
+{% enddoc %}
+
+{% liquid
+  assign rounded = rating | round
+%}
+
+<span class="stars">
+  {% if label != blank %}
+    <span class="visually-hidden">{{ label }}</span>
+  {% endif %}
+  <span class="stars__icons" aria-hidden="true">
+    {% for i in (1..5) %}
+      <span class="stars__star{% if i <= rounded %} stars__star--on{% endif %}">
+        {{- 'icon-star.svg' | inline_asset_content -}}
+      </span>
+    {% endfor %}
+  </span>
+</span>
+
+{% stylesheet %}
+  .stars,
+  .stars__icons {
+    display: inline-flex;
+    align-items: center;
+  }
+  .stars__star {
+    display: inline-grid;
+  }
+  .stars__star svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  /* A filled star counts toward the rating; an outlined one does not. */
+  .stars__star--on svg {
+    fill: currentcolor;
+  }
+{% endstylesheet %}

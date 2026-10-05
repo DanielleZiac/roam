@@ -1,11 +1,11 @@
 import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { useFetcher, useLoaderData } from "react-router";
-import { count, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-import { products } from "../db/schema";
+import { products, reviews } from "../db/schema";
 import { acknowledgeAlert, evaluateAlerts, listAlerts } from "../models/alerts.server";
 import { getDashboard } from "../models/insights.server";
 import { syncProducts } from "../models/products.server";
@@ -24,12 +24,20 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const quizPage = await ensureQuizPage(admin.graphql, shop);
   await evaluateAlerts(shop);
 
-  const [dashboard, allAlerts] = await Promise.all([getDashboard(shop), listAlerts(shop)]);
+  const [dashboard, allAlerts, [{ value: pendingReviews }]] = await Promise.all([
+    getDashboard(shop),
+    listAlerts(shop),
+    db
+      .select({ value: count() })
+      .from(reviews)
+      .where(and(eq(reviews.shop, shop), eq(reviews.status, "pending"))),
+  ]);
 
   return {
     shop,
     quizPage,
     dashboard,
+    pendingReviews,
     alerts: allAlerts
       .filter((alert) => alert.status !== "resolved")
       .map((alert) => ({
@@ -83,7 +91,7 @@ const shortDate = (day: string) =>
   new Date(`${day}T00:00:00Z`).toLocaleDateString("en", { day: "numeric", month: "short", timeZone: "UTC" });
 
 export default function Index() {
-  const { shop, quizPage, dashboard, alerts } = useLoaderData<typeof loader>();
+  const { shop, quizPage, dashboard, alerts, pendingReviews } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const busy = fetcher.state !== "idle";
   const send = (body: { intent: string; alertId?: number }) =>
@@ -98,7 +106,7 @@ export default function Index() {
   const worst = judged.length > 1 ? judged[judged.length - 1] : undefined;
   const hasData = dashboard.events > 0;
   const untagged = dashboard.untaggedProducts;
-  const todo = alerts.length + (untagged > 0 ? 1 : 0);
+  const todo = alerts.length + (untagged > 0 ? 1 : 0) + (pendingReviews > 0 ? 1 : 0);
 
   const change = dashboard.thisWeek - dashboard.lastWeek;
   const trendNote =
@@ -200,6 +208,17 @@ export default function Index() {
                     </s-stack>
                   </s-banner>
                 ))}
+                {pendingReviews > 0 ? (
+                  <s-banner tone="info" heading="Reviews are waiting for you">
+                    <s-stack direction="block" gap="small-200">
+                      <s-paragraph>
+                        {pendingReviews} {pendingReviews === 1 ? "review is" : "reviews are"} waiting. Shoppers only
+                        see a review after you approve it.
+                      </s-paragraph>
+                      <s-button href="/app/reviews">Read and decide</s-button>
+                    </s-stack>
+                  </s-banner>
+                ) : null}
                 {untagged > 0 ? (
                   <s-banner tone="info" heading="Some products can never be suggested">
                     <s-stack direction="block" gap="small-200">

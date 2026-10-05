@@ -1,0 +1,325 @@
+{% comment %}
+  Product page reviews: the average rating, approved reviews and a form to write one.
+
+  Reviews are managed in the Roam Insights app. Approved reviews are stored on
+  the product as "roam" metafields (rating, rating_count, reviews), so this
+  section renders them without calling the app. A new review is posted to the
+  app through the app proxy and stays hidden until the merchant approves it.
+{% endcomment %}
+
+{% liquid
+  assign rating = product.metafields.roam.rating.value
+  assign rating_count = product.metafields.roam.rating_count.value | default: 0
+  assign review_list = product.metafields.roam.reviews.value
+%}
+
+<div class="reviews" id="reviews">
+  <div class="reviews__summary">
+    <h2>{{ section.settings.heading }}</h2>
+    {% if rating_count > 0 %}
+      {% capture rating_label %}{{ rating }} out of 5{% endcapture %}
+      <p class="reviews__average">
+        {% render 'stars', rating: rating, label: rating_label %}
+        <span aria-hidden="true">{{ rating }} out of 5</span>
+        <span class="reviews__count">
+          {%- if rating_count == 1 -%}
+            from 1 review
+          {%- else -%}
+            from {{ rating_count }} reviews
+          {%- endif -%}
+        </span>
+      </p>
+    {% else %}
+      <p>{{ section.settings.empty_text }}</p>
+    {% endif %}
+  </div>
+
+  {% if rating_count > 0 %}
+    <ul class="reviews__list" role="list">
+      {% for review in review_list %}
+        <li class="review">
+          {% capture review_label %}{{ review.rating }} out of 5{% endcapture %}
+          <p class="review__rating">{% render 'stars', rating: review.rating, label: review_label %}</p>
+          <p class="review__body">{{ review.body | escape }}</p>
+          <p class="review__meta">
+            {{ review.name | escape }}, {{ review.date | date: '%B %-d, %Y' }}
+          </p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="review-form scheme-panel" data-review-form-wrapper>
+    <h3>{{ section.settings.form_heading }}</h3>
+    <noscript><p>Writing a review needs JavaScript switched on.</p></noscript>
+
+    <form data-review-form data-handle="{{ product.handle }}" hidden novalidate>
+      <fieldset class="review-form__rating">
+        <legend>Your rating</legend>
+        <div class="review-form__choices">
+          {% for i in (1..5) %}
+            <label class="chip review-form__choice">
+              <input type="radio" name="rating" value="{{ i }}" required>
+              {{ i }}
+              <span class="visually-hidden">out of 5</span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="ReviewName-{{ section.id }}">Your name (optional)</label>
+        <input id="ReviewName-{{ section.id }}" type="text" name="name" maxlength="60" autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label for="ReviewBody-{{ section.id }}">Your review</label>
+        <textarea id="ReviewBody-{{ section.id }}" name="body" rows="4" maxlength="1000" required></textarea>
+      </div>
+
+      {% # Hidden from people and left empty by them. Automated spam tends to fill it in. %}
+      <div class="visually-hidden" aria-hidden="true">
+        <label for="ReviewWebsite-{{ section.id }}">Leave this empty</label>
+        <input id="ReviewWebsite-{{ section.id }}" type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <p class="review-form__status" role="alert" hidden data-review-error></p>
+      <button class="button" type="submit">Send review</button>
+      <p class="review-form__note">{{ section.settings.form_note }}</p>
+    </form>
+
+    <p class="review-form__status review-form__status--done" role="status" tabindex="-1" hidden data-review-done>
+      {{ section.settings.success_text }}
+    </p>
+  </div>
+</div>
+
+{% stylesheet %}
+  .reviews {
+    display: grid;
+    gap: 2rem;
+    padding-block: clamp(3rem, 7vw, 5rem);
+    scroll-margin-top: 1rem;
+  }
+  .reviews__summary h2 {
+    margin-bottom: 0.75rem;
+  }
+  .reviews__average {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+  .reviews__count {
+    font-family: var(--font-primary--family);
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  .reviews__list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .review {
+    padding: 1.25rem;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 1.25rem;
+  }
+  .review p {
+    margin: 0;
+  }
+  .review__body {
+    margin-block: 0.5rem !important;
+  }
+  .review__meta {
+    font-size: 0.9375rem;
+  }
+  .review-form {
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border-radius: 1.25rem;
+  }
+  .review-form h3 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  .review-form form {
+    display: grid;
+    gap: 1rem;
+  }
+  .review-form__rating {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .review-form__rating legend {
+    margin-bottom: 0.375rem;
+    padding: 0;
+    font-weight: 500;
+  }
+  .review-form__choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  /* Each rating is a pill holding a real radio button, which is hidden but still focusable. */
+  .review-form__choice {
+    position: relative;
+    justify-content: center;
+    min-width: 3rem;
+    background-color: var(--color-background);
+    cursor: pointer;
+  }
+  .review-form__choice input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .review-form__choice:has(input:checked) {
+    background-color: var(--color-dark);
+    color: var(--color-background);
+  }
+  .review-form__choice:has(input:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .review-form :is(input[type='text'], textarea) {
+    width: 100%;
+    border-radius: 0.75rem;
+  }
+  .review-form .button {
+    justify-self: start;
+  }
+  .review-form__status {
+    margin: 0;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--color-foreground);
+    border-radius: 0.75rem;
+    background-color: var(--color-background);
+    font-weight: 500;
+  }
+  .review-form__status--done {
+    background-color: var(--color-highlight);
+  }
+  .review-form__note {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  @media (min-width: 60rem) {
+    .reviews {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 4rem;
+      align-items: start;
+    }
+    .reviews__summary {
+      grid-column: 1 / -1;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  // Sends a new review to the Roam Insights app through the app proxy.
+  (() => {
+    const form = document.querySelector('[data-review-form]');
+    if (!form) return;
+
+    const error = form.querySelector('[data-review-error]');
+    const done = form.parentElement.querySelector('[data-review-done]');
+    const button = form.querySelector('button[type="submit"]');
+    form.hidden = false;
+
+    function fail(message) {
+      error.textContent = message;
+      error.hidden = false;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.hidden = true;
+
+      const data = new FormData(form);
+      const rating = data.get('rating');
+      const body = String(data.get('body') || '').trim();
+      if (!rating) return fail('Choose a rating from 1 to 5.');
+      if (body.length < 10) return fail('Write at least a short sentence about the product.');
+
+      button.disabled = true;
+      try {
+        const response = await fetch(`${window.Shopify?.routes?.root || '/'}apps/roam/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            handle: form.dataset.handle,
+            rating: Number(rating),
+            name: data.get('name'),
+            body,
+            website: data.get('website'),
+          }),
+        });
+        const result = await response.json();
+        if (!result.ok) return fail(result.error || 'Your review was not sent. Please try again.');
+
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } catch {
+        fail('Your review was not sent. Please try again in a moment.');
+      } finally {
+        button.disabled = false;
+      }
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Product reviews",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Reviews"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text when there are no reviews",
+      "default": "No reviews yet. Be the first to share how it worked for you."
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "Form heading",
+      "default": "Write a review"
+    },
+    {
+      "type": "text",
+      "id": "form_note",
+      "label": "Note under the form",
+      "default": "We read every review before it appears, so yours will show up after a short wait."
+    },
+    {
+      "type": "text",
+      "id": "success_text",
+      "label": "Message after sending",
+      "default": "Thank you. Your review has been sent and will appear once it is approved."
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

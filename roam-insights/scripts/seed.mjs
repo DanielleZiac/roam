@@ -1,6 +1,7 @@
 /*
- * Fills the database with SAMPLE quiz results, so the dashboard, ranking and
- * alerts have something to show before real shoppers arrive.
+ * Fills the database with SAMPLE quiz results and reviews, so the dashboard,
+ * ranking, alerts and review moderation have something to show before real
+ * shoppers arrive.
  *
  *   npm run db:seed            add about 160 sample results over the last 30 days
  *   npm run db:seed -- --reset remove every recorded result and alert first
@@ -76,7 +77,25 @@ for (const product of products) {
   product.needTags = typeof product.need_tags === "string" ? JSON.parse(product.need_tags) : product.need_tags;
 }
 
+// Sample reviews. Author names are plainly placeholders, because these are not real customers.
+const REVIEW_TEXT = {
+  5: [
+    "Does exactly what it says. Set-up took a few minutes and it has been in daily use since.",
+    "Well made and easy to use. It fitted my routine straight away.",
+    "Better than I expected for the price. I would buy it again.",
+  ],
+  4: [
+    "Works well. The instructions could be clearer, but I got there.",
+    "Solid and reliable. Delivery took a little longer than promised.",
+    "Good product. I would like more colour options.",
+  ],
+  3: ["It does the job, but it feels less sturdy than the photos suggest.", "Fine for occasional use. Not sure about every day."],
+  2: ["It works, but it was awkward to set up and I needed help."],
+};
+
 if (process.argv.includes("--reset")) {
+  await connection.query("DELETE FROM activity_log WHERE shop = ? AND action LIKE 'review.%'", [shop]);
+  await connection.query("DELETE FROM reviews WHERE shop = ?", [shop]);
   await connection.query("DELETE FROM activity_log WHERE shop = ? AND action LIKE 'alert.%'", [shop]);
   await connection.query("DELETE FROM alerts WHERE shop = ?", [shop]);
   await connection.query("DELETE FROM suggestion_events WHERE shop = ?", [shop]);
@@ -130,6 +149,31 @@ for (let i = 0; i < RESULTS; i += 1) {
   }
 }
 
+// Two to four reviews per product. Most are already approved; a few wait for a decision.
+let reviewCount = 0;
+let pendingCount = 0;
+let reviewer = 1;
+for (const product of products) {
+  const howMany = 2 + Math.floor(random() * 3);
+  for (let i = 0; i < howMany; i += 1) {
+    const roll = random();
+    const rating = roll < 0.5 ? 5 : roll < 0.82 ? 4 : roll < 0.95 ? 3 : 2;
+    const options = REVIEW_TEXT[rating];
+    const body = options[Math.floor(random() * options.length)];
+    const pending = random() < 0.12;
+    const createdAt = new Date(Date.now() - random() * DAYS * 24 * 60 * 60 * 1000);
+    await connection.query(
+      "INSERT INTO reviews (shop, product_id, rating, author_name, body, status, created_at, moderated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [shop, product.id, rating, `Sample shopper ${reviewer}`, body, pending ? "pending" : "approved", createdAt, pending ? null : createdAt],
+    );
+    reviewer += 1;
+    reviewCount += 1;
+    if (pending) pendingCount += 1;
+  }
+}
+
 await connection.end();
 console.log(`Added ${events} sample results for ${shop}: ${picks} suggestions, ${adds} added to cart.`);
+console.log(`Added ${reviewCount} sample reviews, ${pendingCount} of them waiting for approval.`);
 console.log("Open the app's home page to see the dashboard and alerts.");
+console.log('To show the sample reviews on the store, open Reviews in the app and press "Publish all approved reviews".');

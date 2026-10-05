@@ -11,10 +11,15 @@
     "recent": {
       "type": "recently-viewed",
       "settings": {}
+    },
+    "reviews": {
+      "type": "product-reviews",
+      "settings": {}
     }
   },
   "order": [
     "main",
+    "reviews",
     "related",
     "recent"
   ]
