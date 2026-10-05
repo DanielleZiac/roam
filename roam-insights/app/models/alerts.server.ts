@@ -116,8 +116,8 @@ export async function evaluateAlerts(shop: string) {
       needTag: null,
       productId: row.productId,
       message: `${titleById.get(row.productId)}: suggested ${row.suggested} times, added to a cart ${
-        row.addedToCart
-      } times. Check its need tags, price and product page.`,
+        row.addedToCart === 1 ? "once" : `${row.addedToCart} times`
+      }. Check its need tags, price and product page.`,
       metric: { suggested: row.suggested, addedToCart: row.addedToCart, ratePercent: Math.round(rate * 100) },
     };
     wanted.set(keyOf(entry), entry);
