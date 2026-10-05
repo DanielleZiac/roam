@@ -111,7 +111,7 @@
       <span class="visually-hidden" role="status" data-listen-status data-reading="{{ 'products.listen_reading' | t }}"></span>
     </div>
 
-    {% form 'product', product, class: 'product__form' %}
+    {% form 'product', product, class: 'product__form', data-handle: product.handle %}
       {% if product.has_only_default_variant %}
         <input type="hidden" name="id" value="{{ current_variant.id }}">
       {% else %}

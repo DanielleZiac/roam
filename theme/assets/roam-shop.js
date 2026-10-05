@@ -10,6 +10,8 @@
 (() => {
   const SAVED_KEY = 'roam:saved';
   const VIEWED_KEY = 'roam:viewed';
+  const PICKS_KEY = 'roam:picks';
+  const SUGGESTION_KEY = 'roam:last-suggestion';
   const MAX_VIEWED = 8;
 
   const stringsNode = document.querySelector('[data-shop-strings]');
@@ -96,6 +98,7 @@
       form.action = strings.cartAddUrl;
       form.method = 'post';
       form.dataset.quickAdd = '';
+      form.dataset.handle = product.handle;
       const id = node('input');
       id.type = 'hidden';
       id.name = 'id';
@@ -223,6 +226,7 @@
       );
       updateCartCount(cart.item_count);
       announce(text('addedMessage', item.product_title));
+      reportCartAdd(form.dataset.handle);
       button.classList.add('is-done');
       setTimeout(() => button.classList.remove('is-done'), 1500);
     } catch {
@@ -245,6 +249,15 @@
     section.hidden = false;
   });
 
+  // --- Picked for you: the last "Tell us about you" results, shown to returning shoppers ---
+
+  document.querySelectorAll('[data-picked-for-you]').forEach((section) => {
+    const picks = readList(PICKS_KEY);
+    if (picks.length === 0) return;
+    section.querySelector('[data-picked-list]').replaceChildren(...picks.slice(0, 4).map(card));
+    section.hidden = false;
+  });
+
   if (currentProduct) {
     const viewed = readList(VIEWED_KEY).filter((product) => product.handle !== currentProduct.handle);
     viewed.unshift(currentProduct);
@@ -263,7 +276,39 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ needs, picks }),
       keepalive: true,
-    }).catch(() => {});
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((result) => {
+        // Kept for this browser tab only, so a later add to cart can be linked to these suggestions.
+        if (result && result.eventId) {
+          sessionStorage.setItem(SUGGESTION_KEY, JSON.stringify({ eventId: result.eventId, picks, reported: [] }));
+        }
+      })
+      .catch(() => {});
+  });
+
+  // Tells the app when a suggested product is added to the cart. Sent once per product.
+  function reportCartAdd(handle) {
+    try {
+      const last = JSON.parse(sessionStorage.getItem(SUGGESTION_KEY));
+      if (!last || !handle || !last.picks.includes(handle) || last.reported.includes(handle)) return;
+      last.reported.push(handle);
+      sessionStorage.setItem(SUGGESTION_KEY, JSON.stringify(last));
+      fetch(strings.cartEventUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: last.eventId, handle }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      // Session storage can be blocked. Shopping still works, the add just is not reported.
+    }
+  }
+
+  // The product page's own Add to cart form reloads the page, so report as it is submitted.
+  document.addEventListener('submit', (event) => {
+    const form = event.target.closest('form[data-handle]:not([data-quick-add])');
+    if (form) reportCartAdd(form.dataset.handle);
   });
 
   // Other scripts announce when they have drawn new cards (catalog search results).

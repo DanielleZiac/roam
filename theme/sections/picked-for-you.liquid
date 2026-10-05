@@ -1,0 +1,84 @@
+{% comment %}
+  "Picked for you": shows a returning shopper the products "Tell us about you"
+  suggested last time. The picks are kept in localStorage on their device and
+  drawn by assets/roam-shop.js. The section stays hidden for everyone else,
+  and without JavaScript.
+{% endcomment %}
+
+<div class="picked full-width scheme-{{ section.settings.color_scheme }}" data-picked-for-you hidden>
+  <div class="picked__inner">
+    <div class="picked__header">
+      <div>
+        <p class="label">{{ section.settings.eyebrow }}</p>
+        <h2>{{ section.settings.heading }}</h2>
+      </div>
+      <a class="picked__link" href="{{ routes.root_url }}pages/find-my-gear">{{ section.settings.link_label }}</a>
+    </div>
+    <ul class="product-grid" role="list" data-picked-list></ul>
+  </div>
+</div>
+
+{% stylesheet %}
+  .picked__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(3rem, 7vw, 5rem) var(--page-margin);
+  }
+  .picked__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .picked__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    font-weight: bold;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Picked for you",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small line above the heading",
+      "default": "From your answers"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Picked for you"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Change my answers"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour block",
+      "options": [
+        { "value": "highlight", "label": "Bright teal" },
+        { "value": "panel", "label": "Soft lilac" },
+        { "value": "plain", "label": "White" }
+      ],
+      "default": "highlight"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Picked for you"
+    }
+  ]
+}
+{% endschema %}

@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 
 import db from "../db.server";
 import { eventNeeds, eventPicks, products, suggestionEvents } from "../db/schema";
@@ -62,4 +62,29 @@ export async function recordSuggestionEvent(shop: string, payload: SuggestionPay
 
     return event.id;
   });
+}
+
+/*
+ * Records that a shopper added one of an event's suggested products to their
+ * cart. Only the first add counts, and the event must belong to this shop.
+ * Returns true if a pick was updated.
+ */
+export async function recordCartAdd(shop: string, eventId: number, productHandle: string) {
+  const [event] = await db
+    .select({ id: suggestionEvents.id })
+    .from(suggestionEvents)
+    .where(and(eq(suggestionEvents.id, eventId), eq(suggestionEvents.shop, shop)));
+  if (!event) return false;
+
+  const [result] = await db
+    .update(eventPicks)
+    .set({ addedToCartAt: new Date() })
+    .where(
+      and(
+        eq(eventPicks.eventId, eventId),
+        eq(eventPicks.productHandle, productHandle),
+        isNull(eventPicks.addedToCartAt),
+      ),
+    );
+  return result.affectedRows > 0;
 }

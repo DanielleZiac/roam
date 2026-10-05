@@ -7,6 +7,7 @@ import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { products, suggestionEvents } from "../db/schema";
 import { syncProducts } from "../models/products.server";
+import { ensureQuizPage } from "../models/storefront.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
@@ -24,7 +25,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     .from(suggestionEvents)
     .where(eq(suggestionEvents.shop, shop));
 
-  return { shop, productCount, eventCount };
+  // The storefront quiz needs its page. Create it if the store does not have one yet.
+  const quizPage = await ensureQuizPage(admin.graphql, shop);
+
+  return { shop, productCount, eventCount, quizPage };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -34,7 +38,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
-  const { shop, productCount, eventCount } = useLoaderData<typeof loader>();
+  const { shop, productCount, eventCount, quizPage } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const syncing = fetcher.state !== "idle";
 
@@ -47,6 +51,10 @@ export default function Index() {
         <s-unordered-list>
           <s-list-item>{productCount} products tracked</s-list-item>
           <s-list-item>{eventCount} storefront suggestion events recorded</s-list-item>
+          <s-list-item>
+            Storefront quiz page:{" "}
+            {quizPage === "exists" ? "ready" : quizPage === "created" ? "created just now" : `not ready (${quizPage})`}
+          </s-list-item>
         </s-unordered-list>
         <s-button onClick={() => fetcher.submit({}, { method: "post" })} {...(syncing ? { loading: true } : {})}>
           Sync products from Shopify

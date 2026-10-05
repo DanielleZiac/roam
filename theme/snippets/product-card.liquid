@@ -84,7 +84,7 @@
         </button>
 
         {% if product.available and product.has_only_default_variant %}
-          <form action="{{ routes.cart_add_url }}" method="post" data-quick-add>
+          <form action="{{ routes.cart_add_url }}" method="post" data-quick-add data-handle="{{ product.handle }}">
             <input type="hidden" name="id" value="{{ card_variant.id }}">
             <input type="hidden" name="quantity" value="1">
             <button

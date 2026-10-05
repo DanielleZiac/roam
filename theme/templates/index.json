@@ -181,10 +181,15 @@
         "blind-low-vision"
       ],
       "settings": {}
+    },
+    "picked": {
+      "type": "picked-for-you",
+      "settings": {}
     }
   },
   "order": [
     "hero",
+    "picked",
     "needs",
     "callout",
     "featured",

@@ -201,6 +201,8 @@
             "type": {{ product.type | json }},
             "price": {{ price | json }},
             "image": {{ image | json }},
+            "variant": {{ product.selected_or_first_available_variant.id | json }},
+            "quickAdd": {% if product.available and product.has_only_default_variant %}true{% else %}false{% endif %},
             "needs": {{ needs | json }}
           }
           {%- unless forloop.last -%},{%- endunless -%}
@@ -314,6 +316,7 @@
     if (!root) return;
 
     const STORAGE_KEY = 'roam:about-you';
+    const PICKS_KEY = 'roam:picks';
     const MAX_PICKS = 4;
 
     // Words in the free-text answer that point to a need tag. Matched on the device only.
@@ -363,6 +366,7 @@
     function clear() {
       try {
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(PICKS_KEY);
       } catch {}
     }
 
@@ -444,6 +448,20 @@
       return node;
     }
 
+    const stringsNode = document.querySelector('[data-shop-strings]');
+    const shopStrings = stringsNode ? JSON.parse(stringsNode.textContent) : {};
+
+    function icon(name) {
+      const template = document.querySelector(`template[data-icon="${name}"]`);
+      return template ? template.content.cloneNode(true) : document.createTextNode('');
+    }
+
+    // The details other parts of the store need to redraw this product as a card.
+    function cardData(product) {
+      const { handle, title, url, type, price, image, variant, quickAdd } = product;
+      return { handle, title, url, type, price, image, variant, quickAdd };
+    }
+
     function card({ product, reasons }) {
       const item = element('li');
       const article = element('article', 'product-card');
@@ -468,12 +486,36 @@
       const why = element('p', 'product-card__why');
       why.append(element('strong', '', 'Why we picked this'), `Fits ${reasons.slice(0, 2).join(' and ')}.`);
 
-      content.append(
-        element('p', 'product-card__type', product.type),
-        title,
-        element('p', 'product-card__price', product.price),
-        why
-      );
+      // The same wishlist and add-to-cart buttons as every other product card.
+      // assets/roam-shop.js handles their clicks.
+      const footer = element('div', 'product-card__footer');
+      const actions = element('div', 'product-card__actions');
+      const save = element('button', 'icon-button');
+      save.type = 'button';
+      save.dataset.save = '';
+      save.dataset.product = JSON.stringify(cardData(product));
+      save.append(icon('heart'));
+      actions.append(save);
+      if (product.quickAdd) {
+        const form = element('form');
+        form.action = shopStrings.cartAddUrl;
+        form.method = 'post';
+        form.dataset.quickAdd = '';
+        form.dataset.handle = product.handle;
+        const id = element('input');
+        id.type = 'hidden';
+        id.name = 'id';
+        id.value = product.variant;
+        const add = element('button', 'icon-button icon-button--filled');
+        add.type = 'submit';
+        add.setAttribute('aria-label', (shopStrings.quickAdd || '').replace('[title]', product.title));
+        add.append(icon('plus'));
+        form.append(id, add);
+        actions.append(form);
+      }
+      footer.append(element('p', 'product-card__price', product.price), actions);
+
+      content.append(element('p', 'product-card__type', product.type), title, footer, why);
       // Products without a photo show as a text-only card.
       if (product.image) article.append(media);
       article.append(content);
@@ -486,6 +528,16 @@
       const picks = rank(signals);
 
       resultsList.replaceChildren(...picks.map(card));
+      document.dispatchEvent(new Event('roam:cards-updated'));
+
+      // Remember the picks on this device, so the home page can show "Picked for you".
+      try {
+        if (picks.length > 0) {
+          localStorage.setItem(PICKS_KEY, JSON.stringify(picks.map((entry) => cardData(entry.product))));
+        } else {
+          localStorage.removeItem(PICKS_KEY);
+        }
+      } catch {}
       if (picks.length > 0) {
         resultsHeading.textContent = 'We think you’ll like…';
         resultsNote.textContent = `${picks.length} ${
