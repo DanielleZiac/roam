@@ -1,0 +1,283 @@
+{% doc %}
+  The "Accessibility" button and the panel it opens. Two optional modes, both
+  remembered on this device (localStorage) and applied as classes on <html>:
+
+  - a11y-listen: reads any text aloud when the shopper points at it or tabs to it,
+    and shows a Listen button on product pages (browser speech). This is a
+    point-and-listen aid for low vision and reading difficulties. It is not a
+    screen reader replacement: blind shoppers use their own (VoiceOver, TalkBack,
+    NVDA, JAWS), which the semantic markup and alt text already support.
+
+  Icons are from Lucide (ISC licence).
+  - a11y-dyslexia: plainer font, wider spacing, shorter lines, cream background.
+
+  The store already meets WCAG AA without them; these are extras a shopper
+  can switch on. layout/theme.liquid applies saved choices before the page
+  paints, so there is no flash when moving between pages.
+
+  @example
+  {% render 'accessibility-panel' %}
+{% enddoc %}
+
+<button class="a11y-trigger" type="button" aria-haspopup="dialog" hidden data-a11y-open>
+  {{ 'accessibility.panel_button' | t }}
+</button>
+
+<dialog class="a11y-panel" aria-labelledby="A11yPanelTitle" data-a11y-panel>
+  <div class="a11y-panel__header">
+    <h2 id="A11yPanelTitle">{{ 'accessibility.panel_title' | t }}</h2>
+    <button class="a11y-panel__close" type="button" data-a11y-close>
+      {{ 'accessibility.panel_close' | t }}
+    </button>
+  </div>
+
+  <p>{{ 'accessibility.panel_intro' | t }}</p>
+
+  <div class="choices">
+    <label class="choice a11y-option">
+      <input type="checkbox" data-a11y-toggle="dyslexia">
+      <span class="a11y-option__icon" aria-hidden="true">{{ 'icon-eye.svg' | inline_asset_content }}</span>
+      <span class="a11y-option__text">
+        <strong>{{ 'accessibility.dyslexia_title' | t }}</strong>
+        <small>{{ 'accessibility.dyslexia_text' | t }}</small>
+      </span>
+    </label>
+
+    <label class="choice a11y-option">
+      <input type="checkbox" data-a11y-toggle="listen">
+      <span class="a11y-option__icon" aria-hidden="true">{{ 'icon-volume-2.svg' | inline_asset_content }}</span>
+      <span class="a11y-option__text">
+        <strong>{{ 'accessibility.listen_title' | t }}</strong>
+        <small>{{ 'accessibility.listen_text' | t }}</small>
+      </span>
+    </label>
+  </div>
+
+  <p class="a11y-panel__note" hidden data-a11y-no-speech>{{ 'accessibility.listen_unsupported' | t }}</p>
+
+  <button class="button a11y-panel__done" type="button" data-a11y-close>
+    {{ 'accessibility.panel_done' | t }}
+  </button>
+</dialog>
+
+{% stylesheet %}
+  .a11y-trigger {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0.5rem 1.125rem;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--color-foreground);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .a11y-trigger[hidden] {
+    display: none;
+  }
+  .a11y-trigger:hover {
+    background-color: var(--color-panel);
+  }
+  .a11y-panel {
+    width: min(30rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 1.5rem;
+    border: 2px solid var(--color-foreground);
+    border-radius: 1.5rem;
+  }
+  .a11y-panel::backdrop {
+    background-color: rgb(16 20 24 / 0.6);
+  }
+  .a11y-panel__header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .a11y-panel__header h2 {
+    font-size: 1.75rem;
+  }
+  .a11y-panel__close {
+    min-height: 3rem;
+    padding: 0.25rem 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--color-action);
+    font: inherit;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .a11y-option {
+    align-items: center;
+  }
+  .a11y-option__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: var(--color-panel);
+  }
+  .a11y-option:has(input:checked) .a11y-option__icon {
+    background-color: var(--color-background);
+  }
+  .a11y-option__icon svg {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .a11y-option__text {
+    display: grid;
+    gap: 0.25rem;
+  }
+  /* The piece of text currently being read aloud. */
+  .is-being-read {
+    outline: 3px solid var(--color-action);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .a11y-option small {
+    font-size: 0.9375rem;
+    font-weight: 400;
+  }
+  .a11y-panel__note {
+    margin-top: 1rem;
+    font-size: 0.9375rem;
+  }
+  .a11y-panel__done {
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const STORAGE_KEY = 'roam:a11y';
+    const root = document.documentElement;
+    const trigger = document.querySelector('[data-a11y-open]');
+    const panel = document.querySelector('[data-a11y-panel]');
+    if (!trigger || !panel || typeof panel.showModal !== 'function') return;
+
+    const canSpeak = 'speechSynthesis' in window;
+    let prefs = {};
+    try {
+      prefs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch {}
+
+    function apply() {
+      root.classList.toggle('a11y-dyslexia', Boolean(prefs.dyslexia));
+      root.classList.toggle('a11y-listen', Boolean(prefs.listen) && canSpeak);
+      if (!prefs.listen && canSpeak) window.speechSynthesis.cancel();
+    }
+
+    panel.querySelectorAll('[data-a11y-toggle]').forEach((input) => {
+      const name = input.dataset.a11yToggle;
+      input.checked = Boolean(prefs[name]);
+      input.addEventListener('change', () => {
+        prefs[name] = input.checked;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+        } catch {
+          // Storage can be blocked. The mode still applies to this page.
+        }
+        apply();
+      });
+    });
+
+    if (!canSpeak) {
+      const listen = panel.querySelector('[data-a11y-toggle="listen"]');
+      listen.checked = false;
+      listen.disabled = true;
+      panel.querySelector('[data-a11y-no-speech]').hidden = false;
+    }
+
+    trigger.hidden = false;
+    trigger.addEventListener('click', () => panel.showModal());
+    panel.querySelectorAll('[data-a11y-close]').forEach((button) => {
+      button.addEventListener('click', () => panel.close());
+    });
+    // A click on the dimmed area outside the panel closes it. Escape does too, natively.
+    panel.addEventListener('click', (event) => {
+      if (event.target === panel) panel.close();
+    });
+
+    apply();
+
+    // --- Point and listen: read whatever text the pointer rests on or the keyboard focuses ---
+
+    if (!canSpeak) return;
+
+    const synth = window.speechSynthesis;
+    const READABLE =
+      'h1, h2, h3, h4, h5, h6, p, li, a, button, label, legend, summary, dt, dd, th, td, figcaption, img[alt], input, select, textarea';
+    let hoverTimer;
+    let current = null;
+
+    function readableFrom(node) {
+      if (!(node instanceof Element)) return null;
+      // The product page's Listen button manages its own speech.
+      if (node.closest('[aria-hidden="true"], [data-listen]')) return null;
+      return node.closest(READABLE);
+    }
+
+    function textOf(node) {
+      if (node.matches('img')) return node.alt;
+      if (node.matches('input, select, textarea')) {
+        const label = node.labels && node.labels[0];
+        return label ? label.innerText : node.getAttribute('aria-label') || '';
+      }
+      return node.getAttribute('aria-label') || node.innerText;
+    }
+
+    function hush() {
+      if (current) current.classList.remove('is-being-read');
+      current = null;
+    }
+
+    function speak(node) {
+      if (!node || node === current || !root.classList.contains('a11y-listen')) return;
+      const text = (textOf(node) || '').replace(/\s+/g, ' ').trim();
+      if (!text) return;
+
+      // Let other speech on the page (the Listen button) reset itself first.
+      document.dispatchEvent(new Event('roam:speech-cancel'));
+      synth.cancel();
+      hush();
+      current = node;
+      node.classList.add('is-being-read');
+
+      const utterance = new SpeechSynthesisUtterance(text.slice(0, 600));
+      utterance.lang = root.lang || 'en';
+      utterance.onend = utterance.onerror = () => {
+        if (current === node) hush();
+      };
+      synth.speak(utterance);
+    }
+
+    // A short pause before speaking, so sweeping the pointer across the page stays quiet.
+    document.addEventListener('mouseover', (event) => {
+      clearTimeout(hoverTimer);
+      // Some areas opt out of pointer reading, like the scrolling words.
+      if (event.target instanceof Element && event.target.closest('[data-no-hover-read]')) return;
+      const node = readableFrom(event.target);
+      if (node) hoverTimer = setTimeout(() => speak(node), 250);
+    });
+    document.addEventListener('mouseout', (event) => {
+      if (current && !current.contains(event.relatedTarget)) clearTimeout(hoverTimer);
+    });
+    document.addEventListener('focusin', (event) => speak(readableFrom(event.target)));
+
+    // Escape always stops the voice.
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      synth.cancel();
+      hush();
+    });
+    window.addEventListener('pagehide', () => synth.cancel());
+  })();
+{% endjavascript %}

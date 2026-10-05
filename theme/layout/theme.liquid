@@ -1,12 +1,22 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
+    {% # Apply saved accessibility modes before the page paints, so there is no flash. %}
+    <script>
+      try {
+        var roamA11y = JSON.parse(localStorage.getItem('roam:a11y')) || {};
+        if (roamA11y.dyslexia) document.documentElement.classList.add('a11y-dyslexia');
+        if (roamA11y.listen && 'speechSynthesis' in window) document.documentElement.classList.add('a11y-listen');
+      } catch (error) {}
+    </script>
+
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'roam.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'roam-shop.js' | asset_url }}" defer></script>
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
@@ -24,5 +34,7 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    {% render 'shop-tools' %}
   </body>
 </html>

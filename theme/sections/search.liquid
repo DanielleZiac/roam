@@ -1,64 +1,81 @@
 {% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
+  Search results. The header search box lands here. Results are limited to
+  products and shown with the same cards as the rest of the store.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/search
 {% endcomment %}
 
-<h1>{{ 'search.title' | t }}</h1>
+<div class="search-header full-width scheme-panel">
+  <div class="search-header__inner">
+    <p class="label">{{ 'search.title' | t }}</p>
+    <h1>
+      {% if search.performed and search.terms != blank %}
+        {{ 'search.heading_html' | t: terms: search.terms }}
+      {% else %}
+        {{ 'search.heading_empty' | t }}
+      {% endif %}
+    </h1>
 
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
+    <form class="search-form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="SearchPageInput">{{ 'search.label' | t }}</label>
+      <input
+        id="SearchPageInput"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+      >
+      <input type="hidden" name="type" value="product">
+      <button class="button" type="submit">{{ 'search.submit' | t }}</button>
+    </form>
+  </div>
+</div>
 
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
+<div class="search-results">
+  {% if search.performed %}
+    {% paginate search.results by 12 %}
+      <p class="collection-count" role="status">
+        {{ 'search.results_count' | t: count: search.results_count }}
+      </p>
 
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
+      {% if search.results_count == 0 %}
+        <div class="collection-empty scheme-panel">
+          <h2>{{ 'search.no_results_title' | t }}</h2>
+          <p>{{ 'search.no_results_text' | t }}</p>
+          <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'cart.empty_button' | t }}</a>
+        </div>
+      {% else %}
+        <ul class="product-grid" role="list">
+          {% for result in search.results %}
+            {% if result.object_type == 'product' %}
+              <li>{% render 'product-card', product: result, heading_tag: 'h2' %}</li>
             {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
-            </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        </ul>
+      {% endif %}
 
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
-    </div>
+      {% if paginate.pages > 1 %}
+        <nav class="pagination" aria-label="{{ 'collections.pagination_label' | t }}">
+          {{ paginate | default_pagination }}
+        </nav>
+      {% endif %}
+    {% endpaginate %}
   {% endif %}
-{% endif %}
+</div>
 
 {% stylesheet %}
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  .search-header__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(2.5rem, 7vw, 5rem) var(--page-margin);
   }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
-    grid-column: 1 / -1;
+  .search-header h1 {
+    max-width: 20ch;
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1.02;
+  }
+  .search-results {
+    padding-block: 2rem clamp(3rem, 7vw, 5rem);
   }
 {% endstylesheet %}
 

@@ -1,0 +1,53 @@
+{% comment %}
+  A row of the products this shopper opened most recently. The list is kept in
+  localStorage by assets/roam-shop.js, which also fills this section in.
+  It stays hidden until there is something to show, and without JavaScript.
+{% endcomment %}
+
+<div class="recent full-width scheme-{{ section.settings.color_scheme }}" data-recently-viewed hidden>
+  <div class="recent__inner">
+    <h2>{{ section.settings.heading }}</h2>
+    <ul class="product-grid" role="list" data-recently-list></ul>
+  </div>
+</div>
+
+{% stylesheet %}
+  .recent__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(3rem, 7vw, 5rem) var(--page-margin);
+  }
+  .recent h2 {
+    margin-bottom: 2rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Recently viewed",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recently viewed"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour block",
+      "options": [
+        { "value": "plain", "label": "White" },
+        { "value": "panel", "label": "Soft lilac" }
+      ],
+      "default": "plain"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently viewed"
+    }
+  ]
+}
+{% endschema %}

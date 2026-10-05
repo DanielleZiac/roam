@@ -357,3 +357,213 @@ select {
 .pagination a:hover {
   background-color: var(--color-panel);
 }
+
+/*
+ * Dyslexia-friendly text, switched on from the Accessibility panel.
+ * Follows the British Dyslexia Association style guide: a plain sans-serif font
+ * at 16 to 19px or larger, wider letter, word and line spacing, left-aligned
+ * lines of about 60 characters, no italics or capitals for emphasis, and a cream
+ * background instead of white.
+ * Dark text on the cream background is 17.3:1.
+ */
+:root.a11y-dyslexia {
+  --font-primary--family: Verdana, Tahoma, 'Trebuchet MS', Arial, sans-serif;
+  --font-heading--family: Verdana, Tahoma, 'Trebuchet MS', Arial, sans-serif;
+  --font-mono: Verdana, Tahoma, 'Trebuchet MS', Arial, sans-serif;
+  --color-background: #fbf6e9;
+}
+
+.a11y-dyslexia body {
+  font-size: 1.1875rem;
+  letter-spacing: 0.05em;
+  word-spacing: 0.16em;
+  line-height: 1.8;
+}
+
+.a11y-dyslexia :is(h1, h2, h3, .heading, .about-you__question) {
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+/* Verdana is wide, so the largest headlines come down a step to fit. */
+.a11y-dyslexia :is(.hero__heading, .callout__heading, .collection-header h1, .about-you-intro h1, .cart__title) {
+  max-width: 18ch;
+  font-size: clamp(2rem, 6vw, 4.25rem);
+}
+
+.a11y-dyslexia :is(p, .rte li) {
+  max-width: 60ch;
+  text-align: left;
+}
+
+.a11y-dyslexia :is(em, i, cite) {
+  font-style: normal;
+  font-weight: bold;
+}
+
+.a11y-dyslexia :is(.label, .hero__eyebrow, .product-card__type, .product-card__why strong) {
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
+/* No small print: every piece of small text comes up to at least 16px. */
+.a11y-dyslexia
+  :is(
+    small,
+    .label,
+    .hero__eyebrow,
+    .goal__number,
+    .product-card__type,
+    .product-card__why,
+    .product-card__why strong,
+    .product-card__badge,
+    .collection-count,
+    .breadcrumb,
+    .cart__note,
+    .footer__copyright,
+    .about-you-intro__privacy,
+    .a11y-panel__note,
+    .header__cart-count
+  ) {
+  font-size: 1rem;
+}
+
+/* Moving text is harder to read, so the scrolling words and the wheel hold still. */
+.a11y-dyslexia .hero__wheel {
+  animation-play-state: paused;
+}
+
+.a11y-dyslexia .ticker__track {
+  width: auto;
+  animation: none;
+}
+
+.a11y-dyslexia .ticker__group {
+  flex-wrap: wrap;
+  padding: 0 var(--page-margin);
+}
+
+.a11y-dyslexia .ticker__group[aria-hidden='true'] {
+  display: none;
+}
+
+/* Large selectable answers: used by Tell us about you and the Accessibility panel. */
+.choices {
+  display: grid;
+  gap: 0.75rem;
+}
+/* Each answer is one large target: the whole row is the label. */
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 3.5rem;
+  padding: 0.75rem 1.125rem;
+  border: 1.5px solid var(--color-foreground);
+  border-radius: 1rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.choice input {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-dark);
+}
+.choice:hover {
+  background-color: var(--color-panel);
+}
+/* Selected answers turn teal and get a thicker border, so colour is not the only cue. */
+.choice:has(input:checked) {
+  border-width: 3px;
+  padding: calc(0.75rem - 1.5px) calc(1.125rem - 1.5px);
+  background-color: var(--color-highlight);
+}
+.choice:has(input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+.choice input:focus-visible {
+  outline: none;
+}
+
+/* Round icon buttons: Save (heart) and quick Add to cart. 48px targets. */
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 1.5px solid var(--color-foreground);
+  border-radius: 50%;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  cursor: pointer;
+}
+
+.icon-button svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.icon-button:hover {
+  background-color: var(--color-panel);
+}
+
+.icon-button--filled {
+  background-color: var(--color-dark);
+  color: var(--color-background);
+}
+
+.icon-button--filled:hover,
+.icon-button--filled.is-done {
+  background-color: var(--color-highlight);
+  color: var(--color-foreground);
+}
+
+.icon-button--large {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+/* A saved product: the heart fills in. aria-pressed tells screen readers the same thing. */
+.icon-button[aria-pressed='true'] {
+  background-color: var(--color-highlight);
+}
+
+.icon-button[aria-pressed='true'] svg {
+  fill: currentcolor;
+}
+
+/* Result count and empty state: shared by collection and search pages. */
+.collection-count {
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.collection-empty {
+  padding: clamp(2rem, 6vw, 4rem);
+  border-radius: 1.25rem;
+}
+.collection-empty h2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Search box: on the catalog page and the search results page. */
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  max-width: 40rem;
+  margin-top: 1.5rem;
+}
+.search-form input[type='search'] {
+  flex: 1;
+  min-width: 12rem;
+  border-radius: 999px;
+  padding-inline: 1.25rem;
+}

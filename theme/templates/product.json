@@ -7,10 +7,15 @@
     "related": {
       "type": "related-products",
       "settings": {}
+    },
+    "recent": {
+      "type": "recently-viewed",
+      "settings": {}
     }
   },
   "order": [
     "main",
-    "related"
+    "related",
+    "recent"
   ]
 }

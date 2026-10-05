@@ -1,0 +1,84 @@
+{% doc %}
+  Everything assets/roam-shop.js needs on every page: the Saved gear panel,
+  icon templates for cards drawn by the script, its text strings, and a
+  live region for screen-reader announcements. Rendered once in the layout.
+
+  @example
+  {% render 'shop-tools' %}
+{% enddoc %}
+
+<dialog class="saved-panel" aria-labelledby="SavedPanelTitle" data-saved-panel>
+  <div class="saved-panel__header">
+    <h2 id="SavedPanelTitle">{{ 'saved.title' | t }}</h2>
+    <button class="saved-panel__close" type="button" data-saved-close>{{ 'accessibility.panel_close' | t }}</button>
+  </div>
+  <p>{{ 'saved.intro' | t }}</p>
+
+  <ul class="product-grid saved-panel__list" role="list" data-saved-list hidden></ul>
+
+  <div class="saved-panel__empty scheme-panel" data-saved-empty>
+    <p>{{ 'saved.empty' | t }}</p>
+    <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'cart.empty_button' | t }}</a>
+  </div>
+</dialog>
+
+<template data-icon="heart">{{ 'icon-heart.svg' | inline_asset_content }}</template>
+<template data-icon="plus">{{ 'icon-shopping-cart.svg' | inline_asset_content }}</template>
+
+<p class="visually-hidden" role="status" data-shop-status></p>
+
+<script type="application/json" data-shop-strings>
+  {
+    "cartAddUrl": {{ routes.cart_add_url | json }},
+    "cartUrl": {{ routes.cart_url | append: '.js' | json }},
+    "save": {{ 'products.save' | t: title: '[title]' | json }},
+    "unsave": {{ 'products.unsave' | t: title: '[title]' | json }},
+    "quickAdd": {{ 'products.quick_add' | t: title: '[title]' | json }},
+    "savedMessage": {{ 'saved.added' | t: title: '[title]' | json }},
+    "unsavedMessage": {{ 'saved.removed' | t: title: '[title]' | json }},
+    "addedMessage": {{ 'cart.added' | t: title: '[title]' | json }},
+    "savedButton": {{ 'saved.button' | t: count: '[count]' | json }},
+    "cartOne": {{ 'cart.link_count.one' | t: count: '[count]' | json }},
+    "cartOther": {{ 'cart.link_count.other' | t: count: '[count]' | json }}
+  }
+</script>
+
+{% stylesheet %}
+  .saved-panel {
+    width: min(60rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 1.5rem;
+    border: 2px solid var(--color-foreground);
+    border-radius: 1.5rem;
+  }
+  .saved-panel::backdrop {
+    background-color: rgb(16 20 24 / 0.6);
+  }
+  .saved-panel__header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .saved-panel__close {
+    min-height: 3rem;
+    padding: 0.25rem 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--color-action);
+    font: inherit;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .saved-panel__list {
+    margin-top: 1.5rem;
+  }
+  .saved-panel__empty {
+    margin-top: 1.5rem;
+    padding: 2rem;
+    border-radius: 1.25rem;
+  }
+{% endstylesheet %}

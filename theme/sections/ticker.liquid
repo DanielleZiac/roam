@@ -1,68 +1,87 @@
 {% comment %}
-  A band of large scrolling words. Screen readers get one plain list; the moving
-  copy is hidden from them. It only moves if the visitor allows motion, pauses
-  on hover and keyboard focus, and has a pause button (WCAG 2.2.2).
+  A band of large scrolling links. Each word is a block with its own link.
+
+  The words are printed twice so the loop is seamless. The first copy is a real
+  list of links; the second is hidden from screen readers and the keyboard.
+  The band only moves if the visitor allows motion, and it stops while the
+  pointer is over it or a link in it has keyboard focus. No JavaScript.
 {% endcomment %}
 
-{% liquid
-  assign items = section.settings.items | newline_to_br | split: '<br />'
-%}
-
-<div class="ticker full-width scheme-{{ section.settings.color_scheme }}" data-ticker>
-  <ul class="visually-hidden">
-    {% for item in items %}
-      {% assign word = item | strip %}
-      {% if word != blank %}
-        <li>{{ word }}</li>
-      {% endif %}
-    {% endfor %}
-  </ul>
-
-  <div class="ticker__viewport" aria-hidden="true">
-    <div class="ticker__track">
-      {% for i in (1..2) %}
-        {% for item in items %}
-          {% assign word = item | strip %}
-          {% if word != blank %}
-            <span class="ticker__item heading">{{ word }}</span>
-            <span class="ticker__dot"></span>
-          {% endif %}
+<div class="ticker full-width scheme-{{ section.settings.color_scheme }}" data-no-hover-read>
+  <div class="ticker__track">
+    {% for copy in (1..2) %}
+      <ul
+        class="ticker__group"
+        role="list"
+        {% if copy == 2 %}
+          aria-hidden="true"
+        {% endif %}
+      >
+        {% for block in section.blocks %}
+          <li
+            {% if copy == 1 %}
+              {{ block.shopify_attributes }}
+            {% endif %}
+          >
+            <a
+              class="ticker__item heading"
+              href="{{ block.settings.link | default: routes.all_products_collection_url }}"
+              {% if copy == 2 %}
+                tabindex="-1"
+              {% endif %}
+            >
+              {{- block.settings.text -}}
+            </a>
+            <span class="ticker__dot" aria-hidden="true"></span>
+          </li>
         {% endfor %}
-      {% endfor %}
-    </div>
+      </ul>
+    {% endfor %}
   </div>
-
-  <button class="ticker__pause" type="button" aria-pressed="false" hidden data-ticker-pause>
-    <span data-ticker-label data-pause="{{ 'ticker.pause' | t }}" data-play="{{ 'ticker.play' | t }}">
-      {{- 'ticker.pause' | t -}}
-    </span>
-  </button>
 </div>
 
 {% stylesheet %}
   .ticker {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding-block: 1.25rem;
-  }
-  .ticker__viewport {
-    flex: 1;
-    min-width: 0;
     overflow: hidden;
+    padding-block: 0.75rem;
   }
   .ticker__track {
+    display: flex;
+  }
+  .ticker__group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem 1.5rem;
-    padding-inline: var(--page-margin);
+    gap: 0 1.5rem;
+    margin: 0;
+    padding: 0 var(--page-margin);
+    list-style: none;
+  }
+  /* The second copy only exists for the moving loop. */
+  .ticker__group[aria-hidden='true'] {
+    display: none;
+  }
+  .ticker__group li {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
   }
   .ticker__item {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
     color: inherit;
     font-size: clamp(1.5rem, 4vw, 2.75rem);
+    text-decoration: none;
     white-space: nowrap;
+  }
+  .ticker__item:hover,
+  .ticker__item:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--scheme-accent);
+    text-decoration-thickness: 0.12em;
+    text-underline-offset: 0.18em;
   }
   .ticker__dot {
     width: 0.75rem;
@@ -71,43 +90,21 @@
     border-radius: 50%;
     background-color: var(--scheme-accent);
   }
-  .ticker__pause {
-    flex: none;
-    margin-inline: 0.75rem;
-    min-height: 2.75rem;
-    padding: 0.25rem 1rem;
-    border: 2px solid currentcolor;
-    border-radius: 999px;
-    background-color: var(--scheme-background);
-    color: inherit;
-    font: inherit;
-    font-size: 0.875rem;
-    cursor: pointer;
-  }
   @media (prefers-reduced-motion: no-preference) {
-    .ticker.is-moving .ticker__track {
-      flex-wrap: nowrap;
-      justify-content: flex-start;
+    .ticker__track {
       width: max-content;
-      padding-inline: 0;
       animation: ticker 40s linear infinite;
     }
-    .ticker.is-moving .ticker__dot:last-child {
-      margin-right: 1.5rem;
+    .ticker__group,
+    .ticker__group[aria-hidden='true'] {
+      display: flex;
+      flex-wrap: nowrap;
+      padding: 0 1.5rem 0 0;
     }
-    .ticker.is-moving:hover .ticker__track,
-    .ticker.is-moving:focus-within .ticker__track,
-    .ticker.is-paused .ticker__track {
+    /* Stops while the pointer is over the band or a link in it has keyboard focus. */
+    .ticker:hover .ticker__track,
+    .ticker:focus-within .ticker__track {
       animation-play-state: paused;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .ticker__pause {
-      display: none;
-    }
-    /* Without motion the second copy is not needed. */
-    .ticker__track > :nth-child(n + 13) {
-      display: none;
     }
   }
   @keyframes ticker {
@@ -117,32 +114,11 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
-  document.querySelectorAll('[data-ticker]').forEach((ticker) => {
-    const button = ticker.querySelector('[data-ticker-pause]');
-    const label = ticker.querySelector('[data-ticker-label]');
-    ticker.classList.add('is-moving');
-    button.hidden = false;
-    button.addEventListener('click', () => {
-      const paused = ticker.classList.toggle('is-paused');
-      button.setAttribute('aria-pressed', String(paused));
-      label.textContent = paused ? label.dataset.play : label.dataset.pause;
-    });
-  });
-{% endjavascript %}
-
 {% schema %}
 {
   "name": "Scrolling words",
   "tag": "section",
   "settings": [
-    {
-      "type": "textarea",
-      "id": "items",
-      "label": "Words",
-      "info": "One per line. Up to six.",
-      "default": "Power assist\nSports wheels\nBraille keys\nVoice devices\nFlash alerts\nLight-touch keys"
-    },
     {
       "type": "select",
       "id": "color_scheme",
@@ -156,9 +132,34 @@
       "default": "dark"
     }
   ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Word",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Power assist"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
   "presets": [
     {
-      "name": "Scrolling words"
+      "name": "Scrolling words",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Power assist" } },
+        { "type": "item", "settings": { "text": "Sports wheels" } },
+        { "type": "item", "settings": { "text": "Braille keys" } }
+      ]
     }
   ]
 }

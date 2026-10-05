@@ -15,6 +15,17 @@
     </nav>
 
     <div class="header__icons">
+      {% render 'accessibility-panel' %}
+
+      <a href="{{ routes.all_products_collection_url }}#catalog-search" aria-label="{{ 'search.label' | t }}">
+        {{ 'icon-search.svg' | inline_asset_content }}
+      </a>
+
+      <button class="header__saved" type="button" aria-haspopup="dialog" hidden data-saved-open>
+        {{ 'icon-heart.svg' | inline_asset_content }}
+        <span class="header__cart-count" aria-hidden="true" hidden data-saved-count></span>
+      </button>
+
       {% if shop.customer_accounts_enabled %}
         <a href="{{ routes.account_url }}" aria-label="{{ 'accessibility.account' | t }}">
           {{ 'icon-account.svg' | inline_asset_content }}
@@ -28,10 +39,10 @@
           assign cart_label = 'cart.link_empty' | t
         endif
       %}
-      <a class="header__cart" href="{{ routes.cart_url }}" aria-label="{{ cart_label }}">
+      <a class="header__cart" href="{{ routes.cart_url }}" aria-label="{{ cart_label }}" data-cart-link>
         {{ 'icon-cart.svg' | inline_asset_content }}
         {% if cart.item_count > 0 %}
-          <span class="header__cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+          <span class="header__cart-count" aria-hidden="true" data-cart-count>{{ cart.item_count }}</span>
         {% endif %}
       </a>
     </div>
@@ -90,7 +101,36 @@
   }
   .header__icons {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
+  }
+  @media (max-width: 30rem) {
+    .header__icons {
+      gap: 0;
+    }
+    .header__icons a,
+    .header__saved {
+      min-width: 2.75rem;
+    }
+  }
+  .header__saved {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 3rem;
+    min-height: 3rem;
+    border: 0;
+    background: none;
+    color: var(--color-foreground);
+    cursor: pointer;
+  }
+  .header__saved[hidden],
+  .header__cart-count[hidden] {
+    display: none;
+  }
+  .header__saved svg {
+    width: 1.75rem;
+    height: 1.75rem;
   }
   .header__icons a {
     position: relative;

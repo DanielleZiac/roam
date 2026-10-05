@@ -34,7 +34,8 @@
     "items": "Items",
     "subtotal": "Subtotal",
     "taxes_note": "Shipping and taxes are worked out at checkout.",
-    "continue": "Keep shopping"
+    "continue": "Keep shopping",
+    "added": "Added {{ title }} to cart"
   },
   "customers": {
     "login": {
@@ -49,7 +50,7 @@
     "label": "Collection",
     "filter_label": "Filter by goal",
     "filter_all": "All",
-    "sort_label": "Sort by",
+    "sort_label": "Sort by:",
     "sort_apply": "Sort",
     "count": {
       "one": "{{ count }} product",
@@ -58,7 +59,14 @@
     "empty_title": "No gear matches that yet",
     "empty_text": "Try a different goal, or see everything in this collection.",
     "empty_button": "Show all",
-    "pagination_label": "Pages"
+    "pagination_label": "Pages",
+    "category_label": "Category",
+    "goal_label": "Goal",
+    "category_filter_label": "Type of gear",
+    "filters_heading": "Filters",
+    "sort_recommended": "Recommended",
+    "sort_price_low": "Price, low to high",
+    "sort_price_high": "Price, high to low"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -74,17 +82,34 @@
   },
   "search": {
     "title": "Search",
-    "placeholder": "Search articles, pages, or products",
+    "label": "Search gear",
+    "placeholder": "Search gear",
     "submit": "Search",
-    "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "heading_html": "Results for “{{ terms }}”",
+    "heading_empty": "What are you looking for?",
+    "results_count": {
+      "one": "{{ count }} result",
+      "other": "{{ count }} results"
+    },
+    "no_results_title": "Nothing matched that",
+    "no_results_text": "Check the spelling, try a shorter word, or browse everything."
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
     "main_menu": "Main",
     "footer_menu": "Footer",
     "account": "Account",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "panel_button": "Accessibility",
+    "panel_title": "Make Roam easier to use",
+    "panel_close": "Close",
+    "panel_done": "Done",
+    "panel_intro": "Switch on what helps. Your choices are saved on this device.",
+    "listen_title": "Read it to me",
+    "listen_text": "Hear any text read aloud when you point at it or tab to it. Product pages also get a Listen button. Press Escape to stop. If you use a screen reader, leave this off.",
+    "dyslexia_title": "Dyslexia-friendly text",
+    "dyslexia_text": "Larger text in a plainer font, with wider spacing, shorter lines and a cream background.",
+    "listen_unsupported": "Read it to me is not available in this browser."
   },
   "footer": {
     "tagline": "Gear built around you.",
@@ -99,11 +124,13 @@
     "quantity": "Quantity",
     "add_to_cart": "Add to cart",
     "key_facts": "Key facts",
-    "view_all": "View all"
-  },
-  "ticker": {
-    "pause": "Pause scrolling",
-    "play": "Resume scrolling"
+    "view_all": "View all",
+    "listen": "Listen",
+    "listen_stop": "Stop listening",
+    "listen_reading": "Reading the product details aloud.",
+    "save": "Save {{ title }}",
+    "unsave": "Remove {{ title }} from saved",
+    "quick_add": "Add {{ title }} to cart"
   },
   "general": {
     "home": "Home"
@@ -113,5 +140,22 @@
     "sports": "Play sports",
     "travel": "Travel",
     "everyday": "Everyday carry"
+  },
+  "categories": {
+    "wheelchair_gear": "Wheelchair gear",
+    "canes_walkers": "Canes and walkers",
+    "keyboards": "Keyboards",
+    "alerts": "Alerts",
+    "communication": "Voice and boards",
+    "grip_recovery": "Grip and recovery",
+    "home_tech": "Home tech"
+  },
+  "saved": {
+    "title": "Saved gear",
+    "intro": "Kept on this device. No account needed.",
+    "empty": "Nothing saved yet. Tap the heart on any product to keep it here.",
+    "added": "Saved {{ title }}",
+    "removed": "Removed {{ title }} from saved",
+    "button": "Saved gear: {{ count }}"
   }
 }

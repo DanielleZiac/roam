@@ -1,6 +1,10 @@
 {% doc %}
-  Renders one product as a card: image, need group, title and price.
-  The whole card is one link (the title), so keyboard users tab once per product.
+  Renders one product as a card: image, need group, title, price, a Save (heart)
+  button and a quick Add to cart button.
+  The title link is stretched over the card, and the two buttons sit above it.
+
+  The card's details are also printed as JSON on the Save button, so the saved
+  list and the recently viewed row can redraw the card later without a request.
 
   @param {product} product - The product to show
   @param {string} [heading_tag] - Heading tag for the title, defaults to h3
@@ -11,7 +15,26 @@
 
 {% liquid
   assign heading_tag = heading_tag | default: 'h3'
+  assign card_variant = product.selected_or_first_available_variant
+  assign card_price = product.price | money
+  assign card_image = nil
+  if product.featured_image
+    assign card_image = product.featured_image | image_url: width: 600, height: 600, crop: 'center'
+  endif
 %}
+
+{%- capture card_json -%}
+  {
+    "handle": {{ product.handle | json }},
+    "title": {{ product.title | json }},
+    "url": {{ product.url | json }},
+    "type": {{ product.type | json }},
+    "price": {{ card_price | json }},
+    "image": {{ card_image | json }},
+    "variant": {{ card_variant.id | json }},
+    "quickAdd": {% if product.available and product.has_only_default_variant %}true{% else %}false{% endif %}
+  }
+{%- endcapture -%}
 
 <article class="product-card">
   <div class="product-card__media">
@@ -35,17 +58,46 @@
       <a href="{{ product.url }}">{{ product.title }}</a>
     </{{ heading_tag }}>
 
-    <p class="product-card__price">
-      {% if product.price_varies %}
-        {% assign from_price = product.price_min | money %}
-        {{ 'products.from_price_html' | t: price: from_price }}
-      {% else %}
-        {{ product.price | money }}
-      {% endif %}
-      {% unless product.available %}
-        <span class="product-card__badge">{{ 'products.sold_out' | t }}</span>
-      {% endunless %}
-    </p>
+    <div class="product-card__footer">
+      <p class="product-card__price">
+        {% if product.price_varies %}
+          {% assign from_price = product.price_min | money %}
+          {{ 'products.from_price_html' | t: price: from_price }}
+        {% else %}
+          {{ product.price | money }}
+        {% endif %}
+        {% unless product.available %}
+          <span class="product-card__badge">{{ 'products.sold_out' | t }}</span>
+        {% endunless %}
+      </p>
+
+      <div class="product-card__actions">
+        <button
+          class="icon-button"
+          type="button"
+          aria-pressed="false"
+          aria-label="{{ 'products.save' | t: title: product.title | escape }}"
+          data-save
+          data-product="{{ card_json | escape }}"
+        >
+          {{ 'icon-heart.svg' | inline_asset_content }}
+        </button>
+
+        {% if product.available and product.has_only_default_variant %}
+          <form action="{{ routes.cart_add_url }}" method="post" data-quick-add>
+            <input type="hidden" name="id" value="{{ card_variant.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button
+              class="icon-button icon-button--filled"
+              type="submit"
+              aria-label="{{ 'products.quick_add' | t: title: product.title | escape }}"
+            >
+              {{ 'icon-shopping-cart.svg' | inline_asset_content }}
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </article>
 
@@ -115,9 +167,24 @@
   .product-card__title a:focus-visible {
     outline: none;
   }
-  .product-card__price {
+  .product-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     margin-top: auto;
     padding-top: 0.5rem;
+  }
+  /* The buttons sit above the stretched title link. */
+  .product-card__actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+  .product-card__price {
     font-size: 1.125rem;
     font-weight: bold;
   }

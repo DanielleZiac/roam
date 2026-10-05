@@ -20,6 +20,28 @@
   endif
 %}
 
+{% liquid
+  assign view_price = product.price | money
+  assign view_image = nil
+  if product.featured_image
+    assign view_image = product.featured_image | image_url: width: 600, height: 600, crop: 'center'
+  endif
+%}
+{%- capture view_json -%}
+  {
+    "handle": {{ product.handle | json }},
+    "title": {{ product.title | json }},
+    "url": {{ product.url | json }},
+    "type": {{ product.type | json }},
+    "price": {{ view_price | json }},
+    "image": {{ view_image | json }},
+    "variant": {{ current_variant.id | json }},
+    "quickAdd": {% if product.available and product.has_only_default_variant %}true{% else %}false{% endif %}
+  }
+{%- endcapture -%}
+{% # Read by assets/roam-shop.js to remember this product as recently viewed. %}
+<script type="application/json" data-product-view>{{ view_json }}</script>
+
 <nav class="breadcrumb" aria-label="{{ 'accessibility.breadcrumb' | t }}">
   <ol role="list">
     <li><a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a></li>
@@ -62,9 +84,9 @@
       <p class="label">{{ product.type }}</p>
     {% endif %}
 
-    <h1 class="product__title">{{ product.title }}</h1>
+    <h1 class="product__title" data-read>{{ product.title }}</h1>
 
-    <p class="product__price">
+    <p class="product__price" data-read>
       <span class="visually-hidden">{{ 'products.price' | t }}</span>
       {{ current_variant.price | money }}
       {% if current_variant.compare_at_price > current_variant.price %}
@@ -76,8 +98,18 @@
     </p>
 
     {% if summary != blank %}
-      <div class="product__summary rte">{{ summary }}</div>
+      <div class="product__summary rte" data-read>{{ summary }}</div>
     {% endif %}
+
+    {% # Shown only when "Read it to me" is switched on in the Accessibility panel. %}
+    <div class="listen" data-listen>
+      <button class="button button--secondary button--small" type="button" aria-pressed="false" data-listen-button>
+        <span data-listen-label data-listen="{{ 'products.listen' | t }}" data-stop="{{ 'products.listen_stop' | t }}">
+          {{- 'products.listen' | t -}}
+        </span>
+      </button>
+      <span class="visually-hidden" role="status" data-listen-status data-reading="{{ 'products.listen_reading' | t }}"></span>
+    </div>
 
     {% form 'product', product, class: 'product__form' %}
       {% if product.has_only_default_variant %}
@@ -123,12 +155,23 @@
             {{ 'products.sold_out' | t }}
           {% endif %}
         </button>
+
+        <button
+          class="icon-button icon-button--large"
+          type="button"
+          aria-pressed="false"
+          aria-label="{{ 'products.save' | t: title: product.title | escape }}"
+          data-save
+          data-product="{{ view_json | escape }}"
+        >
+          {{ 'icon-heart.svg' | inline_asset_content }}
+        </button>
       </div>
     {% endform %}
 
     {% if facts != blank %}
       <section class="key-facts scheme-panel" aria-labelledby="KeyFacts-{{ section.id }}">
-        <h2 id="KeyFacts-{{ section.id }}" class="key-facts__title">{{ 'products.key_facts' | t }}</h2>
+        <h2 id="KeyFacts-{{ section.id }}" class="key-facts__title" data-read>{{ 'products.key_facts' | t }}</h2>
         <div class="rte">{{ facts }}</div>
       </section>
     {% endif %}
@@ -194,6 +237,13 @@
     max-width: 44ch;
     font-size: 1.1875rem;
   }
+  .listen {
+    display: none;
+    margin-top: 1rem;
+  }
+  .a11y-listen .listen {
+    display: block;
+  }
   .product__form {
     margin-block: 1.5rem 2rem;
   }
@@ -237,6 +287,62 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  // Read it to me: reads the title, price, summary and key facts with the browser's own voice.
+  (() => {
+    const box = document.querySelector('[data-listen]');
+    if (!box || !('speechSynthesis' in window)) return;
+
+    const synth = window.speechSynthesis;
+    const button = box.querySelector('[data-listen-button]');
+    const label = box.querySelector('[data-listen-label]');
+    const status = box.querySelector('[data-listen-status]');
+    let speaking = false;
+
+    // One short piece per element. Long single utterances get cut off in some browsers.
+    function pieces() {
+      return [...document.querySelectorAll('[data-read], .key-facts li')]
+        .map((node) => node.innerText.replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
+    }
+
+    function stop() {
+      speaking = false;
+      synth.cancel();
+      label.textContent = label.dataset.listen;
+      button.setAttribute('aria-pressed', 'false');
+      status.textContent = '';
+    }
+
+    function start() {
+      synth.cancel();
+      speaking = true;
+      label.textContent = label.dataset.stop;
+      button.setAttribute('aria-pressed', 'true');
+      status.textContent = status.dataset.reading;
+
+      const list = pieces();
+      list.forEach((text, index) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = document.documentElement.lang || 'en';
+        if (index === list.length - 1) {
+          utterance.onend = () => {
+            if (speaking) stop();
+          };
+        }
+        synth.speak(utterance);
+      });
+    }
+
+    button.addEventListener('click', () => (speaking ? stop() : start()));
+    // Pointing at other text takes over the voice, so reset this button.
+    document.addEventListener('roam:speech-cancel', () => {
+      if (speaking) stop();
+    });
+    window.addEventListener('pagehide', () => synth.cancel());
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

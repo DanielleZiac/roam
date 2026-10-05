@@ -262,48 +262,6 @@
   .about-you__hint {
     margin-block: 0.75rem 1.5rem;
   }
-  .choices {
-    display: grid;
-    gap: 0.75rem;
-  }
-  /* Each answer is one large target: the whole row is the label. */
-  .choice {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    min-height: 3.5rem;
-    padding: 0.75rem 1.125rem;
-    border: 1.5px solid var(--color-foreground);
-    border-radius: 1rem;
-    font-size: 1.125rem;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  .choice input {
-    flex: none;
-    width: 1.5rem;
-    height: 1.5rem;
-    min-height: 0;
-    margin: 0;
-    padding: 0;
-    accent-color: var(--color-dark);
-  }
-  .choice:hover {
-    background-color: var(--color-panel);
-  }
-  /* Selected answers turn teal and get a thicker border, so colour is not the only cue. */
-  .choice:has(input:checked) {
-    border-width: 3px;
-    padding: calc(0.75rem - 1.5px) calc(1.125rem - 1.5px);
-    background-color: var(--color-highlight);
-  }
-  .choice:has(input:focus-visible) {
-    outline: 3px solid var(--color-focus);
-    outline-offset: 3px;
-  }
-  .choice input:focus-visible {
-    outline: none;
-  }
   .about-you__other {
     margin-top: 1.5rem;
   }
