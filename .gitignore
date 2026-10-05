@@ -1,2 +1,5 @@
 # macOS
 .DS_Store
+
+# Full-size photo downloads. The cropped copies in product-images/ are what the store uses.
+product-images/originals/

@@ -1,0 +1,163 @@
+[
+  {
+    "handle": "roam-court-wheels",
+    "images": [
+      {
+        "file": "roam-court-wheels-1.jpg",
+        "alt": "Sports wheelchair with angled wheels on a basketball court, beside a player with a prosthetic leg sitting on a chair.",
+        "credit": "Kampus Production",
+        "source": "https://www.pexels.com/photo/6763808/"
+      },
+      {
+        "file": "roam-court-wheels-2.jpg",
+        "alt": "Wheelchair rugby player smiling on court, one hand on a solid black sports wheel.",
+        "credit": "Audi Nissen",
+        "source": "https://unsplash.com/photos/u1CAj5HJzO4"
+      }
+    ]
+  },
+  {
+    "handle": "roam-braille-keys",
+    "images": [
+      {
+        "file": "roam-braille-keys-1.jpg",
+        "alt": "Black braille keyboard with blue keys on a desk in front of an open laptop.",
+        "credit": "Elizabeth Woolner",
+        "source": "https://unsplash.com/photos/9xxNZCJZ8bA"
+      },
+      {
+        "file": "roam-braille-keys-2.jpg",
+        "alt": "Two hands typing on a braille keyboard with large white keys.",
+        "credit": "Compagnons",
+        "source": "https://unsplash.com/photos/4MoIpDcSlr4"
+      }
+    ]
+  },
+  {
+    "handle": "roam-folding-white-cane",
+    "images": [
+      {
+        "file": "roam-folding-white-cane-1.jpg",
+        "alt": "Seated person holding a white cane with a red band across their lap.",
+        "credit": "Tima Miroshnichenko",
+        "source": "https://www.pexels.com/photo/6609676/"
+      }
+    ]
+  },
+  {
+    "handle": "roam-ring-mouse",
+    "images": [
+      {
+        "file": "roam-ring-mouse-1.jpg",
+        "alt": "Hand resting on a desk with a small black and grey ring mouse strapped to the thumb.",
+        "credit": "Elizabeth Woolner",
+        "source": "https://unsplash.com/photos/oRZJSFcFjNk"
+      }
+    ]
+  },
+  {
+    "handle": "roam-release-tool",
+    "images": [
+      {
+        "file": "roam-release-tool-1.jpg",
+        "alt": "Woman in a gym holding a black muscle scraper by its cut-out handle and running it along another person's foot.",
+        "credit": "Jonathan Borba",
+        "source": "https://www.pexels.com/photo/27730420/"
+      }
+    ]
+  },
+  {
+    "handle": "roam-touch-lock",
+    "images": [
+      {
+        "file": "roam-touch-lock-1.jpg",
+        "alt": "Finger on the green-lit fingerprint reader of a grey door lock with a number keypad and small screen.",
+        "credit": "cookiecutter",
+        "source": "https://www.pexels.com/photo/17155842/"
+      }
+    ]
+  },
+  {
+    "handle": "roam-bamboo-walking-stick",
+    "images": [
+      {
+        "file": "roam-bamboo-walking-stick-1.jpg",
+        "alt": "Close-up of a hand resting on the top of a pale wooden walking stick.",
+        "credit": "Pixabay",
+        "source": "https://www.pexels.com/photo/40141/"
+      },
+      {
+        "file": "roam-bamboo-walking-stick-2.jpg",
+        "alt": "Man in a cap standing outdoors with one hand on a tall bamboo walking stick.",
+        "credit": "Sarah Louise Kinsella",
+        "source": "https://unsplash.com/photos/Mqmsu7T8au8"
+      }
+    ]
+  },
+  {
+    "handle": "roam-everyday-wheelchair",
+    "images": [
+      {
+        "file": "roam-everyday-wheelchair-1.jpg",
+        "alt": "Close-up of a person in a red jumper in a silver-framed manual wheelchair, one hand on the push rim.",
+        "credit": "cottonbro studio",
+        "source": "https://www.pexels.com/photo/8524601/"
+      }
+    ]
+  },
+  {
+    "handle": "roam-underseat-bag",
+    "images": [
+      {
+        "file": "roam-underseat-bag-1.jpg",
+        "alt": "Wheelchair user gripping a handrail on a staircase, with a blue drawstring bag hanging under the seat.",
+        "credit": "Nadiia Doloh",
+        "source": "https://www.pexels.com/photo/11597472/"
+      }
+    ]
+  },
+  {
+    "handle": "roam-spoke-guards",
+    "images": [
+      {
+        "file": "roam-spoke-guards-1.jpg",
+        "alt": "Small wheelchair on a beach at the water's edge, its wheel covered by a spoke guard printed with cartoon animals.",
+        "credit": "Jens Theeß",
+        "source": "https://unsplash.com/photos/ZwHkhBbhRDA"
+      }
+    ]
+  },
+  {
+    "handle": "roam-city-scooter",
+    "images": [
+      {
+        "file": "roam-city-scooter-1.jpg",
+        "alt": "Person riding a four-wheel mobility scooter along a city bike lane, seen from behind, with two crutches in a holder at the back.",
+        "credit": "Rasmus Gerdin",
+        "source": "https://unsplash.com/photos/1JJ3Lwcx3G0"
+      }
+    ]
+  },
+  {
+    "handle": "roam-sprint-racing-chair",
+    "images": [
+      {
+        "file": "roam-sprint-racing-chair-1.jpg",
+        "alt": "Athlete in a helmet leaning forward in a green racing wheelchair at speed, the background blurred.",
+        "credit": "Seth Kane",
+        "source": "https://unsplash.com/photos/oyZalm8fvS4"
+      }
+    ]
+  },
+  {
+    "handle": "roam-bionic-arm",
+    "images": [
+      {
+        "file": "roam-bionic-arm-1.jpg",
+        "alt": "Fitter adjusting a black prosthetic arm with a powered hand for a man seated in a manual wheelchair.",
+        "credit": "ThisisEngineering",
+        "source": "https://unsplash.com/photos/o6jUolZ7QJk"
+      }
+    ]
+  }
+]

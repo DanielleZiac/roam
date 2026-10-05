@@ -137,7 +137,8 @@
     "listen_reading": "Reading the product details aloud.",
     "save": "Add {{ title }} to wishlist",
     "unsave": "Remove {{ title }} from wishlist",
-    "quick_add": "Add {{ title }} to cart"
+    "quick_add": "Add {{ title }} to cart",
+    "show_photo": "Show photo {{ number }} of {{ total }}"
   },
   "general": {
     "home": "Home"

@@ -59,7 +59,11 @@
 <div class="product">
   <div class="product__media">
     {% if product.featured_image %}
-      <ul class="product__images" role="list">
+      {% comment %}
+        One large photo with a row of small previews under it. Without JavaScript
+        every photo simply shows, one under the other.
+      {% endcomment %}
+      <ul class="product__images" role="list" data-gallery>
         {% for image in product.images %}
           {% liquid
             assign loading = 'lazy'
@@ -67,7 +71,7 @@
               assign loading = 'eager'
             endif
           %}
-          <li>
+          <li data-gallery-photo>
             {{
               image
               | image_url: width: 1400
@@ -76,6 +80,29 @@
           </li>
         {% endfor %}
       </ul>
+
+      {% if product.images.size > 1 %}
+        <ul class="product__thumbs" role="list" data-gallery-thumbs hidden>
+          {% for image in product.images %}
+            <li>
+              <button
+                type="button"
+                class="product__thumb"
+                aria-label="{{ 'products.show_photo' | t: number: forloop.index, total: product.images.size }}"
+                {% if forloop.first %}
+                  aria-current="true"
+                {% endif %}
+              >
+                {{
+                  image
+                  | image_url: width: 240, height: 240, crop: 'center'
+                  | image_tag: loading: 'lazy', alt: '', width: 120, height: 120
+                }}
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     {% else %}
       <div class="product__placeholder">
         {{ 'product-1' | placeholder_svg_tag }}
@@ -242,6 +269,38 @@
     padding: 0;
     list-style: none;
   }
+  .product__thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .product__thumb {
+    display: block;
+    width: 5rem;
+    padding: 0;
+    overflow: hidden;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 0.875rem;
+    background-color: var(--color-panel);
+    cursor: pointer;
+    opacity: 0.6;
+  }
+  .product__thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .product__thumb:hover,
+  .product__thumb[aria-current='true'] {
+    opacity: 1;
+  }
+  .product__thumb[aria-current='true'] {
+    outline: 3px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
   .product__images img,
   .product__placeholder {
     width: 100%;
@@ -345,6 +404,29 @@
 {% endstylesheet %}
 
 {% javascript %}
+  // Photo previews: show one large photo at a time and switch with the small ones under it.
+  (() => {
+    const thumbs = document.querySelector('[data-gallery-thumbs]');
+    if (!thumbs) return;
+
+    const photos = [...document.querySelectorAll('[data-gallery-photo]')];
+    const buttons = [...thumbs.querySelectorAll('button')];
+
+    function show(index) {
+      photos.forEach((photo, i) => (photo.hidden = i !== index));
+      // Photos that start hidden are lazy-loaded, so ask for this one now.
+      photos[index].querySelector('img').loading = 'eager';
+      buttons.forEach((button, i) => {
+        if (i === index) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
+    }
+
+    buttons.forEach((button, index) => button.addEventListener('click', () => show(index)));
+    thumbs.hidden = false;
+    show(0);
+  })();
+
   // Read it to me: reads the title, price, summary and key facts with the browser's own voice.
   (() => {
     const box = document.querySelector('[data-listen]');
