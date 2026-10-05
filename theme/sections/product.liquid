@@ -2,9 +2,10 @@
   Product page: photos, a plain-language summary, price, the add-to-cart form
   and a "Key facts" card with the specs.
 
-  The description is written as one summary paragraph followed by a bullet list.
-  We split it at the list so the summary sits by the price and the bullets
-  become the Key facts card.
+  The summary and key facts come from the product's "roam" metafields, which the
+  merchant edits in the Roam Insights app. Products that have not been edited
+  there fall back to the description: its first paragraph is the summary and
+  its bullet list becomes the Key facts card.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
@@ -18,6 +19,9 @@
   if description_parts.size > 1
     assign facts = product.description | remove_first: summary
   endif
+
+  assign app_facts = product.metafields.roam.key_facts.value
+  assign app_summary = product.metafields.roam.summary.value | strip
 %}
 
 {% liquid
@@ -97,7 +101,9 @@
       {% endif %}
     </p>
 
-    {% if summary != blank %}
+    {% if app_summary != blank %}
+      <div class="product__summary rte" data-read><p>{{ app_summary | escape }}</p></div>
+    {% elsif summary != blank %}
       <div class="product__summary rte" data-read>{{ summary }}</div>
     {% endif %}
 
@@ -169,7 +175,24 @@
       </div>
     {% endform %}
 
-    {% if facts != blank %}
+    {% if app_facts != blank and app_facts.size > 0 %}
+      <section class="key-facts scheme-panel" aria-labelledby="KeyFacts-{{ section.id }}">
+        <h2 id="KeyFacts-{{ section.id }}" class="key-facts__title" data-read>{{ 'products.key_facts' | t }}</h2>
+        <div class="rte">
+          <ul>
+            {% for fact in app_facts %}
+              <li>
+                {%- if fact.label != blank -%}
+                  {{ fact.label | escape }}: {{ fact.value | escape }}
+                {%- else -%}
+                  {{ fact.value | escape }}
+                {%- endif -%}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    {% elsif facts != blank %}
       <section class="key-facts scheme-panel" aria-labelledby="KeyFacts-{{ section.id }}">
         <h2 id="KeyFacts-{{ section.id }}" class="key-facts__title" data-read>{{ 'products.key_facts' | t }}</h2>
         <div class="rte">{{ facts }}</div>

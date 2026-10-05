@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 import db from "../db.server";
-import { products, type KeyFact } from "../db/schema";
-import { isNeedTag } from "../lib/needs";
+import { eventPicks, products, suggestionEvents, type KeyFact } from "../db/schema";
+import { isNeedTag, needLabel } from "../lib/needs";
+import { logActivity } from "./activity.server";
 
 type AdminGraphql = (query: string, options?: { variables?: Record<string, unknown> }) => Promise<Response>;
 
@@ -102,4 +103,136 @@ export async function syncProducts(graphql: AdminGraphql, shop: string) {
 
 export function listProducts(shop: string) {
   return db.select().from(products).where(eq(products.shop, shop)).orderBy(products.title);
+}
+
+export async function getProduct(shop: string, id: number) {
+  const [product] = await db
+    .select()
+    .from(products)
+    .where(and(eq(products.shop, shop), eq(products.id, id)));
+  return product ?? null;
+}
+
+// How often each product was suggested by the storefront quiz, and how often
+// that suggestion was added to a cart.
+export async function productSuggestionStats(shop: string) {
+  const rows = await db
+    .select({
+      productId: eventPicks.productId,
+      suggested: count(),
+      addedToCart: count(eventPicks.addedToCartAt),
+    })
+    .from(eventPicks)
+    .innerJoin(suggestionEvents, eq(eventPicks.eventId, suggestionEvents.id))
+    .where(eq(suggestionEvents.shop, shop))
+    .groupBy(eventPicks.productId);
+
+  return new Map(rows.filter((row) => row.productId !== null).map((row) => [row.productId as number, row]));
+}
+
+// Key facts are edited as text, one per line, written "Label: value".
+export function keyFactsToText(keyFacts: KeyFact[]) {
+  return keyFacts.map((fact) => (fact.label ? `${fact.label}: ${fact.value}` : fact.value)).join("\n");
+}
+
+export function textToKeyFacts(text: string): KeyFact[] {
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 12)
+    .map((line) => {
+      const colon = line.indexOf(":");
+      if (colon > 0 && colon < 40) {
+        return { label: line.slice(0, colon).trim(), value: line.slice(colon + 1).trim().slice(0, 200) };
+      }
+      return { label: "", value: line.slice(0, 200) };
+    });
+}
+
+const SET_METAFIELDS = `#graphql
+  mutation RoamSetProductMetafields($metafields: [MetafieldsSetInput!]!) {
+    metafieldsSet(metafields: $metafields) {
+      metafields {
+        key
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+export type MatchingInput = { needTags: string[]; keyFactsText: string; summary: string };
+
+/*
+ * The create/update workflow. Saves a product's need tags, key facts and summary:
+ *
+ *   1. Validates the input against the need vocabulary.
+ *   2. Works out what actually changed.
+ *   3. Writes the new values to the product's metafields in Shopify (namespace
+ *      "roam"), which is what the storefront reads.
+ *   4. Updates the app's own row.
+ *   5. Adds an activity log entry holding the before and after values.
+ *
+ * Shopify is written first, so the app's table never claims a change the
+ * storefront did not get. Returns what changed, or an error message.
+ */
+export async function updateProductMatching(
+  graphql: AdminGraphql,
+  shop: string,
+  id: number,
+  input: MatchingInput,
+): Promise<{ ok: true; changed: string[] } | { ok: false; error: string }> {
+  const product = await getProduct(shop, id);
+  if (!product) return { ok: false, error: "Product not found" };
+
+  const needTags = [...new Set(input.needTags.filter(isNeedTag))];
+  const keyFacts = textToKeyFacts(input.keyFactsText);
+  const summary = input.summary.trim().slice(0, 500) || null;
+
+  const added = needTags.filter((tag) => !product.needTags.includes(tag));
+  const removed = product.needTags.filter((tag) => !(needTags as string[]).includes(tag));
+  const factsChanged = JSON.stringify(keyFacts) !== JSON.stringify(product.keyFacts);
+  const summaryChanged = summary !== (product.summary ?? null);
+
+  const changed: string[] = [];
+  if (added.length > 0) changed.push(`added ${added.map(needLabel).join(", ")}`);
+  if (removed.length > 0) changed.push(`removed ${removed.map(needLabel).join(", ")}`);
+  if (factsChanged) changed.push("updated key facts");
+  if (summaryChanged) changed.push("updated summary");
+  if (changed.length === 0) return { ok: true, changed };
+
+  const metafields = [
+    { key: "need_tags", type: "list.single_line_text_field", value: JSON.stringify(needTags) },
+    { key: "key_facts", type: "json", value: JSON.stringify(keyFacts) },
+    // Shopify does not accept an empty text metafield, so a cleared summary is stored as a single space.
+    { key: "summary", type: "multi_line_text_field", value: summary ?? " " },
+  ].map((metafield) => ({ ...metafield, ownerId: product.shopifyProductId, namespace: "roam" }));
+
+  const response = await graphql(SET_METAFIELDS, { variables: { metafields } });
+  const body = (await response.json()) as {
+    data?: { metafieldsSet: { userErrors: { message: string }[] } };
+  };
+  const errors = body.data?.metafieldsSet.userErrors ?? [];
+  if (!body.data || errors.length > 0) {
+    return { ok: false, error: errors.map((error) => error.message).join("; ") || "Shopify did not accept the change" };
+  }
+
+  await db.update(products).set({ needTags, keyFacts, summary }).where(eq(products.id, id));
+
+  await logActivity({
+    shop,
+    actor: "merchant",
+    action: "product.matching_updated",
+    summary: `${product.title}: ${changed.join("; ")}`,
+    productId: id,
+    details: {
+      before: { needTags: product.needTags, keyFacts: product.keyFacts, summary: product.summary },
+      after: { needTags, keyFacts, summary },
+    },
+  });
+
+  return { ok: true, changed };
 }

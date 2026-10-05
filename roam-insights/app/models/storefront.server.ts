@@ -1,5 +1,4 @@
-import db from "../db.server";
-import { activityLog } from "../db/schema";
+import { logActivity } from "./activity.server";
 
 type AdminGraphql = (query: string, options?: { variables?: Record<string, unknown> }) => Promise<Response>;
 
@@ -93,7 +92,7 @@ async function ensureQuizPageOnce(graphql: AdminGraphql, shop: string): Promise<
       return errors.map((error) => error.message).join("; ") || "Could not create the page";
     }
 
-    await db.insert(activityLog).values({
+    await logActivity({
       shop,
       actor: "system",
       action: "storefront.page_created",

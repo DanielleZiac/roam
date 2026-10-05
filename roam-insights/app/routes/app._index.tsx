@@ -56,9 +56,15 @@ export default function Index() {
             {quizPage === "exists" ? "ready" : quizPage === "created" ? "created just now" : `not ready (${quizPage})`}
           </s-list-item>
         </s-unordered-list>
-        <s-button onClick={() => fetcher.submit({}, { method: "post" })} {...(syncing ? { loading: true } : {})}>
-          Sync products from Shopify
-        </s-button>
+        <s-stack direction="inline" gap="base">
+          <s-button variant="primary" href="/app/products">
+            Edit products
+          </s-button>
+          <s-button href="/app/activity">View activity</s-button>
+          <s-button onClick={() => fetcher.submit({}, { method: "post" })} {...(syncing ? { loading: true } : {})}>
+            Sync products from Shopify
+          </s-button>
+        </s-stack>
         {fetcher.data ? <s-paragraph>Synced {fetcher.data.synced} products.</s-paragraph> : null}
       </s-section>
     </s-page>
