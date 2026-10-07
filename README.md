@@ -15,7 +15,7 @@ The reasoning behind the store concept, the app and the schema is in [APP_DECISI
 ## See it running
 
 - **Storefront:** https://roam-igo4wyyh.myshopify.com
-- **Storefront password:** `TODO: add the storefront password`
+- **Storefront password:** `roamaround`
 - **Admin app:** installed on the `roam-dev` development store as "roam-insights". It runs from a local server, so it is shown live in the demo.
 
 ## What to look at
