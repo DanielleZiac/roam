@@ -183,6 +183,106 @@
     ]
   },
   {
+    "handle": "roam-buzz-band",
+    "images": [
+      {
+        "file": "roam-buzz-band-studio-1.jpg",
+        "alt": "Slim matte black wristband with a square module and a bright teal ring around its side button.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-buzz-band-studio-2.jpg",
+        "alt": "Wrist wearing the black wristband, hand relaxed.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-caption-screen",
+    "images": [
+      {
+        "file": "roam-caption-screen-studio-1.jpg",
+        "alt": "Small matte black caption display standing on a fold-out stand, screen off, with a bright teal side button.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-caption-screen-studio-2.jpg",
+        "alt": "The caption display showing a conversation as text, with each speaker's name in a different colour.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-caption-screen-studio-3.jpg",
+        "alt": "Hand holding the caption display in a cafe, with a conversation shown as text on the screen.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-smoke-alert",
+    "images": [
+      {
+        "file": "roam-smoke-alert-studio-1.jpg",
+        "alt": "Round off-white smoke alarm with a clear strobe ring and a bright teal test button, beside a flat black bed-shaker pad.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-smoke-alert-studio-2.jpg",
+        "alt": "The smoke alarm on a kitchen ceiling with its strobe ring flashing.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-care-kit",
+    "images": [
+      {
+        "file": "roam-care-kit-studio-1.jpg",
+        "alt": "Open black zip case with a bright teal zip pull, beside a drying pot, cleaning brush, wax pick, grey cloth and battery tester.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-care-kit-studio-2.jpg",
+        "alt": "The same kit packed inside its open case.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-tv-listener",
+    "images": [
+      {
+        "file": "roam-tv-listener-studio-1.jpg",
+        "alt": "Matte black over-ear headphones with a large bright teal volume dial, resting on a small charging stand.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-tv-listener-studio-2.jpg",
+        "alt": "Man seen from behind wearing the headphones, the teal volume dial on the right ear cup.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-cry-alert",
+    "images": [
+      {
+        "file": "roam-cry-alert-studio-1.jpg",
+        "alt": "Off-white nursery unit with a round speaker grille, beside a black receiver with a column of bright teal light bars.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-cry-alert-studio-2.jpg",
+        "alt": "The two units seen from behind, showing the belt clip on the black receiver.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-cry-alert-studio-3.jpg",
+        "alt": "The nursery unit on a shelf beside a cot, and the receiver glowing on a coffee table in the next room.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
     "handle": "roam-voice-8",
     "images": [
       {
@@ -198,6 +298,131 @@
       {
         "file": "roam-voice-8-studio-3.jpg",
         "alt": "The device with a bright teal wrist loop on its handle and water droplets on its buttons.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-message-button",
+    "images": [
+      {
+        "file": "roam-message-button-studio-1.jpg",
+        "alt": "Large bright teal dome button on a low matte black base with a small speaker grille.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-message-button-studio-2.jpg",
+        "alt": "Hand pressing down on the large teal button on a table.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-type-talk",
+    "images": [
+      {
+        "file": "roam-type-talk-studio-1.jpg",
+        "alt": "Matte black handheld device with a wide screen above a keyboard of off-white keys and one bright teal key.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-type-talk-studio-2.jpg",
+        "alt": "Two hands typing on the device, with a short typed message showing on its screen.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-talk-tablet",
+    "images": [
+      {
+        "file": "roam-talk-tablet-studio-1.jpg",
+        "alt": "Tablet in a thick black case with a carry handle and stand, showing a grid of twelve large teal picture buttons.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-talk-tablet-studio-2.jpg",
+        "alt": "The tablet held on a black clamp-on mounting arm, showing a grid of picture buttons with labels.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-talk-tablet-studio-3.jpg",
+        "alt": "The tablet mounted on the armrest of a power wheelchair in a living room.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-voice-amp",
+    "images": [
+      {
+        "file": "roam-voice-amp-studio-1.jpg",
+        "alt": "Small black clip-on speaker with a bright teal dial, wired to a black headset microphone.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-voice-amp-studio-2.jpg",
+        "alt": "Man in a checked shirt wearing the headset microphone, adjusting the speaker clipped to his belt.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-throat-voice-amp",
+    "images": [
+      {
+        "file": "roam-throat-voice-amp-studio-1.jpg",
+        "alt": "Small black clip-on speaker with a bright teal dial, wired to a black neckband with a throat microphone.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-throat-voice-amp-studio-2.jpg",
+        "alt": "Man in a green hoodie wearing the neckband microphone, with the speaker clipped at his waist.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-write-pad",
+    "images": [
+      {
+        "file": "roam-write-pad-studio-1.jpg",
+        "alt": "Thin black writing tablet with a dark screen, a bright teal erase button and a stylus on its side.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-write-pad-studio-2.jpg",
+        "alt": "Hands writing a coffee order on the tablet with the stylus, the writing showing in pale green.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-say-cards",
+    "images": [
+      {
+        "file": "roam-say-cards-studio-1.jpg",
+        "alt": "Fanned stack of off-white cards with teal picture icons on a metal ring, attached to a bright teal lanyard.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-say-cards-studio-2.jpg",
+        "alt": "Young boy wearing the teal lanyard, holding up a card with a cup icon to a woman sitting beside him.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-talk-mount",
+    "images": [
+      {
+        "file": "roam-talk-mount-studio-1.jpg",
+        "alt": "Black two-joint mounting arm with a tablet holder and a bright teal locking lever, clamped to a short metal tube.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-talk-mount-studio-2.jpg",
+        "alt": "The mounting arm clamped to a wheelchair armrest, holding a tablet in front of the seat.",
         "credit": "AI-generated"
       }
     ]
@@ -281,6 +506,56 @@
       {
         "file": "roam-folding-white-cane-studio-3.jpg",
         "alt": "Man in dark glasses and a black fleece standing with the white cane in his right hand.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-tactile-dots",
+    "images": [
+      {
+        "file": "roam-tactile-dots-studio-1.jpg",
+        "alt": "Clear sheet of raised stick-on dots in orange, black and clear, in round, square and bar shapes, with three loose ones beside it.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-tactile-dots-studio-2.jpg",
+        "alt": "Hands sticking an orange dot onto a keyboard, with the sheet of dots on the table.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-talking-watch",
+    "images": [
+      {
+        "file": "roam-talking-watch-studio-1.jpg",
+        "alt": "Black wristwatch with bold white hands and markers, a black strap and a large bright teal side button.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-talking-watch-studio-2.jpg",
+        "alt": "Older man in glasses holding the watch up near his ear.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-pocket-magnifier",
+    "images": [
+      {
+        "file": "roam-pocket-magnifier-studio-2.jpg",
+        "alt": "Black handheld magnifier standing on its fold-out handle, screen off, with three large buttons, the middle one bright teal.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-pocket-magnifier-studio-1.jpg",
+        "alt": "Hands holding the magnifier over a medicine bottle, its screen showing the label in large black letters.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-pocket-magnifier-studio-3.jpg",
+        "alt": "Person using the magnifier on its stand to read a street map on a table.",
         "credit": "AI-generated"
       }
     ]

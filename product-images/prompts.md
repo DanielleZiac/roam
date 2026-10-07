@@ -1,6 +1,6 @@
 # Roam product image prompts
 ```
-Everything was generated using Gemini's ___ model.
+Everything was generated using Gemini's 3.6 Flash model.
 
 ### Follow-up prompt: side view
 ```
@@ -172,96 +172,96 @@ Alt text: Matte black prosthetic forearm with a five-fingered mechanical hand an
 
 ## 26. Roam Buzz Band — `roam-buzz-band-studio-1.jpg`
 ```
-Product photo of a slim vibrating alert wristband: a soft matte black silicone band with a small flat rounded module, a blank dark face with no screen, and a thin bright teal ring around one side button. Three-quarter view, product only, centred, standing upright in a loop. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a slim vibrating alert wristband: a soft matte black silicone band with a small flat rounded module, a blank dark face with no screen, and a thin bright teal ring around one side button. Three-quarter view, product only, centred, standing upright in a loop. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Slim matte black wristband with a small module and a bright teal ring around its button.
 
 ## 27. Roam Caption Screen — `roam-caption-screen-studio-1.jpg`
 ```
-Product photo of a pocket-sized live caption display: a matte black rounded slab the size of a small phone standing upright on a fold-out stand, with a blank dark screen, two small microphone holes on the top edge, and one bright teal button on the side. Three-quarter front view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a pocket-sized live caption display: a matte black rounded slab the size of a small phone standing upright on a fold-out stand, with a blank dark screen, two small microphone holes on the top edge, and one bright teal button on the side. Three-quarter front view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Small matte black caption display standing on a fold-out stand, with a bright teal side button.
 
 ## 28. Roam Smoke Alert — `roam-smoke-alert-studio-1.jpg`
 ```
-Product photo of a two-piece smoke alarm set for Deaf users: a round off-white ceiling smoke alarm with a ring of clear strobe light around its edge and one bright teal test button in the centre, next to a round flat matte black bed-shaker pad. Three-quarter view, products only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a two-piece smoke alarm set for Deaf users: a round off-white ceiling smoke alarm with a ring of clear strobe light around its edge and one bright teal test button in the centre, next to a round flat matte black bed-shaker pad. Three-quarter view, products only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Round off-white smoke alarm with a strobe ring and a bright teal test button, beside a flat black bed-shaker pad.
 
 ## 29. Roam Message Button — `roam-message-button-studio-1.jpg`
 ```
-Product photo of a single large recordable speech button: a wide round bright teal dome button about 9 cm across, set in a low matte black base with a small speaker grille on the front and a non-slip rubber ring underneath. Three-quarter view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a single large recordable speech button: a wide round bright teal dome button about 9 cm across, set in a low matte black base with a small speaker grille on the front and a non-slip rubber ring underneath. Three-quarter view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Large bright teal dome button on a low matte black base with a speaker grille.
 
 ## 30. Roam Type Talk — `roam-type-talk-studio-1.jpg`
 ```
-Product photo of a handheld text-to-speech communication device: a matte black rounded case with a wide blank dark screen above a compact keyboard of large off-white keys with blank tops, a speaker grille on the front edge, and one bright teal speak key. Three-quarter top-down view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a handheld text-to-speech communication device: a matte black rounded case with a wide blank dark screen above a compact keyboard of large off-white keys with blank tops, a speaker grille on the front edge, and one bright teal speak key. Three-quarter top-down view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Matte black device with a screen above a keyboard of large off-white keys and one bright teal key.
 
 ## 31. Roam Talk Tablet — `roam-talk-tablet-studio-1.jpg`
 ```
-Product photo of a rugged communication tablet: a 10-inch tablet in a thick matte black rubber case with a carry handle on top and a fold-out stand, the screen showing a neat grid of twelve large off-white squares each with one simple teal picture icon, and a speaker grille below the screen. Three-quarter front view, standing on its stand, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a rugged communication tablet: a 10-inch tablet in a thick matte black rubber case with a carry handle on top and a fold-out stand, the screen showing a neat grid of twelve large off-white squares each with one simple teal picture icon, and a speaker grille below the screen. Three-quarter front view, standing on its stand, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Tablet in a thick matte black case with a carry handle, showing a grid of large picture buttons.
 
 ## 32. Roam Voice Amp — `roam-voice-amp-studio-1.jpg`
 ```
-Product photo of a wearable voice amplifier set: a small matte black rectangular speaker with a belt clip, a round speaker grille and one large bright teal volume dial, connected by a thin black cable to a lightweight black headset microphone with a foam tip. Three-quarter view, products only, centred, cable neatly curved. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a wearable voice amplifier set: a small matte black rectangular speaker with a belt clip, a round speaker grille and one large bright teal volume dial, connected by a thin black cable to a lightweight black headset microphone with a foam tip. Three-quarter view, products only, centred, cable neatly curved. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Small matte black clip-on speaker with a bright teal dial, wired to a black headset microphone.
 
 ## 33. Roam Care Kit — `roam-care-kit-studio-1.jpg`
 ```
-Product photo of a hearing aid care kit laid out neatly: an open matte black hard zip case with a bright teal zip pull, and beside it a small round off-white drying pot, a small black cleaning brush, a thin wax pick, a folded grey cloth and a small battery tester. Top-down three-quarter view, products only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a hearing aid care kit laid out neatly: an open matte black hard zip case with a bright teal zip pull, and beside it a small round off-white drying pot, a small black cleaning brush, a thin wax pick, a folded grey cloth and a small battery tester. Top-down three-quarter view, products only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Open black zip case with a drying pot, cleaning brush, wax pick, cloth and battery tester laid out beside it.
 
 ## 34. Roam TV Listener — `roam-tv-listener-studio-1.jpg`
 ```
-Product photo of wireless TV headphones on a charging stand: lightweight matte black over-ear headphones with soft cushions and one large bright teal volume dial on the right ear cup, resting on a small matte black stand with a single off-white indicator light. Three-quarter front view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of wireless TV headphones on a charging stand: lightweight matte black over-ear headphones with soft cushions and one large bright teal volume dial on the right ear cup, resting on a small matte black stand with a single off-white indicator light. Three-quarter front view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Matte black over-ear headphones with a bright teal volume dial, resting on a small charging stand.
 
 ## 35. Roam Cry Alert — `roam-cry-alert-studio-1.jpg`
 ```
-Product photo of a two-piece baby monitor set for Deaf parents: a small rounded off-white nursery unit with a microphone grille, next to a palm-sized matte black receiver with a row of five bright teal light bars on its front and a belt clip. Three-quarter view, products only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a two-piece baby monitor set for Deaf parents: a small rounded off-white nursery unit with a microphone grille, next to a palm-sized matte black receiver with a row of five bright teal light bars on its front and a belt clip. Three-quarter view, products only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Off-white nursery unit beside a black handheld receiver with a row of bright teal light bars.
 
 ## 36. Roam Write Pad — `roam-write-pad-studio-1.jpg`
 ```
-Product photo of a slim LCD writing tablet: a thin matte black slab with a large blank dark writing screen, one large bright teal round erase button below the screen, and a black stylus clipped into the right edge. Three-quarter top-down view, product only, centred, screen blank. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a slim LCD writing tablet: a thin matte black slab with a large blank dark writing screen, one large bright teal round erase button below the screen, and a black stylus clipped into the right edge. Three-quarter top-down view, product only, centred, screen blank. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Thin matte black writing tablet with a dark screen, a bright teal erase button and a stylus on its edge.
 
 ## 37. Roam Say Cards — `roam-say-cards-studio-1.jpg`
 ```
-Product photo of a set of communication cards on a lanyard: a fanned stack of rounded off-white plastic cards joined by a metal ring at one corner, each card showing one large simple teal picture icon and no words, attached to a bright teal fabric lanyard with a black clip. Top-down three-quarter view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a set of communication cards on a lanyard: a fanned stack of rounded off-white plastic cards joined by a metal ring at one corner, each card showing one large simple teal picture icon and no words, attached to a bright teal fabric lanyard with a black clip. Top-down three-quarter view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Fanned stack of off-white picture cards on a ring, attached to a bright teal lanyard.
 
 ## 38. Roam Talk Mount — `roam-talk-mount-studio-1.jpg`
 ```
-Product photo of a mounting arm for a speech tablet: a sturdy matte black two-joint adjustable arm with a screw clamp at the bottom gripping a short section of round metal tubing, a flat tablet holder plate with four corner grips at the top, and one bright teal locking lever at the middle joint. Three-quarter view, product only, centred, holder empty. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a mounting arm for a speech tablet: a sturdy matte black two-joint adjustable arm with a screw clamp at the bottom gripping a short section of round metal tubing, a flat tablet holder plate with four corner grips at the top, and one bright teal locking lever at the middle joint. Three-quarter view, product only, centred, holder empty. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Matte black two-joint mounting arm clamped to a metal tube, with a tablet holder and a bright teal locking lever.
 
 ## 39. Roam Tactile Dots — `roam-tactile-dots-studio-1.jpg`
 ```
-Product photo of a sheet of raised tactile marker stickers: a flat rectangular backing sheet covered in neat rows of small raised bump dots in bright orange, black and clear, in round, square and bar shapes, with three loose dots lying beside the sheet. Top-down three-quarter view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a sheet of raised tactile marker stickers: a flat rectangular backing sheet covered in neat rows of small raised bump dots in bright orange, black and clear, in round, square and bar shapes, with three loose dots lying beside the sheet. Top-down three-quarter view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Sheet of raised orange, black and clear stick-on dots, with three loose dots beside it.
 
 ## 40. Roam Talking Watch — `roam-talking-watch-studio-1.jpg`
 ```
-Product photo of a high-contrast talking wristwatch: a round matte black case with a black face, large bold white hour markers and thick white hands and no numerals, one large bright teal button at the side, and a soft black silicone strap. Three-quarter view, product only, centred, strap curved as if worn. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a high-contrast talking wristwatch: a round matte black case with a black face, large bold white hour markers and thick white hands and no numerals, one large bright teal button at the side, and a soft black silicone strap. Three-quarter view, product only, centred, strap curved as if worn. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Black wristwatch with bold white hands and markers, a black strap and a large bright teal side button.
 
 ## 41. Roam Pocket Magnifier — `roam-pocket-magnifier-studio-1.jpg`
 ```
-Product photo of a handheld electronic video magnifier: a matte black rounded device the size of a large phone with a 5-inch screen that is blank and dark, a fold-out handle at the bottom, and three large tactile buttons on the front, the middle one bright teal. Three-quarter front view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format, no text, no logos, no people.
+Product photo of a handheld electronic video magnifier: a matte black rounded device the size of a large phone with a 5-inch screen that is blank and dark, a fold-out handle at the bottom, and three large tactile buttons on the front, the middle one bright teal. Three-quarter front view, product only, centred. Clean studio product photography, seamless pure white background, soft even lighting, gentle natural shadow, sharp focus, photorealistic, square format.
 ```
 Alt text: Handheld matte black video magnifier with a fold-out handle and three large buttons, one bright teal.
