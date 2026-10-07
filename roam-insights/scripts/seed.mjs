@@ -7,9 +7,12 @@
  *   npm run db:seed -- --reset remove every recorded result and alert first
  *
  * The data is invented. It is shaped to look like a plausible month: mobility
- * is the most common need, "Nonspeaking" and "Deaf or hard of hearing" are
- * chosen often relative to how few products cover them, and one product is
- * suggested a lot but almost never added to a cart.
+ * is the most common need, "Deaf or hard of hearing" is chosen more often than
+ * its share of the catalog, everyday low-cost items convert well, and a few
+ * products are suggested a lot but almost never added to a cart.
+ *
+ * Without --reset it tops up: more quiz results are added, and only products
+ * that have no reviews yet get sample reviews.
  *
  * Run it after opening the app once, so the store's products are synced.
  */
@@ -21,25 +24,32 @@ const DAYS = 30;
 
 // Each sample shopper: the needs they choose, and how common that kind of shopper is.
 const PROFILES = [
-  { weight: 20, needs: ["mobility", "wheelchair"], goals: ["get-around", "sports", "travel"] },
-  { weight: 12, needs: ["mobility", "walking-aid"], goals: ["get-around", "travel", "everyday"] },
-  { weight: 20, needs: ["nonspeaking"], goals: ["everyday", "travel"] },
-  { weight: 18, needs: ["deaf-hoh"], goals: ["everyday", "travel"] },
-  { weight: 14, needs: ["dexterity"], goals: ["everyday", "sports"] },
-  { weight: 10, needs: ["blind-low-vision"], goals: ["everyday", "get-around"] },
+  { weight: 18, needs: ["mobility", "wheelchair"], goals: ["get-around", "sports", "travel"] },
+  { weight: 10, needs: ["mobility", "walking-aid"], goals: ["get-around", "travel", "everyday"] },
+  { weight: 16, needs: ["nonspeaking"], goals: ["everyday", "travel"] },
+  { weight: 26, needs: ["deaf-hoh"], goals: ["everyday", "travel"] },
+  { weight: 12, needs: ["dexterity"], goals: ["everyday", "sports"] },
+  { weight: 12, needs: ["blind-low-vision"], goals: ["everyday", "get-around"] },
   { weight: 6, needs: ["mobility", "dexterity"], goals: ["sports"] },
 ];
 
 // Chance that a suggestion of this product is added to a cart. Others use DEFAULT_RATE.
 const DEFAULT_RATE = 0.22;
 const CART_RATES = {
+  "roam-write-pad": 0.5,
   "roam-shake-alarm-clock": 0.45,
+  "roam-tactile-dots": 0.45,
   "roam-trail-cane": 0.4,
   "roam-clamp-phone-mount": 0.38,
+  "roam-buzz-band": 0.36,
+  "roam-talking-watch": 0.34,
   "roam-grip-aid": 0.3,
   "roam-court-wheels": 0.16,
   "roam-boost": 0.1,
+  "roam-pocket-magnifier": 0.06,
   "roam-voice-8": 0.02,
+  "roam-talk-tablet": 0.02,
+  "roam-bionic-arm-2000": 0.01,
 };
 
 // A small seeded random generator, so every run produces the same data.
@@ -149,11 +159,15 @@ for (let i = 0; i < RESULTS; i += 1) {
   }
 }
 
-// Two to four reviews per product. Most are already approved; a few wait for a decision.
+// Two to four reviews for each product that has none. Most are already approved; a few wait for a decision.
+const [reviewed] = await connection.query("SELECT DISTINCT product_id FROM reviews WHERE shop = ?", [shop]);
+const hasReviews = new Set(reviewed.map((row) => row.product_id));
+const [[{ existing }]] = await connection.query("SELECT COUNT(*) AS existing FROM reviews WHERE shop = ?", [shop]);
 let reviewCount = 0;
 let pendingCount = 0;
-let reviewer = 1;
+let reviewer = existing + 1;
 for (const product of products) {
+  if (hasReviews.has(product.id)) continue;
   const howMany = 2 + Math.floor(random() * 3);
   for (let i = 0; i < howMany; i += 1) {
     const roll = random();

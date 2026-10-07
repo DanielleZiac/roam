@@ -8,7 +8,7 @@ import db from "../db.server";
 import { products, reviews } from "../db/schema";
 import { acknowledgeAlert, evaluateAlerts, listAlerts } from "../models/alerts.server";
 import { getDashboard } from "../models/insights.server";
-import { syncProducts } from "../models/products.server";
+import { countStoreProducts, syncProducts } from "../models/products.server";
 import { ensureQuizPage } from "../models/storefront.server";
 import { CHART_COLORS, ColumnChart, Legend, PairedBars, RateBars, StatTile } from "../components/charts";
 
@@ -16,9 +16,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
   const shop = session.shop;
 
-  // First visit: bring the store's products in, so the app has something to work with.
-  const [{ value: productCount }] = await db.select({ value: count() }).from(products).where(eq(products.shop, shop));
-  if (productCount === 0) await syncProducts(admin.graphql, shop);
+  // Bring the store's products in on the first visit, and again whenever the
+  // store has gained or lost products since the last sync.
+  const [[{ value: productCount }], storeCount] = await Promise.all([
+    db.select({ value: count() }).from(products).where(eq(products.shop, shop)),
+    countStoreProducts(admin.graphql),
+  ]);
+  if (productCount === 0 || (storeCount !== null && storeCount !== productCount)) {
+    await syncProducts(admin.graphql, shop);
+  }
 
   // The storefront quiz needs its page, and the alerts should reflect the latest data.
   const quizPage = await ensureQuizPage(admin.graphql, shop);

@@ -9,7 +9,7 @@ type AdminGraphql = (query: string, options?: { variables?: Record<string, unkno
 
 const PRODUCTS_QUERY = `#graphql
   query RoamProducts($cursor: String) {
-    products(first: 50, after: $cursor) {
+    products(first: 50, after: $cursor, query: "status:active") {
       pageInfo {
         hasNextPage
         endCursor
@@ -95,12 +95,18 @@ async function syncShopifyTags(graphql: AdminGraphql, shopifyProductId: string, 
  * their need tags and key facts, because the merchant may have edited them
  * here: only the title, handle and type are refreshed. For those products the
  * app is the source of truth, so their Shopify tags are corrected to match.
+ *
+ * Only active products are copied. A product the app knows that is no longer
+ * active in the store (archived, drafted or deleted) is removed from the app,
+ * so it stops counting toward coverage, ranking and alerts. Its past quiz
+ * suggestions stay in the history under its handle.
  */
 export async function syncProducts(graphql: AdminGraphql, shop: string) {
   let cursor: string | null = null;
   let synced = 0;
 
   const known = new Map((await listProducts(shop)).map((product) => [product.shopifyProductId, product]));
+  const active = new Set<string>();
 
   do {
     const response: Response = await graphql(PRODUCTS_QUERY, { variables: { cursor } });
@@ -110,6 +116,7 @@ export async function syncProducts(graphql: AdminGraphql, shop: string) {
     const page = body.data.products;
 
     for (const node of page.nodes) {
+      active.add(node.id);
       const { summary, keyFacts } = parseDescription(node.descriptionHtml);
       await db
         .insert(products)
@@ -143,7 +150,34 @@ export async function syncProducts(graphql: AdminGraphql, shop: string) {
     cursor = page.pageInfo.hasNextPage ? page.pageInfo.endCursor : null;
   } while (cursor);
 
+  for (const product of known.values()) {
+    if (active.has(product.shopifyProductId)) continue;
+    await db.delete(products).where(eq(products.id, product.id));
+    await logActivity({
+      shop,
+      actor: "system",
+      action: "product.removed",
+      summary: `Removed ${product.title}: it is no longer active in the store`,
+      details: { handle: product.handle },
+    });
+  }
+
   return synced;
+}
+
+const ACTIVE_COUNT = `#graphql
+  query RoamActiveProductCount {
+    productsCount(query: "status:active") {
+      count
+    }
+  }
+`;
+
+// How many active products the store has, to tell when the app's copy is out of date.
+export async function countStoreProducts(graphql: AdminGraphql) {
+  const response = await graphql(ACTIVE_COUNT);
+  const body = (await response.json()) as { data?: { productsCount: { count: number } | null } };
+  return body.data?.productsCount?.count ?? null;
 }
 
 export function listProducts(shop: string) {
