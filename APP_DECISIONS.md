@@ -1,0 +1,120 @@
+# App decisions
+
+This document explains what I built for the take-home and why: the store concept, the app idea, the architecture and schema, the tradeoffs I accepted, and what I would do with more time.
+
+## Store concept
+
+**Roam** sells assistive technology to disabled people aged 18 to 35 in the Philippines, with families and carers as the second audience.
+
+- **The gap:** existing assistive technology stores are catalogs for schools, hospitals and government buyers. They read like procurement lists. Nobody sells this gear the way sportswear is sold: to the person who will use it, with pride.
+- **The position:** bold and active, never clinical or pitying. Copy is specs first, in plain words, with no medical promises.
+- **The catalog:** 48 products across five need groups (Mobility, Hands and dexterity, Deaf and hard of hearing, Nonspeaking, Blind and low vision), from a ₱279 writing pad to a ₱289,000 prosthetic arm. Prices are in pesos.
+- **The look:** white, bright teal, soft lilac and violet, with Space Grotesk headings. Teal is only used behind dark text so contrast stays above WCAG AA.
+
+### The standout feature: "Tell us about you"
+
+Most shoppers do not know the name of the product that would help them. So the store asks four optional questions and suggests gear.
+
+- **How it scores:** every answer carries need tags with a weight. A product's score is the sum of the weights it matches. Goals such as travel or sports only break ties once a need is matched, so a "travel" answer alone cannot push an unrelated product up.
+- **It explains itself:** each suggestion shows which answers earned it its place.
+- **It respects the shopper:** everything is skippable, including "I'd rather not say". Scoring happens in the browser, and answers are saved only on the device.
+- **It is not a gate:** the store works fully without it, and without JavaScript the page links to the catalog.
+
+I also added two accessibility modes, dyslexia-friendly text and "Read it to me". They are upgrades on top of a theme that already aims for WCAG 2.2 AA, not a substitute for it.
+
+## App idea: Roam Insights
+
+The quiz produces something no normal store has: a record of what shoppers say they need, before they buy anything. Roam Insights turns that into decisions for the merchant.
+
+**The question it answers:** are we stocking what our shoppers are asking for, and are our suggestions any good?
+
+| Requirement | What the app does |
+|---|---|
+| Dashboard | Which needs shoppers choose, how much of the catalog serves each one, how many suggestions become cart adds, and a ranking of products |
+| Create and update | The merchant edits each product's need tags, key facts and summary. Saving writes metafields that the quiz and product page read |
+| History | Every merchant edit, review decision and alert is written to an activity log |
+| Logic | Unmet-need alerts, low-conversion alerts, a smoothed ranking and a coverage verdict |
+
+The app and the theme form a loop. The quiz sends anonymous results to the app. The app shows where the catalog is thin. The merchant retags or adds products. The quiz then suggests differently.
+
+### The logic, in plain terms
+
+- **Unmet-need alert:** raised when a need was chosen at least 5 times in 30 days and either no product is tagged for it, or at most 2 are and the need appears in at least 15% of results.
+- **Low-conversion alert:** raised when a product was suggested at least 8 times and fewer than 5% of those suggestions were added to a cart. It usually means wrong need tags, a price problem or a weak product page.
+- **Alerts close themselves.** Each time the dashboard loads, the app works out which alerts should exist and resolves the ones whose condition has cleared. Early on the app flagged that Nonspeaking had only two products. After I added seven more, the alert resolved itself and the activity log recorded it.
+- **Ranking:** products are ranked by how often a suggestion becomes a cart add. A raw rate would put a product suggested once and added once above one suggested 50 times and added 20 times. So each rate is pulled toward the shop average, as if every product had 5 extra suggestions that performed averagely: `score = (added + average × 5) / (suggested + 5)`.
+- **Coverage verdict:** the app compares a need's share of quiz results with its share of the catalog. If demand is 1.5 times supply or more, the store is "short"; if it is 0.6 times or less, the need is "well covered".
+
+### Reviews
+
+I added reviews because a shop for expensive, personal equipment needs proof from other users.
+
+- **Buyers only.** The form posts through the app proxy, where Shopify adds the signed-in customer's id to a signed request. The app then checks that customer's orders for the product. This check runs on the server, so it cannot be skipped from the browser.
+- **One review per customer per product**, with up to three photos.
+- **Moderated by default**, with a switch to publish straight away.
+- **Approved reviews are written to product metafields**, so product pages show them with no request to the app.
+
+## Architecture
+
+```
+Storefront (theme)                         Shopify                    Roam Insights
+──────────────────                         ───────                    ─────────────
+quiz result, cart add,   ── /apps/roam ──▶ app proxy, signs  ───────▶ /proxy/* routes ──▶ MySQL
+review                                     the request
+
+product page reads       ◀── metafields ── Admin API         ◀─────── product editor,
+need tags, key facts,                                                 review moderation
+summary, reviews
+
+                                           Shopify admin     ◀──────▶ embedded pages
+                                           (OAuth, sessions)          (dashboard, products,
+                                                                       reviews, activity)
+```
+
+- **Stack:** Shopify's React Router app template, which runs on Vite with a Node.js server, plus Drizzle ORM on MySQL 8.4 in Docker. Sessions are stored in MySQL through Drizzle's session storage adapter.
+- **Why this template and not Express with a separate Vite frontend:** it is the template Shopify currently maintains for embedded apps, and it handles OAuth, token exchange and the embedded flow correctly out of the box. It is still a Vite frontend and a Node backend, in one project. I spent the time I saved on the app's logic.
+- **Why the app proxy:** the theme can call the app on the shop's own domain with no API key in theme code. Shopify signs every request, so the endpoints reject anything that did not come through the store.
+- **Why metafields for the theme's data:** need tags, key facts, summaries and published reviews live on the product in the `roam` namespace. The storefront stays fast and keeps working if the app's server is down.
+- **Two sources of truth, on purpose:** Shopify owns the product itself. The app owns the matching data and keeps Shopify's tags in step with it, because the catalog filters run on tags.
+
+## Schema decisions
+
+Ten tables. The schema is one file, [roam-insights/app/db/schema.ts](roam-insights/app/db/schema.ts), and the four migrations are generated from it.
+
+| Table | Holds | Why it is shaped this way |
+|---|---|---|
+| `products` | The app's copy of each product's need tags, key facts and summary | The merchant edits here. Keeping a copy means the dashboard never waits on the Admin API |
+| `suggestion_events` | One row per finished quiz | The unit everything else counts |
+| `event_needs` | The need tags chosen in an event, one row per tag | A separate table, not a JSON column, so "how often was this need chosen" is an indexed count |
+| `event_picks` | The products suggested in an event, in order, and when one was added to a cart | Links demand to outcome. It keeps the product handle as well as the id, so history survives a product being removed |
+| `alerts` | Open, acknowledged and resolved alerts with the numbers behind them | Status is a column, not a deletion, so the history of a problem is kept |
+| `activity_log` | Who did what and when, linked to a product or alert | One table for every kind of change keeps the Activity page a single query |
+| `reviews`, `review_photos` | Reviews and their photos | Photos are a separate table so listing reviews never loads image data |
+| `shop_settings` | Per-shop switches, such as publishing reviews without approval | One row per shop |
+| `session` | Shopify sessions | The shape is fixed by Shopify's adapter |
+
+- **No personal data from the quiz.** An event is tags and product handles. The free-text answer never leaves the browser.
+- **Deletes are deliberate.** Removing a product sets its id to null in past suggestions and in the log, and deletes its reviews.
+
+## Tradeoffs
+
+- **Fixed alert thresholds.** "At most 2 products" made sense with 15 products. With 48 it rarely fires, and the coverage verdict now does that job better. I kept the rule simple and visible in one file instead of tuning it late.
+- **Review photos are stored in MySQL.** It kept the project to one data store and no file service. It would not scale; object storage is the right home.
+- **Scoring runs in the browser.** That is good for privacy and speed, but the merchant cannot change the weights without editing the theme.
+- **Cart adds, not purchases.** The app measures whether a suggestion was added to a cart. Following it through to a paid order needs order webhooks and a way to connect an order to a quiz result without identifying the shopper.
+- **Products are published by hand.** The app has no permission to publish to sales channels, so products created by the catalog script need one click in the admin. I chose not to widen the app's permissions for a setup convenience.
+- **The app runs locally.** It is not deployed, so it is live only while my development server is running.
+- **The catalog is invented.** Products, specs, prices, quiz results and "Sample shopper" reviews are sample data. Most product photos are AI-generated, and that is stated in the README.
+
+## What I would improve with more time
+
+1. **Make the unmet-need rule relative.** Alert when a need's share of demand is well above its share of the catalog, so the rule scales with catalog size.
+2. **Track suggestions through to orders**, to rank products by revenue and not only cart adds.
+3. **Let the merchant tune the quiz from the app:** weights, questions and wording, stored in metaobjects the theme reads.
+4. **Add "limb difference" and "hands and dexterity" as quiz options.** The Hands group is only reached through follow-up questions today.
+5. **A free-text option with AI:** "describe it yourself", turned into need tags on the server through the app proxy.
+6. **Move review photos to object storage** and add image resizing.
+7. **Deploy the app** and add automated tests for the scoring, ranking and alert rules, which are pure functions and easy to test.
+8. **A full accessibility audit** with screen reader users, not only automated checks and my own keyboard testing.
+9. **Real photography** of real disabled people using the gear, with consent, to replace the generated images.
+10. **Remove the template's leftover example definitions** from the app configuration.
