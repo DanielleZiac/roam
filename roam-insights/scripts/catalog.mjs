@@ -1,14 +1,16 @@
 /*
  * Brings the store's catalog in line with the files in ../store-data:
  *
- *   1. Creates any product in products.csv that the store does not have yet.
- *   2. Uploads the photos listed in product-photos.json (files live in
- *      ../product-images) to their products, with alt text.
+ *   1. Creates any product in products.csv that the store does not have yet,
+ *      and updates the description and price of products where the CSV differs.
+ *   2. Makes each product's photos match product-photos.json (files live in
+ *      ../product-images), with alt text. A product whose photos already match
+ *      is left alone; otherwise its photos are replaced.
  *
  *   npm run catalog
  *
- * Safe to run again: products that exist are not recreated, and a product that
- * already has photos is left alone. Run it after opening the app once, so the
+ * Safe to run again. It never deletes a product: one that is in the store but
+ * not in the CSV is only reported. Run it after opening the app once, so the
  * app has access to the store.
  *
  * New products are created but not shown on the storefront: the app is not
@@ -49,6 +51,12 @@ function check(result, what) {
     throw new Error(`${what}: ${result.userErrors.map((error) => error.message).join("; ")}`);
   }
   return result;
+}
+
+// Shopify stores HTML with its own line breaks between tags, so compare without them.
+function sameHtml(a, b) {
+  const tidy = (html) => html.replace(/>\s+</g, "><").trim();
+  return tidy(a) === tidy(b);
 }
 
 // Reads a CSV with quoted fields into one object per row, keyed by the header row.
@@ -105,15 +113,43 @@ async function uploadPhoto(file) {
 
 const { products } = await graphql(`{
   products(first: 250) {
-    nodes { id handle media(first: 1) { nodes { id } } }
+    nodes { id handle descriptionHtml variants(first: 1) { nodes { id price } } media(first: 20) { nodes { id alt } } }
   }
 }`);
 const store = new Map(products.nodes.map((product) => [product.handle, product]));
 
-// 1. Products in the CSV that the store is missing.
+// 1. Products in the CSV that the store is missing, and descriptions that changed.
 const rows = parseCsv(await readFile(root("store-data/products.csv"), "utf8"));
 for (const row of rows) {
-  if (store.has(row.Handle)) continue;
+  const existing = store.get(row.Handle);
+  if (existing) {
+    if (sameHtml(existing.descriptionHtml, row["Body (HTML)"]) === false) {
+      const { productUpdate } = await graphql(
+        `mutation RoamUpdateDescription($product: ProductUpdateInput!) {
+          productUpdate(product: $product) {
+            userErrors { message }
+          }
+        }`,
+        { product: { id: existing.id, descriptionHtml: row["Body (HTML)"] } },
+      );
+      check(productUpdate, `Updating ${row.Title}`);
+      console.log(`Updated the description of ${row.Title}`);
+    }
+    const [variant] = existing.variants.nodes;
+    if (Number(variant.price) !== Number(row["Variant Price"])) {
+      const { productVariantsBulkUpdate } = await graphql(
+        `mutation RoamSetPrice($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+          productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+            userErrors { message }
+          }
+        }`,
+        { productId: existing.id, variants: [{ id: variant.id, price: row["Variant Price"] }] },
+      );
+      check(productVariantsBulkUpdate, `Pricing ${row.Title}`);
+      console.log(`Changed the price of ${row.Title} from ${Number(variant.price)} to ${row["Variant Price"]}`);
+    }
+    continue;
+  }
 
   const { productCreate } = await graphql(
     `mutation RoamCreateProduct($product: ProductCreateInput!) {
@@ -166,7 +202,12 @@ for (const row of rows) {
   console.log(`Created ${row.Title}`);
 }
 
-// 2. Photos for products that have none yet.
+const inCsv = new Set(rows.map((row) => row.Handle));
+for (const handle of store.keys()) {
+  if (!inCsv.has(handle)) console.warn(`In the store but not in products.csv: ${handle}`);
+}
+
+// 2. Photos. The alt texts, in order, tell us whether a product already has the listed photos.
 const photos = JSON.parse(await readFile(root("store-data/product-photos.json"), "utf8"));
 for (const { handle, images } of photos) {
   const product = store.get(handle);
@@ -174,12 +215,28 @@ for (const { handle, images } of photos) {
     console.warn(`Skipped ${handle}: no product with that handle.`);
     continue;
   }
-  if (product.media.nodes.length > 0) continue;
+  const current = product.media.nodes;
+  if (current.length === images.length && current.every((media, index) => media.alt === images[index].alt)) continue;
 
   const media = [];
   for (const image of images) {
     media.push({ originalSource: await uploadPhoto(image.file), alt: image.alt, mediaContentType: "IMAGE" });
   }
+
+  if (current.length > 0) {
+    const { productDeleteMedia } = await graphql(
+      `mutation RoamRemovePhotos($productId: ID!, $mediaIds: [ID!]!) {
+        productDeleteMedia(productId: $productId, mediaIds: $mediaIds) {
+          mediaUserErrors { message }
+        }
+      }`,
+      { productId: product.id, mediaIds: current.map((item) => item.id) },
+    );
+    if (productDeleteMedia.mediaUserErrors.length > 0) {
+      throw new Error(`Removing old photos from ${handle}: ${productDeleteMedia.mediaUserErrors[0].message}`);
+    }
+  }
+
   const { productUpdate } = await graphql(
     `mutation RoamAddPhotos($product: ProductUpdateInput!, $media: [CreateMediaInput!]) {
       productUpdate(product: $product, media: $media) {
@@ -189,7 +246,7 @@ for (const { handle, images } of photos) {
     { product: { id: product.id }, media },
   );
   check(productUpdate, `Adding photos to ${handle}`);
-  console.log(`Added ${images.length} photo${images.length === 1 ? "" : "s"} to ${handle}`);
+  console.log(`Set ${images.length} photo${images.length === 1 ? "" : "s"} on ${handle}`);
 }
 
 console.log("Catalog is up to date.");

@@ -1,18 +1,204 @@
 [
   {
+    "handle": "roam-boost",
+    "images": [
+      {
+        "file": "roam-boost-studio-1.jpg",
+        "alt": "Compact matte black power-assist motor with one small drive wheel, an off-white clamp and a bright teal release lever.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-boost-studio-2.jpg",
+        "alt": "Person in a manual wheelchair seen from behind, with the Roam Boost motor clipped on under the seat.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
     "handle": "roam-court-wheels",
     "images": [
       {
-        "file": "roam-court-wheels-1.jpg",
-        "alt": "Sports wheelchair with angled wheels on a basketball court, beside a player with a prosthetic leg sitting on a chair.",
-        "credit": "Kampus Production",
-        "source": "https://www.pexels.com/photo/6763808/"
+        "file": "roam-court-wheels-studio-1.jpg",
+        "alt": "Pair of sports wheelchair wheels with black tyres, crossed black spokes, aluminium push rims and bright teal hubs.",
+        "credit": "AI-generated"
       },
       {
-        "file": "roam-court-wheels-2.jpg",
-        "alt": "Wheelchair rugby player smiling on court, one hand on a solid black sports wheel.",
-        "credit": "Audi Nissen",
+        "file": "roam-court-wheels-studio-2.jpg",
+        "alt": "Athlete in a sports wheelchair fitted with the wheels, turning away from the camera.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-court-wheelchair",
+    "images": [
+      {
+        "file": "roam-court-wheelchair-studio-1.jpg",
+        "alt": "Empty aluminium sports wheelchair with a front bumper, side wings and solid black wheel discs with red rims.",
+        "credit": "AI-edited from a photo by Audi Nissen",
         "source": "https://unsplash.com/photos/u1CAj5HJzO4"
+      },
+      {
+        "file": "roam-court-wheelchair-studio-2.jpg",
+        "alt": "Player in a red and white jersey leaning forward in the sports wheelchair, one gloved hand on the wheel.",
+        "credit": "AI-edited from a photo by Audi Nissen",
+        "source": "https://unsplash.com/photos/u1CAj5HJzO4"
+      },
+      {
+        "file": "roam-court-wheelchair-studio-3.jpg",
+        "alt": "The same player seen from behind, showing the low black backrest and angled wheels.",
+        "credit": "AI-edited from a photo by Audi Nissen",
+        "source": "https://unsplash.com/photos/u1CAj5HJzO4"
+      }
+    ]
+  },
+  {
+    "handle": "roam-all-terrain-rollator",
+    "images": [
+      {
+        "file": "roam-all-terrain-rollator-studio-1.jpg",
+        "alt": "Black rollator with four chunky off-road wheels, a padded seat, a mesh basket and bright teal brake cables.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-all-terrain-rollator-studio-2.jpg",
+        "alt": "Older woman in a blue cardigan walking with the rollator, seen from the front.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-trail-cane",
+    "images": [
+      {
+        "file": "roam-trail-cane-studio-1.jpg",
+        "alt": "Black carbon-fibre walking cane shown from the front, from the side, and folded with a bright teal strap.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-trail-cane-studio-2.jpg",
+        "alt": "Older woman in a blue cardigan walking with the cane, beside the cane shown extended and folded.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-grip-aid",
+    "images": [
+      {
+        "file": "roam-grip-aid-studio-1.jpg",
+        "alt": "Black padded grip aid with a wide wrist strap and a bright teal tab, wrapped around the handle of a black dumbbell.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-grip-aid-studio-2.jpg",
+        "alt": "Man in a black T-shirt curling a dumbbell while wearing the grip aid.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-clamp-phone-mount",
+    "images": [
+      {
+        "file": "roam-clamp-phone-mount-studio-1.jpg",
+        "alt": "Black phone mount clamped to a metal tube, with a bright teal tightening knob, holding a smartphone.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-clamp-phone-mount-studio-2.jpg",
+        "alt": "Close-up of the mount clamped to a wheelchair frame, holding a phone beside the armrest.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-clamp-phone-mount-studio-3.jpg",
+        "alt": "Woman in a patterned cardigan sitting in a wheelchair, tapping a phone held by the mount.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-light-touch-keyboard",
+    "images": [
+      {
+        "file": "roam-light-touch-keyboard-studio-1.jpg",
+        "alt": "Black keyboard with large off-white keys under a clear keyguard, and one bright teal enter key.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-recover",
+    "images": [
+      {
+        "file": "roam-recover-studio-1.jpg",
+        "alt": "Matte black massage gun with a closed loop handle, a round massage head and a bright teal power button.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-recover-studio-2.jpg",
+        "alt": "Hand through the loop handle, pressing the massage gun against a shoulder.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-recover-studio-3.jpg",
+        "alt": "Woman in a teal T-shirt with her eyes closed, using the massage gun on her neck.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-flash-doorbell",
+    "images": [
+      {
+        "file": "roam-flash-doorbell-studio-1.jpg",
+        "alt": "Off-white door button with a black ring, beside a plug-in receiver with a glowing bright teal light panel.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-flash-doorbell-studio-2.jpg",
+        "alt": "Hand plugging the glowing receiver into a wall socket in a hallway.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-shake-alarm-clock",
+    "images": [
+      {
+        "file": "roam-shake-alarm-clock-studio-1.jpg",
+        "alt": "Black bedside alarm clock with a bright teal button on top, wired to a round black bed-shaker disc.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-shake-alarm-clock-studio-2.jpg",
+        "alt": "The alarm clock on a wooden bedside table next to a bed, with its shaker disc beside it.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-shake-alarm-clock-studio-3.jpg",
+        "alt": "Hand pressing the teal button on the alarm clock, with the shaker disc lying on the bed.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-voice-8",
+    "images": [
+      {
+        "file": "roam-voice-8-studio-1.jpg",
+        "alt": "Black handheld communication device with a carry handle, eight large off-white picture buttons and a bright teal volume dial.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-voice-8-studio-2.jpg",
+        "alt": "Hands holding the device, one finger turning the teal volume dial.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-voice-8-studio-3.jpg",
+        "alt": "The device with a bright teal wrist loop on its handle and water droplets on its buttons.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -20,16 +206,62 @@
     "handle": "roam-braille-keys",
     "images": [
       {
-        "file": "roam-braille-keys-1.jpg",
-        "alt": "Black braille keyboard with blue keys on a desk in front of an open laptop.",
-        "credit": "Elizabeth Woolner",
+        "file": "roam-braille-keys-studio-1.jpg",
+        "alt": "Slim black braille keypad with raised dots, a wide space bar, a Bluetooth symbol and a bright teal button on the edge.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-braille-keys-studio-2.jpg",
+        "alt": "The braille keypad lying next to a smartphone of about the same size.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-braille-keys-studio-3.jpg",
+        "alt": "Hand holding the braille keypad, showing that it fits in one palm.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-braille-keyboard",
+    "images": [
+      {
+        "file": "roam-braille-keyboard-studio-1.jpg",
+        "alt": "Black braille keyboard with eight blue keys above a long row of braille cells, seen from above.",
+        "credit": "AI-edited from a photo by Elizabeth Woolner",
         "source": "https://unsplash.com/photos/9xxNZCJZ8bA"
       },
       {
-        "file": "roam-braille-keys-2.jpg",
-        "alt": "Two hands typing on a braille keyboard with large white keys.",
-        "credit": "Compagnons",
-        "source": "https://unsplash.com/photos/4MoIpDcSlr4"
+        "file": "roam-braille-keyboard-studio-2.jpg",
+        "alt": "The braille keyboard seen at an angle, showing its blue keys, braille cells and front buttons.",
+        "credit": "AI-edited from a photo by Elizabeth Woolner",
+        "source": "https://unsplash.com/photos/9xxNZCJZ8bA"
+      },
+      {
+        "file": "roam-braille-keyboard-studio-3.jpg",
+        "alt": "Two hands reading the braille cells on the keyboard, seen from the side.",
+        "credit": "AI-edited from a photo by Elizabeth Woolner",
+        "source": "https://unsplash.com/photos/9xxNZCJZ8bA"
+      }
+    ]
+  },
+  {
+    "handle": "roam-talking-induction-cooker",
+    "images": [
+      {
+        "file": "roam-talking-induction-cooker-studio-1.jpg",
+        "alt": "Black portable induction cooker with raised rings marking the cooking zone, a bright teal dial and a speaker grille.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-talking-induction-cooker-studio-2.jpg",
+        "alt": "Hand turning the teal dial on the cooker on a kitchen counter.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-talking-induction-cooker-studio-3.jpg",
+        "alt": "Hands holding a steel pot of soup on the cooker while turning the teal dial.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -37,10 +269,19 @@
     "handle": "roam-folding-white-cane",
     "images": [
       {
-        "file": "roam-folding-white-cane-1.jpg",
-        "alt": "Seated person holding a white cane with a red band across their lap.",
-        "credit": "Tima Miroshnichenko",
-        "source": "https://www.pexels.com/photo/6609676/"
+        "file": "roam-folding-white-cane-studio-1.jpg",
+        "alt": "White cane with a red band, black grip and ball tip, shown extended and folded into sections.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-folding-white-cane-studio-2.jpg",
+        "alt": "The white cane lying diagonally, showing its sections, red band and black wrist loop.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-folding-white-cane-studio-3.jpg",
+        "alt": "Man in dark glasses and a black fleece standing with the white cane in his right hand.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -48,9 +289,41 @@
     "handle": "roam-ring-mouse",
     "images": [
       {
-        "file": "roam-ring-mouse-1.jpg",
-        "alt": "Hand resting on a desk with a small black and grey ring mouse strapped to the thumb.",
-        "credit": "Elizabeth Woolner",
+        "file": "roam-ring-mouse-studio-1.jpg",
+        "alt": "Black dome-shaped button with an off-white centre, on a black elastic finger strap with a bright teal pull tab.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-ring-mouse-studio-2.jpg",
+        "alt": "Hand wearing the button on the index finger, thumb resting on top of it.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-ring-mouse-studio-3.jpg",
+        "alt": "Hand wearing the button on one finger, next to a phone showing Morse code on its screen.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-finger-mouse",
+    "images": [
+      {
+        "file": "roam-finger-mouse-studio-1.jpg",
+        "alt": "Hand resting flat with a small black and grey trackpad on the thumb, held by a strap looped over the fingers.",
+        "credit": "AI-edited from a photo by Elizabeth Woolner",
+        "source": "https://unsplash.com/photos/oRZJSFcFjNk"
+      },
+      {
+        "file": "roam-finger-mouse-studio-2.jpg",
+        "alt": "Hand seen from above with black strap loops around four fingers and the trackpad at the thumb.",
+        "credit": "AI-edited from a photo by Elizabeth Woolner",
+        "source": "https://unsplash.com/photos/oRZJSFcFjNk"
+      },
+      {
+        "file": "roam-finger-mouse-studio-3.jpg",
+        "alt": "The finger mouse on its own: four black finger loops joined by a cord to a small grey trackpad.",
+        "credit": "AI-edited from a photo by Elizabeth Woolner",
         "source": "https://unsplash.com/photos/oRZJSFcFjNk"
       }
     ]
@@ -59,9 +332,14 @@
     "handle": "roam-release-tool",
     "images": [
       {
-        "file": "roam-release-tool-1.jpg",
-        "alt": "Woman in a gym holding a black muscle scraper by its cut-out handle and running it along another person's foot.",
-        "credit": "Jonathan Borba",
+        "file": "roam-release-tool-studio-1.jpg",
+        "alt": "Flat black muscle scraper with wavy edges and a large cut-out handle with finger grooves.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-release-tool-studio-2.jpg",
+        "alt": "Woman in an orange dress holding the scraper by its handle and running it along another person's foot.",
+        "credit": "AI-edited from a photo by Jonathan Borba",
         "source": "https://www.pexels.com/photo/27730420/"
       }
     ]
@@ -70,10 +348,14 @@
     "handle": "roam-touch-lock",
     "images": [
       {
-        "file": "roam-touch-lock-1.jpg",
-        "alt": "Finger on the green-lit fingerprint reader of a grey door lock with a number keypad and small screen.",
-        "credit": "cookiecutter",
-        "source": "https://www.pexels.com/photo/17155842/"
+        "file": "roam-touch-lock-studio-1.jpg",
+        "alt": "Tall black door lock with a small screen, twelve large off-white buttons and a fingerprint reader ringed in bright teal light.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-touch-lock-studio-2.jpg",
+        "alt": "Woman in a wheelchair reaching up to the fingerprint reader on the lock, mounted beside a wooden door.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -81,15 +363,15 @@
     "handle": "roam-bamboo-walking-stick",
     "images": [
       {
-        "file": "roam-bamboo-walking-stick-1.jpg",
-        "alt": "Close-up of a hand resting on the top of a pale wooden walking stick.",
-        "credit": "Pixabay",
+        "file": "roam-bamboo-walking-stick-studio-1.jpg",
+        "alt": "Close-up of a hand gripping the rounded top of a pale wooden walking stick.",
+        "credit": "AI-edited from a photo by Pixabay",
         "source": "https://www.pexels.com/photo/40141/"
       },
       {
-        "file": "roam-bamboo-walking-stick-2.jpg",
-        "alt": "Man in a cap standing outdoors with one hand on a tall bamboo walking stick.",
-        "credit": "Sarah Louise Kinsella",
+        "file": "roam-bamboo-walking-stick-studio-2.jpg",
+        "alt": "Man in a cap standing side-on with one hand on a tall bamboo walking stick.",
+        "credit": "AI-edited from a photo by Sarah Louise Kinsella",
         "source": "https://unsplash.com/photos/Mqmsu7T8au8"
       }
     ]
@@ -98,10 +380,37 @@
     "handle": "roam-everyday-wheelchair",
     "images": [
       {
-        "file": "roam-everyday-wheelchair-1.jpg",
-        "alt": "Close-up of a person in a red jumper in a silver-framed manual wheelchair, one hand on the push rim.",
-        "credit": "cottonbro studio",
-        "source": "https://www.pexels.com/photo/8524601/"
+        "file": "roam-everyday-wheelchair-studio-1.jpg",
+        "alt": "Black folding manual wheelchair seen from the side, with grey tyres, aluminium push rims and a bright teal brake lever.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-everyday-wheelchair-studio-2.jpg",
+        "alt": "Woman with a ponytail sitting in the wheelchair, seen from the side.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-kids-wheelchair",
+    "images": [
+      {
+        "file": "roam-kids-wheelchair-studio-1.jpg",
+        "alt": "Child-sized wheelchair seen from the side, with a tall push handle and a wheel cover printed with cartoon animals.",
+        "credit": "AI-edited from a photo by Jens Theeß",
+        "source": "https://unsplash.com/photos/ZwHkhBbhRDA"
+      },
+      {
+        "file": "roam-kids-wheelchair-studio-2.jpg",
+        "alt": "The child-sized wheelchair seen from the front, showing the black seat, folding frame and push handle.",
+        "credit": "AI-edited from a photo by Jens Theeß",
+        "source": "https://unsplash.com/photos/ZwHkhBbhRDA"
+      },
+      {
+        "file": "roam-kids-wheelchair-studio-3.jpg",
+        "alt": "Smiling young boy sitting in the wheelchair while an adult's hand holds the push handle.",
+        "credit": "AI-edited from a photo by Jens Theeß",
+        "source": "https://unsplash.com/photos/ZwHkhBbhRDA"
       }
     ]
   },
@@ -109,10 +418,19 @@
     "handle": "roam-underseat-bag",
     "images": [
       {
-        "file": "roam-underseat-bag-1.jpg",
-        "alt": "Wheelchair user gripping a handrail on a staircase, with a blue drawstring bag hanging under the seat.",
-        "credit": "Nadiia Doloh",
-        "source": "https://www.pexels.com/photo/11597472/"
+        "file": "roam-underseat-bag-studio-1.jpg",
+        "alt": "Round black drawstring bag with four buckle straps on top and a bright teal cord.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-underseat-bag-studio-2.jpg",
+        "alt": "The bag strapped under a wheelchair seat, hanging between the frame tubes.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-underseat-bag-studio-3.jpg",
+        "alt": "Manual wheelchair seen from the side with the bag hanging under the seat.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -120,10 +438,14 @@
     "handle": "roam-spoke-guards",
     "images": [
       {
-        "file": "roam-spoke-guards-1.jpg",
-        "alt": "Small wheelchair on a beach at the water's edge, its wheel covered by a spoke guard printed with cartoon animals.",
-        "credit": "Jens Theeß",
-        "source": "https://unsplash.com/photos/ZwHkhBbhRDA"
+        "file": "roam-spoke-guards-studio-1.jpg",
+        "alt": "Two round spoke guards leaning together, printed with bright teal brush strokes on off-white, with black clips around the edge.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-spoke-guards-studio-2.jpg",
+        "alt": "A spoke guard with teal brush strokes fitted over the spokes of a wheelchair wheel.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -131,10 +453,19 @@
     "handle": "roam-city-scooter",
     "images": [
       {
-        "file": "roam-city-scooter-1.jpg",
-        "alt": "Person riding a four-wheel mobility scooter along a city bike lane, seen from behind, with two crutches in a holder at the back.",
-        "credit": "Rasmus Gerdin",
-        "source": "https://unsplash.com/photos/1JJ3Lwcx3G0"
+        "file": "roam-city-scooter-studio-1.jpg",
+        "alt": "Black four-wheel mobility scooter with a padded seat, armrests, grey tyres and bright teal trim.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-city-scooter-studio-2.jpg",
+        "alt": "The scooter seen from the side, with a crutch standing in the holder behind the seat.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-city-scooter-studio-3.jpg",
+        "alt": "Smiling older woman riding the scooter, with a crutch in the holder behind her.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -142,10 +473,19 @@
     "handle": "roam-sprint-racing-chair",
     "images": [
       {
-        "file": "roam-sprint-racing-chair-1.jpg",
-        "alt": "Athlete in a helmet leaning forward in a green racing wheelchair at speed, the background blurred.",
-        "credit": "Seth Kane",
-        "source": "https://unsplash.com/photos/oyZalm8fvS4"
+        "file": "roam-sprint-racing-chair-studio-1.jpg",
+        "alt": "Black three-wheel racing wheelchair with a long frame, solid disc rear wheels with teal rims and a thin spoked front wheel.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-sprint-racing-chair-studio-2.jpg",
+        "alt": "Racer in a helmet and teal jersey leaning forward in the racing wheelchair.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-sprint-racing-chair-studio-3.jpg",
+        "alt": "The racer seen from behind, pushing the disc wheels.",
+        "credit": "AI-generated"
       }
     ]
   },
@@ -153,10 +493,71 @@
     "handle": "roam-bionic-arm",
     "images": [
       {
-        "file": "roam-bionic-arm-1.jpg",
-        "alt": "Fitter adjusting a black prosthetic arm with a powered hand for a man seated in a manual wheelchair.",
-        "credit": "ThisisEngineering",
-        "source": "https://unsplash.com/photos/o6jUolZ7QJk"
+        "file": "roam-bionic-arm-studio-1.jpg",
+        "alt": "Matte black prosthetic forearm with a five-fingered mechanical hand and a small bright teal button, resting on a clear stand.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-bionic-arm-studio-2.jpg",
+        "alt": "Person in a grey top holding a black mug with the prosthetic hand.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-bionic-arm-studio-3.jpg",
+        "alt": "Person in a grey top picking up a small blue marble with the fingers of the prosthetic hand.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-braille-keyboard-2000",
+    "images": [
+      {
+        "file": "roam-braille-keyboard-2000-studio-1.jpg",
+        "alt": "White and black braille keyboard with large oval keys, a small screen and a row of braille cells along the front.",
+        "credit": "AI-edited from a photo by Compagnons",
+        "source": "https://unsplash.com/photos/4MoIpDcSlr4"
+      },
+      {
+        "file": "roam-braille-keyboard-2000-studio-2.jpg",
+        "alt": "Two hands on the braille keyboard, one typing and one reading the braille cells.",
+        "credit": "AI-edited from a photo by Compagnons",
+        "source": "https://unsplash.com/photos/4MoIpDcSlr4"
+      }
+    ]
+  },
+  {
+    "handle": "roam-bionic-arm-2000",
+    "images": [
+      {
+        "file": "roam-bionic-arm-2000-studio-1.jpg",
+        "alt": "Above-elbow prosthetic arm with a carbon-fibre forearm, an elbow joint, a hand with gold-coloured finger joints and a padded shoulder harness.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-bionic-arm-2000-studio-2.jpg",
+        "alt": "Man in a navy T-shirt wearing the prosthetic arm, held out straight in front of him.",
+        "credit": "AI-generated"
+      }
+    ]
+  },
+  {
+    "handle": "roam-sprint-racing-chair-2000",
+    "images": [
+      {
+        "file": "roam-sprint-racing-chair-2000-studio-1.jpg",
+        "alt": "Carbon-fibre racing wheelchair with a six-spoke front wheel and disc rear wheels with bright teal rims.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-sprint-racing-chair-2000-studio-2.jpg",
+        "alt": "Racer in a silver helmet leaning low over the carbon racing wheelchair.",
+        "credit": "AI-generated"
+      },
+      {
+        "file": "roam-sprint-racing-chair-2000-studio-3.jpg",
+        "alt": "The racer seen from the front, arms out to both wheels.",
+        "credit": "AI-generated"
       }
     ]
   }
