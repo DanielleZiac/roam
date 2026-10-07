@@ -48,7 +48,6 @@
   "collections": {
     "title": "Collections",
     "label": "Collection",
-    "filter_label": "Filter by goal",
     "filter_all": "All",
     "sort_label": "Sort by:",
     "sort_apply": "Sort",
@@ -57,12 +56,12 @@
       "other": "{{ count }} products"
     },
     "empty_title": "No gear matches that yet",
-    "empty_text": "Try a different goal, or see everything in this collection.",
+    "empty_text": "Try a different category, or see everything in this collection.",
     "empty_button": "Show all",
     "pagination_label": "Pages",
     "category_label": "Category",
     "goal_label": "Goal",
-    "category_filter_label": "Type of gear",
+    "category_filter_label": "Category",
     "filters_heading": "Filters",
     "sort_recommended": "Recommended",
     "sort_price_low": "Price, low to high",
@@ -141,7 +140,8 @@
     "show_photo": "Show photo {{ number }} of {{ total }}"
   },
   "general": {
-    "home": "Home"
+    "home": "Home",
+    "shop_by_need": "Shop by need"
   },
   "goals": {
     "get_around": "Get around",
@@ -150,13 +150,15 @@
     "everyday": "Everyday carry"
   },
   "categories": {
-    "wheelchair_gear": "Wheelchair gear",
-    "canes_walkers": "Canes and walkers",
-    "keyboards": "Keyboards",
+    "chairs_canes": "Chairs & canes",
+    "add_ons": "Add-ons",
+    "sport_gear": "Sport",
+    "hand_gear": "Hands",
+    "computer": "Computer",
+    "speech": "Speech",
     "alerts": "Alerts",
-    "communication": "Communication",
-    "grip_recovery": "Grip and recovery",
-    "home_tech": "Home tech"
+    "vision": "Vision",
+    "home_living": "Home"
   },
   "saved": {
     "title": "Wishlist",

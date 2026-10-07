@@ -1,5 +1,5 @@
 {% comment %}
-  Collection page: a colour-block header, category and goal filters, a sort control and the
+  Collection page: a colour-block header, category filters, a sort control and the
   product grid. Filtering and sorting are plain links and a normal form, so the
   page works without JavaScript.
 
@@ -8,7 +8,7 @@
 
 {% liquid
   assign goal_tags = 'get-around,sports,travel,everyday' | split: ','
-  assign category_tags = 'wheelchair-gear,canes-walkers,keyboards,alerts,communication,grip-recovery,home-tech' | split: ','
+  assign category_tags = 'chairs-canes,add-ons,sport-gear,hand-gear,computer,speech,alerts,vision,home-living' | split: ','
 
   # The full catalog always offers every filter. Shopify's tag list for the
   # built-in "all" collection can lag behind product changes, so it is not relied on.
@@ -18,8 +18,12 @@
   endif
 
   # When one known tag is active, the page is titled after it, so a filtered
-  # view like /collections/all/keyboards reads as its own category page.
+  # view like /collections/all/speech reads as its own category page. Goal tags
+  # are not offered as filters here, but the home page's goal tiles link to them.
   assign heading = collection.title
+  if is_catalog
+    assign heading = 'footer.all_gear' | t
+  endif
   assign eyebrow = 'collections.label' | t
   assign active_tag = ''
   if current_tags.size == 1
@@ -50,19 +54,6 @@
   {% for tag in category_tags %}
     {% if is_catalog or collection.all_tags contains tag %}
       {% assign tag_key = 'categories.' | append: tag | replace: '-', '_' %}
-      <li>
-        <a class="chip" href="{{ collection.url }}/{{ tag }}" {% if active_tag == tag %}aria-current="true"{% endif %}>
-          {{ tag_key | t }}
-        </a>
-      </li>
-    {% endif %}
-  {% endfor %}
-{% endcapture %}
-
-{% capture goal_chips %}
-  {% for tag in goal_tags %}
-    {% if is_catalog or collection.all_tags contains tag %}
-      {% assign tag_key = 'goals.' | append: tag | replace: '-', '_' %}
       <li>
         <a class="chip" href="{{ collection.url }}/{{ tag }}" {% if active_tag == tag %}aria-current="true"{% endif %}>
           {{ tag_key | t }}
@@ -103,19 +94,6 @@
       </nav>
     {% endif %}
 
-    <nav class="collection-filters" aria-label="{{ 'collections.filter_label' | t }}">
-      <span class="label" aria-hidden="true">{{ 'collections.filter_label' | t }}</span>
-      <ul role="list">
-        {% if category_chips_text == blank %}
-          <li>
-            <a class="chip" href="{{ collection.url }}" {% if current_tags == blank %}aria-current="true"{% endif %}>
-              {{ 'collections.filter_all' | t }}
-            </a>
-          </li>
-        {% endif %}
-        {{ goal_chips }}
-      </ul>
-    </nav>
   </aside>
 
   <div class="collection-main">

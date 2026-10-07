@@ -32,6 +32,22 @@
             <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title }}</a>
           </li>
         {% endfor %}
+        <li class="header__needs">
+          {% comment %} The need-group collections, in a native disclosure so it works without JavaScript. {% endcomment %}
+          <details data-header-needs>
+            <summary>
+              {{ 'general.shop_by_need' | t }}
+              {{ 'icon-chevron-down.svg' | inline_asset_content }}
+            </summary>
+            <ul>
+              {% for collection in collections %}
+                {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
+                  <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+                {% endunless %}
+              {% endfor %}
+            </ul>
+          </details>
+        </li>
       </ul>
     </nav>
 
@@ -119,6 +135,16 @@
           The logo already goes home and the search icon goes to the catalog,
           so those two links are left out of this list.
         {% endcomment %}
+        {% for collection in collections %}
+          {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
+            <li>
+              <a href="{{ collection.url }}">
+                {{ 'icon-chevron-right.svg' | inline_asset_content }}
+                {{ collection.title }}
+              </a>
+            </li>
+          {% endunless %}
+        {% endfor %}
         {% for link in section.settings.menu.links %}
           {% unless link.url == routes.root_url or link.url == routes.all_products_collection_url %}
             <li>
@@ -187,6 +213,47 @@
     text-decoration-thickness: 0.18em;
     text-decoration-color: var(--color-action);
     text-underline-offset: 0.4em;
+  }
+  .header__needs details {
+    position: relative;
+  }
+  .header__needs summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 3rem;
+    padding-inline: 0.75rem;
+    font-weight: 500;
+    list-style: none;
+    cursor: pointer;
+  }
+  .header__needs summary::-webkit-details-marker {
+    display: none;
+  }
+  .header__needs summary svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  .header__needs details[open] summary svg {
+    rotate: 180deg;
+  }
+  .header__needs details ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 20;
+    display: grid;
+    gap: 0;
+    min-width: 16rem;
+    padding: 0.5rem;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 1rem;
+    background-color: var(--color-background);
+  }
+  .header__needs details ul a {
+    display: flex;
+    min-height: 2.75rem;
+    border-radius: 0.5rem;
   }
   .header__icons {
     display: flex;
@@ -322,6 +389,23 @@
 {% endstylesheet %}
 
 {% javascript %}
+  // Shop by need: close the list on Escape or when the pointer or focus goes elsewhere.
+  (() => {
+    const needs = document.querySelector('[data-header-needs]');
+    if (!needs) return;
+    document.addEventListener('click', (event) => {
+      if (!needs.contains(event.target)) needs.open = false;
+    });
+    needs.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !needs.open) return;
+      needs.open = false;
+      needs.querySelector('summary').focus();
+    });
+    needs.addEventListener('focusout', (event) => {
+      if (event.relatedTarget && !needs.contains(event.relatedTarget)) needs.open = false;
+    });
+  })();
+
   // Phone menu: the button shows and hides the panel.
   (() => {
     const header = document.querySelector('[data-header]');

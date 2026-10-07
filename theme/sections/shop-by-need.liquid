@@ -144,6 +144,10 @@
       min-height: 16rem;
       padding: 1.25rem;
     }
+    /* Five narrow cards: the title steps down so one-word names like "Nonspeaking" stay on one line. */
+    .need__title {
+      font-size: clamp(1.125rem, 1.75vw, 1.75rem);
+    }
   }
   @media (prefers-reduced-motion: no-preference) {
     .need {

@@ -1,5 +1,5 @@
 {% comment %}
-  A row of product cards from one collection, with a link to see the rest.
+  A row of product cards from one collection, with a link to the full catalog.
 {% endcomment %}
 
 {% liquid
@@ -10,7 +10,7 @@
   <div class="featured__inner">
   <div class="featured__header">
     <h2>{{ section.settings.heading }}</h2>
-    <a class="featured__link" href="{{ featured_collection.url }}">{{ section.settings.link_label }}</a>
+    <a class="featured__link" href="{{ routes.all_products_collection_url }}">{{ section.settings.link_label }}</a>
   </div>
 
   <ul class="product-grid" role="list">
