@@ -30,12 +30,32 @@ The quiz produces something no normal store has: a record of what shoppers say t
 
 | Requirement | What the app does |
 |---|---|
-| Dashboard | Which needs shoppers choose, how much of the catalog serves each one, how many suggestions become cart adds, and a ranking of products |
+| Dashboard | A summary for a period the merchant picks (7, 30 or 90 days, or all time), what needs the merchant's attention, how much of the catalog serves each need, and a searchable table of how every suggested product performs |
 | Create and update | The merchant edits each product's need tags, key facts and summary. Saving writes metafields that the quiz and product page read |
 | History | Every merchant edit, review decision and alert is written to an activity log |
 | Logic | Unmet-need alerts, low-conversion alerts, a smoothed ranking and a coverage verdict |
 
 The app and the theme form a loop. The quiz sends anonymous results to the app. The app shows where the catalog is thin. The merchant retags or adds products. The quiz then suggests differently.
+
+### Why it does not repeat Shopify Analytics
+
+I considered putting orders and sales on the dashboard, built a first version, and removed it.
+
+- **Shopify already does it.** The admin's Analytics page reports sales, orders and top products. A second copy inside the app would add nothing.
+- **The app's value is the data Shopify does not have.** Shopify sees what sold. It cannot see the shopper who wanted a visual doorbell, found none, and left. The quiz records what people wanted before they bought, so the app can show demand that never became an order.
+
+In one line: Shopify tells the merchant what sold, and Roam Insights tells them what they should be selling.
+
+### How the dashboard is laid out
+
+- **A period picker at the top:** 7, 30 or 90 days, or all time. The choice is kept in the page address, so a reload keeps it. Alerts ignore it and always use their own 30-day rules, so changing the view never raises or clears an alert.
+- **Summary first:** four tiles in one row (two by two on a phone), then two pie charts and the best and weakest performers.
+- **Then actions:** "What to do next" lists open alerts, reviews waiting and untagged products, each with a button that goes to the place to fix it.
+- **Then two tables,** each answering one question in its heading:
+  - **"Do you stock what shoppers ask for?"** One bar per need shows the share of shoppers who have it, and a marker on the bar shows the share of the catalog that serves it. Needs the store is short on are listed first.
+  - **"Which suggestions do shoppers act on?"** One bar per product shows how often it was suggested, with how often it was added to a cart drawn on top. The controls sit in the header row: search, a performance filter and three sort buttons.
+- **Charts are plain SVG and HTML,** with no charting library. Every chart has a text description for screen readers and shows its numbers as text, so colour is never the only cue.
+- **Need groups have icons,** from the same Lucide set as the theme. The group's name stays available as a tooltip and to screen readers.
 
 ### The logic, in plain terms
 
@@ -43,7 +63,8 @@ The app and the theme form a loop. The quiz sends anonymous results to the app. 
 - **Low-conversion alert:** raised when a product was suggested at least 8 times and fewer than 5% of those suggestions were added to a cart. It usually means wrong need tags, a price problem or a weak product page.
 - **Alerts close themselves.** Each time the dashboard loads, the app works out which alerts should exist and resolves the ones whose condition has cleared. Early on the app flagged that Nonspeaking had only two products. After I added seven more, the alert resolved itself and the activity log recorded it.
 - **Ranking:** products are ranked by how often a suggestion becomes a cart add. A raw rate would put a product suggested once and added once above one suggested 50 times and added 20 times. So each rate is pulled toward the shop average, as if every product had 5 extra suggestions that performed averagely: `score = (added + average × 5) / (suggested + 5)`.
-- **Coverage verdict:** the app compares a need's share of quiz results with its share of the catalog. If demand is 1.5 times supply or more, the store is "short"; if it is 0.6 times or less, the need is "well covered".
+- **Coverage verdict:** the app compares a need's share of quiz results with its share of the catalog. If demand is 1.5 times supply or more, the store is "short"; if it is 0.6 times or less, the need is "well covered". Example: 27% of quiz results include "Deaf or hard of hearing" and 13% of products are tagged for it, so demand is about twice supply and the store is short.
+- **Performance label:** each suggested product is compared with the shop's average cart-add rate. At 1.3 times the average or more it is "Shoppers want this"; at half the average or less it is "Rarely chosen". A product suggested fewer than 8 times is "Too early to say".
 
 ### Reviews
 
@@ -98,6 +119,9 @@ Ten tables. The schema is one file, [roam-insights/app/db/schema.ts](roam-insigh
 
 ## Tradeoffs
 
+- **The verdicts are rules of thumb.** The coverage cut-offs (1.5 and 0.6) and the performance cut-offs (1.3 and 0.5) are starting values I chose, not numbers learned from sales. Coverage also counts products, which ignores stock levels, price and quality. The verdicts point the merchant at where to look; they do not prove the catalog is right.
+- **The two dashboard tables are hand-built HTML,** not Polaris tables. I wanted the search box, filter and sort buttons inside the header row and a bar inside each row, which the Polaris table does not offer. The cost is that they are styled by hand to match the admin.
+- **The dashboard is wider than the other pages.** It uses a full-width page with its own two-column layout, because the tables need the room. Products, Reviews and Activity still use Shopify's standard width.
 - **Fixed alert thresholds.** "At most 2 products" made sense with 15 products. With 48 it rarely fires, and the coverage verdict now does that job better. I kept the rule simple and visible in one file instead of tuning it late.
 - **Review photos are stored in MySQL.** It kept the project to one data store and no file service. It would not scale; object storage is the right home.
 - **Scoring runs in the browser.** That is good for privacy and speed, but the merchant cannot change the weights without editing the theme.
@@ -118,3 +142,6 @@ Ten tables. The schema is one file, [roam-insights/app/db/schema.ts](roam-insigh
 8. **A full accessibility audit** with screen reader users, not only automated checks and my own keyboard testing.
 9. **Real photography** of real disabled people using the gear, with consent, to replace the generated images.
 10. **Remove the template's leftover example definitions** from the app configuration.
+11. **Tune the verdict cut-offs with real sales data,** and let the merchant adjust them.
+12. **Give the Products page the same search and filters** as the dashboard table, including a "no need tags" filter.
+13. **Link the product editor to the product in Shopify** and show how that product is performing, so an alert leads somewhere the merchant can act on price and photos too.

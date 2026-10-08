@@ -1,9 +1,8 @@
 import { and, count, countDistinct, eq, gte, sql } from "drizzle-orm";
 
 import db from "../db.server";
-import { eventNeeds, eventPicks, products, suggestionEvents } from "../db/schema";
+import { eventNeeds, eventPicks, products, reviews, suggestionEvents } from "../db/schema";
 import { NEEDS } from "../lib/needs";
-import { ALERT_RULES, windowStart } from "./alerts.server";
 
 // How much the shop-wide average counts when ranking. See rankProducts.
 const PRIOR_WEIGHT = 5;
@@ -11,6 +10,8 @@ const PRIOR_WEIGHT = 5;
 export type RankedProduct = {
   id: number;
   title: string;
+  // The need group the product belongs to (its product type), for filtering.
+  group: string;
   suggested: number;
   addedToCart: number;
   ratePercent: number;
@@ -48,7 +49,7 @@ export function coverageVerdict(demandPercent: number, stockPercent: number, mat
  * With little data a product sits near the average. As evidence builds up, its
  * own numbers take over.
  */
-export function rankProducts(rows: { id: number; title: string; suggested: number; addedToCart: number }[]): RankedProduct[] {
+export function rankProducts(rows: { id: number; title: string; group: string; suggested: number; addedToCart: number }[]): RankedProduct[] {
   const totalSuggested = rows.reduce((sum, row) => sum + row.suggested, 0);
   const totalAdded = rows.reduce((sum, row) => sum + row.addedToCart, 0);
   const average = totalSuggested > 0 ? totalAdded / totalSuggested : 0;
@@ -71,17 +72,31 @@ export function rankProducts(rows: { id: number; title: string; suggested: numbe
     .sort((a, b) => b.score - a.score || b.suggested - a.suggested);
 }
 
-// Everything the dashboard shows, for the same window the alert rules use.
-export async function getDashboard(shop: string) {
-  const since = windowStart();
-  const inWindow = and(eq(suggestionEvents.shop, shop), gte(suggestionEvents.createdAt, since));
+// The periods the dashboard can show. "all" is everything the app has recorded.
+export const PERIODS = ["7", "30", "90", "all"] as const;
+export type Period = (typeof PERIODS)[number];
+
+const DAY = 24 * 60 * 60 * 1000;
+// The per-day chart never draws more than this many columns.
+const MAX_CHART_DAYS = 365;
+
+/*
+ * Everything the dashboard shows, for the chosen period. The alerts are
+ * separate: they always follow their own rules in alerts.server.ts.
+ */
+export async function getDashboard(shop: string, period: Period = "30") {
+  const periodDays = period === "all" ? null : Number(period);
+  const inShop = eq(suggestionEvents.shop, shop);
+  const inWindow =
+    periodDays === null ? inShop : and(inShop, gte(suggestionEvents.createdAt, new Date(Date.now() - periodDays * DAY)));
 
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
   const dayOf = sql<string>`DATE_FORMAT(${suggestionEvents.createdAt}, '%Y-%m-%d')`;
 
-  const [[{ events }], [{ thisWeek }], [{ lastTwoWeeks }], dayRows, needRows, pickRows, catalog] = await Promise.all([
+  const [[{ events }], [{ thisWeek }], [{ lastTwoWeeks }], dayRows, needRows, pickRows, catalog, [{ noMatch }], [reviewStats], [{ firstEvent }]] =
+    await Promise.all([
     db.select({ events: count() }).from(suggestionEvents).where(inWindow),
     db
       .select({ thisWeek: count() })
@@ -109,6 +124,17 @@ export async function getDashboard(shop: string) {
       .where(inWindow)
       .groupBy(eventPicks.productId),
     db.select().from(products).where(eq(products.shop, shop)),
+    // Quiz results where no product matched the shopper's answers.
+    db
+      .select({ noMatch: count() })
+      .from(suggestionEvents)
+      .where(and(inWindow, eq(suggestionEvents.pickCount, 0))),
+    db
+      .select({ total: count(), average: sql<string | null>`AVG(${reviews.rating})` })
+      .from(reviews)
+      .where(and(eq(reviews.shop, shop), eq(reviews.status, "approved"))),
+    // When the first quiz result ever arrived, to know how far back "all time" goes.
+    db.select({ firstEvent: sql<Date | string | null>`MIN(${suggestionEvents.createdAt})` }).from(suggestionEvents).where(inShop),
   ]);
 
   const selectionsByTag = new Map(needRows.map((row) => [row.needTag, row.selections]));
@@ -134,26 +160,43 @@ export async function getDashboard(shop: string) {
     catalog.map((product) => ({
       id: product.id,
       title: product.title,
+      group: product.productType || "Other",
       suggested: statsById.get(product.id)?.suggested ?? 0,
       addedToCart: statsById.get(product.id)?.addedToCart ?? 0,
     })),
   );
+
+  // Cart adds per need group (the product's type), largest first, for the dashboard's pie chart.
+  const addsByGroup = new Map<string, number>();
+  for (const product of catalog) {
+    const added = statsById.get(product.id)?.addedToCart ?? 0;
+    if (added === 0) continue;
+    const group = product.productType || "Other";
+    addsByGroup.set(group, (addsByGroup.get(group) ?? 0) + added);
+  }
+  const cartAddsByGroup = [...addsByGroup]
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value);
 
   const suggested = pickRows.reduce((sum, row) => sum + row.suggested, 0);
   const addedToCart = pickRows.reduce((sum, row) => sum + row.addedToCart, 0);
 
   const lastWeek = lastTwoWeeks - thisWeek;
 
-  // One entry per day in the window, including days with no results.
+  // One entry per day in the period, including days with no results. "All time" starts at the first result.
+  const daysSinceFirst = firstEvent ? Math.ceil((Date.now() - new Date(firstEvent).getTime()) / DAY) + 1 : 1;
+  const chartDays = Math.min(MAX_CHART_DAYS, periodDays ?? daysSinceFirst);
   const resultsByDay = new Map(dayRows.map((row) => [row.day, row.results]));
-  const daily = Array.from({ length: ALERT_RULES.WINDOW_DAYS }, (_, index) => {
-    const date = new Date(Date.now() - (ALERT_RULES.WINDOW_DAYS - 1 - index) * 24 * 60 * 60 * 1000);
+  const daily = Array.from({ length: chartDays }, (_, index) => {
+    const date = new Date(Date.now() - (chartDays - 1 - index) * DAY);
     const key = date.toISOString().slice(0, 10);
     return { day: key, results: resultsByDay.get(key) ?? 0 };
   });
 
   return {
-    windowDays: ALERT_RULES.WINDOW_DAYS,
+    period,
+    // False only when no shopper has ever finished the quiz.
+    everUsed: firstEvent !== null,
     events,
     thisWeek,
     lastWeek,
@@ -163,6 +206,10 @@ export async function getDashboard(shop: string) {
     suggested,
     addedToCart,
     cartRatePercent: suggested > 0 ? Math.round((addedToCart / suggested) * 100) : 0,
+    cartAddsByGroup,
+    noMatch,
+    approvedReviews: reviewStats.total,
+    averageRating: reviewStats.average === null ? null : Math.round(Number(reviewStats.average) * 10) / 10,
     needs,
     ranking,
   };

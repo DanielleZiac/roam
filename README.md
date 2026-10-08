@@ -30,11 +30,18 @@ The reasoning behind the store concept, the app and the schema is in [APP_DECISI
 
 ### Admin app
 
-- **Home:** a dashboard of what shoppers ask for in the quiz, how well the catalog covers each need, and which suggestions turn into cart adds, plus open alerts.
+- **Home:** a dashboard built from the quiz. The merchant picks the period: 7, 30 or 90 days, or all time.
+  - **At a glance:** quiz results, shoppers with no match, average review, and the share of suggestions added to a cart.
+  - **Two pie charts:** which need groups shoppers add to cart, and what shoppers want to do.
+  - **Best and weakest performers:** the two products whose suggestions work best and the two that work worst.
+  - **What to do next:** open alerts, reviews waiting, and products with no need tags, each with a button.
+  - **Do you stock what shoppers ask for?** One row per need, comparing the share of shoppers with that need against the share of the catalog that serves it.
+  - **Which suggestions do shoppers act on?** Every suggested product, with search, a performance filter and sorting by rate, times suggested or cart adds.
 - **Products:** edit each product's need tags, key facts and plain-language summary. Saving writes them to product metafields that the theme reads.
 - **Reviews:** approve or reject customer reviews, with an option to publish without approval.
 - **Activity:** a log of every change made by the merchant or by the app itself.
 - **Logic:** unmet-need alerts, low-conversion alerts, a smoothed product ranking and a coverage verdict per need. The rules are explained in [APP_DECISIONS.md](APP_DECISIONS.md).
+- **What it leaves out on purpose:** sales and order reports. Shopify's own Analytics page already has them. The app shows what shoppers asked for before they bought anything.
 
 ## Run it yourself
 
@@ -136,7 +143,7 @@ Everything in the catalog is invented for this project. Roam is not a real busin
 
 - **Theme base:** Shopify's [Skeleton theme](https://github.com/Shopify/skeleton-theme).
 - **App base:** Shopify's React Router app template.
-- **Icons:** [Lucide](https://lucide.dev), ISC licence. The TikTok icon is drawn for this project.
+- **Icons:** [Lucide](https://lucide.dev), ISC licence, in the theme and in the app. The TikTok icon is drawn for this project.
 - **Fonts:** Space Grotesk and Inter, from Shopify's font library.
 - **Logo:** my own wordmark.
 

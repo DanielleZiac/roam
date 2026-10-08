@@ -3,10 +3,12 @@
  * ranking, alerts and review moderation have something to show before real
  * shoppers arrive.
  *
- *   npm run db:seed            add about 160 sample results over the last 30 days
- *   npm run db:seed -- --reset remove every recorded result and alert first
+ *   npm run db:seed                    add about 960 sample results over the last 90 days
+ *   npm run db:seed -- --fresh-results remove the recorded quiz results first, keep reviews and alerts
+ *   npm run db:seed -- --reset         remove every recorded result, review and alert first
  *
- * The data is invented. It is shaped to look like a plausible month: mobility
+ * The data is invented. It is shaped to look like a plausible quarter, a little
+ * busier in recent weeks than at the start: mobility
  * is the most common need, "Deaf or hard of hearing" is chosen more often than
  * its share of the catalog, everyday low-cost items convert well, and a few
  * products are suggested a lot but almost never added to a cart.
@@ -19,8 +21,8 @@
 import mysql from "mysql2/promise";
 
 const DATABASE_URL = process.env.DATABASE_URL || "mysql://roam:roam_local_dev@127.0.0.1:3306/roam_insights";
-const RESULTS = 160;
-const DAYS = 30;
+const RESULTS = 960;
+const DAYS = 90;
 
 // Each sample shopper: the needs they choose, and how common that kind of shopper is.
 const PROFILES = [
@@ -110,6 +112,9 @@ if (process.argv.includes("--reset")) {
   await connection.query("DELETE FROM alerts WHERE shop = ?", [shop]);
   await connection.query("DELETE FROM suggestion_events WHERE shop = ?", [shop]);
   console.log("Removed existing results and alerts.");
+} else if (process.argv.includes("--fresh-results")) {
+  await connection.query("DELETE FROM suggestion_events WHERE shop = ?", [shop]);
+  console.log("Removed existing quiz results.");
 }
 
 let events = 0;
@@ -132,7 +137,8 @@ for (let i = 0; i < RESULTS; i += 1) {
     .sort((a, b) => b.needScore * 3 + b.goalScore - (a.needScore * 3 + a.goalScore) || random() - 0.5)
     .slice(0, 4);
 
-  const createdAt = new Date(Date.now() - random() * DAYS * 24 * 60 * 60 * 1000);
+  // Raising the random number to a power above 1 puts slightly more results in recent weeks.
+  const createdAt = new Date(Date.now() - random() ** 1.2 * DAYS * 24 * 60 * 60 * 1000);
 
   const [result] = await connection.query(
     "INSERT INTO suggestion_events (shop, pick_count, created_at) VALUES (?, ?, ?)",
