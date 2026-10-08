@@ -128,6 +128,25 @@
             {{ 'accessibility.panel_button' | t }}
           </button>
         </li>
+        <li>
+          {% comment %} The need-group collections, folded away until asked for. {% endcomment %}
+          <details class="header__panel-needs">
+            <summary>
+              {{ 'icon-layout-grid.svg' | inline_asset_content }}
+              {{ 'general.shop_by_need' | t }}
+              <span class="header__panel-chevron" aria-hidden="true">
+                {{- 'icon-chevron-down.svg' | inline_asset_content -}}
+              </span>
+            </summary>
+            <ul role="list">
+              {% for collection in collections %}
+                {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
+                  <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+                {% endunless %}
+              {% endfor %}
+            </ul>
+          </details>
+        </li>
       </ul>
 
       <ul class="header__panel-list" role="list">
@@ -135,16 +154,6 @@
           The logo already goes home and the search icon goes to the catalog,
           so those two links are left out of this list.
         {% endcomment %}
-        {% for collection in collections %}
-          {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
-            <li>
-              <a href="{{ collection.url }}">
-                {{ 'icon-chevron-right.svg' | inline_asset_content }}
-                {{ collection.title }}
-              </a>
-            </li>
-          {% endunless %}
-        {% endfor %}
         {% for link in section.settings.menu.links %}
           {% unless link.url == routes.root_url or link.url == routes.all_products_collection_url %}
             <li>
@@ -344,7 +353,7 @@
     position: static;
     margin-left: auto;
   }
-  .header__panel-list :is(a, button) {
+  .header__panel-list :is(a, button, summary) {
     position: relative;
     display: flex;
     align-items: center;
@@ -360,6 +369,29 @@
     font-weight: 500;
     text-align: left;
     cursor: pointer;
+  }
+  .header__panel-needs summary {
+    list-style: none;
+  }
+  .header__panel-needs summary::-webkit-details-marker {
+    display: none;
+  }
+  .header__panel-chevron {
+    display: inline-flex;
+    margin-left: auto;
+  }
+  .header__panel-needs[open] .header__panel-chevron {
+    rotate: 180deg;
+  }
+  .header__panel-needs ul {
+    margin: 0;
+    padding: 0 0 0.25rem 2.25rem;
+    list-style: none;
+  }
+  .header__panel-needs ul a {
+    min-height: 2.75rem;
+    font-size: 1rem;
+    font-weight: 400;
   }
 
   /* Wide screens never show the menu button or its panel. */
