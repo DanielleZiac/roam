@@ -233,6 +233,43 @@ select {
   color: inherit;
 }
 
+/*
+ * Image loading: while a picture loads, its frame is pale grey with the Roam
+ * wheel turning in the middle. The script in roam-shop.js adds and removes the
+ * class, so without JavaScript pictures simply appear as they load.
+ */
+.is-loading-image {
+  position: relative;
+  background-color: #f1f2f4;
+}
+
+.is-loading-image img {
+  opacity: 0;
+}
+
+.is-loading-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: min(3rem, 40%);
+  aspect-ratio: 1;
+  margin: auto;
+  background-color: #b9bfc7;
+  mask: url('hero-wheel.svg') center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .is-loading-image::before {
+    animation: image-loading 1.2s linear infinite;
+  }
+}
+
+@keyframes image-loading {
+  to {
+    rotate: 360deg;
+  }
+}
+
 /* Need group icons: sized to the text they sit beside. */
 .need-icon {
   display: inline-flex;

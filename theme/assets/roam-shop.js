@@ -353,6 +353,33 @@
     if (form) reportCartAdd(form.dataset.handle);
   });
 
+  // --- Image loading ---
+
+  // While a picture is still loading, its frame shows a spinning wheel. The frames
+  // are the boxes around product and need-group pictures; cards drawn later
+  // by scripts are picked up as they are added to the page.
+  const FRAMES = '.product-card__media, .product__images li, .cart-item__media, .need__media';
+
+  function watchImage(image) {
+    const frame = image.closest(FRAMES);
+    if (!frame || image.complete) return;
+    frame.classList.add('is-loading-image');
+    const done = () => frame.classList.remove('is-loading-image');
+    image.addEventListener('load', done, { once: true });
+    image.addEventListener('error', done, { once: true });
+  }
+
+  document.querySelectorAll('img').forEach(watchImage);
+  new MutationObserver((changes) => {
+    changes.forEach((change) => {
+      change.addedNodes.forEach((added) => {
+        if (added.nodeType !== 1) return;
+        if (added.tagName === 'IMG') watchImage(added);
+        else added.querySelectorAll('img').forEach(watchImage);
+      });
+    });
+  }).observe(document.body, { childList: true, subtree: true });
+
   // Other scripts announce when they have drawn new cards (catalog search results).
   document.addEventListener('roam:cards-updated', syncSaveButtons);
 

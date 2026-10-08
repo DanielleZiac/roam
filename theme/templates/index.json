@@ -157,7 +157,8 @@
     "callout": {
       "type": "callout",
       "settings": {
-        "color_scheme": "action",
+        "color_scheme": "violet",
+        "show_photo": true,
         "button_link": "/pages/find-my-gear"
       }
     },

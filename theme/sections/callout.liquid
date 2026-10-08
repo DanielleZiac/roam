@@ -3,7 +3,19 @@
   Used on the home page to invite shoppers into "Tell us about you".
 {% endcomment %}
 
-<div class="callout full-width scheme-{{ section.settings.color_scheme }}">
+<div class="callout full-width scheme-{{ section.settings.color_scheme }}{% if section.settings.show_photo %} callout--photo{% endif %}">
+  {% if section.settings.show_photo %}
+    {% # Decorative: a photo down the right side that fades into the block's colour. %}
+    <div class="callout__photo" aria-hidden="true">
+      <img
+        src="{{ 'goal-everyday.jpg' | asset_img_url: '1000x' }}"
+        srcset="{{ 'goal-everyday.jpg' | asset_img_url: '700x' }} 700w, {{ 'goal-everyday.jpg' | asset_img_url: '1000x' }} 1000w, {{ 'goal-everyday.jpg' | asset_img_url: '1400x' }} 1400w"
+        sizes="(min-width: 48rem) 62vw, 100vw"
+        alt=""
+        loading="lazy"
+      >
+    </div>
+  {% endif %}
   <div class="callout__inner">
     <div class="callout__main">
       {% if section.settings.eyebrow != blank %}
@@ -57,6 +69,65 @@
     margin-bottom: 1.25rem;
     font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
   }
+
+  /*
+   * With a photo: the picture fills the right side and fades into the block's
+   * colour toward the text, so the text always sits on solid colour.
+   */
+  .callout--photo {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .callout__photo {
+    position: absolute;
+    z-index: -1;
+    inset: auto 0 0;
+    height: 52%;
+  }
+  .callout__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 28%;
+  }
+  .callout__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      var(--scheme-background) 0%,
+      color-mix(in srgb, var(--scheme-background) 55%, transparent) 45%,
+      color-mix(in srgb, var(--scheme-background) 12%, transparent) 100%
+    );
+  }
+  /* Phones: the photo sits under the text, so the block gets room for it at the bottom. */
+  .callout--photo .callout__inner {
+    padding-bottom: 58vw;
+  }
+  @media (min-width: 48rem) {
+    .callout__photo {
+      inset: 0 0 0 auto;
+      width: 62%;
+      height: auto;
+    }
+    .callout__photo::after {
+      background: linear-gradient(
+        90deg,
+        var(--scheme-background) 0%,
+        var(--scheme-background) 6%,
+        color-mix(in srgb, var(--scheme-background) 60%, transparent) 42%,
+        color-mix(in srgb, var(--scheme-background) 10%, transparent) 100%
+      );
+    }
+    .callout--photo .callout__inner {
+      padding-block: clamp(3rem, 6vw, 5rem);
+    }
+    /* The text keeps to the left, on the solid part of the colour. */
+    .callout--photo :is(.callout__main, .callout__side) {
+      max-width: min(34rem, 44%);
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -65,11 +136,19 @@
   "tag": "section",
   "settings": [
     {
+      "type": "checkbox",
+      "id": "show_photo",
+      "label": "Blend a photo into the colour block",
+      "info": "Shows the everyday photo down the right side, fading into the block's colour.",
+      "default": false
+    },
+    {
       "type": "select",
       "id": "color_scheme",
       "label": "Colour block",
       "options": [
         { "value": "action", "label": "Lime accent" },
+        { "value": "violet", "label": "Violet" },
         { "value": "muted", "label": "White, grey text" },
         { "value": "highlight", "label": "Bright teal" },
         { "value": "panel", "label": "Lime" },
