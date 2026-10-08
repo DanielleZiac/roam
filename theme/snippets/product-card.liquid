@@ -51,7 +51,10 @@
 
   <div class="product-card__content">
     {% if product.type != blank %}
-      <p class="product-card__type">{{ product.type }}</p>
+      <p class="product-card__type">
+        {%- render 'need-icon', group: product.type -%}
+        {{ product.type }}
+      </p>
     {% endif %}
 
     <{{ heading_tag }} class="product-card__title">
@@ -149,6 +152,9 @@
     margin: 0;
   }
   .product-card__type {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     letter-spacing: 0.02em;
@@ -175,8 +181,8 @@
     outline-offset: 3px;
   }
   .product-card:hover {
-    border-color: var(--color-action);
-    box-shadow: 0 0 0 1.5px var(--color-action);
+    border-color: var(--color-foreground);
+    box-shadow: 0 6px 18px rgb(16 20 24 / 12%);
   }
   .product-card__title a:focus-visible {
     outline: none;

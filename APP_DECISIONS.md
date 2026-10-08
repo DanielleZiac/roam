@@ -9,7 +9,7 @@ This document explains what I built for the take-home and why: the store concept
 - **The gap:** existing assistive technology stores are catalogs for schools, hospitals and government buyers. They read like procurement lists. Nobody sells this gear the way sportswear is sold: to the person who will use it, with pride.
 - **The position:** bold and active, never clinical or pitying. Copy is specs first, in plain words, with no medical promises.
 - **The catalog:** 48 products across five need groups (Mobility, Hands and dexterity, Deaf and hard of hearing, Nonspeaking, Blind and low vision), from a ₱279 writing pad to a ₱289,000 prosthetic arm. Prices are in pesos.
-- **The look:** white, bright teal, soft lilac and violet, with Space Grotesk headings. Teal is only used behind dark text so contrast stays above WCAG AA.
+- **The look:** white, bright teal and lime, with Space Grotesk headings. Teal and lime are only used behind dark text, and links are dark and underlined, so contrast stays above WCAG AA.
 
 ### The standout feature: "Tell us about you"
 

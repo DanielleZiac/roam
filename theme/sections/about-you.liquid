@@ -448,6 +448,19 @@
       return node;
     }
 
+    // The need group's label with its icon in front, as the product-card snippet renders it.
+    function typeLabel(type) {
+      const label = element('p', 'product-card__type');
+      const key = String(type || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      const template = document.querySelector(`template[data-need-icon="${key}"]`);
+      if (template) label.append(template.content.cloneNode(true));
+      label.append(type || '');
+      return label;
+    }
+
     const stringsNode = document.querySelector('[data-shop-strings]');
     const shopStrings = stringsNode ? JSON.parse(stringsNode.textContent) : {};
 
@@ -515,7 +528,7 @@
       }
       footer.append(element('p', 'product-card__price', product.price), actions);
 
-      content.append(element('p', 'product-card__type', product.type), title, footer, why);
+      content.append(typeLabel(product.type), title, footer, why);
       // Products without a photo show as a text-only card.
       if (product.image) article.append(media);
       article.append(content);
@@ -635,9 +648,9 @@
       "id": "color_scheme",
       "label": "Header colour block",
       "options": [
-        { "value": "action", "label": "Violet" },
+        { "value": "action", "label": "Lime accent" },
         { "value": "highlight", "label": "Bright teal" },
-        { "value": "panel", "label": "Soft lilac" },
+        { "value": "panel", "label": "Lime" },
         { "value": "dark", "label": "Dark" }
       ],
       "default": "action"

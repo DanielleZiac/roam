@@ -35,7 +35,8 @@
     "subtotal": "Subtotal",
     "taxes_note": "Shipping and taxes are worked out at checkout.",
     "continue": "Keep shopping",
-    "added": "Added {{ title }} to cart"
+    "added": "Added {{ title }} to cart",
+    "view": "View cart"
   },
   "customers": {
     "login": {
@@ -147,7 +148,16 @@
     "get_around": "Get around",
     "sports": "Play sports",
     "travel": "Travel",
-    "everyday": "Everyday carry"
+    "everyday": "Everyday carry",
+    "get_around_text": "Power assist, rollators and canes for the daily route.",
+    "sports_text": "Court wheels, grip aids and recovery for training days.",
+    "travel_text": "Gear that folds, clips on and packs down.",
+    "everyday_text": "The small things that make home, work and school easier.",
+    "slider_label": "Shop by goal",
+    "slider_pause": "Pause the slides",
+    "slider_play": "Play the slides",
+    "slider_show": "Show {{ title }}",
+    "slider_position": "{{ position }} of {{ total }}"
   },
   "categories": {
     "chairs_canes": "Chairs & canes",
@@ -166,7 +176,8 @@
     "empty": "Your wishlist is empty. Tap the heart on any product to keep it here.",
     "added": "Added {{ title }} to your wishlist",
     "removed": "Removed {{ title }} from your wishlist",
-    "button": "Wishlist: {{ count }}"
+    "button": "Wishlist: {{ count }}",
+    "view": "View wishlist"
   },
   "contact": {
     "details_title": "Reach us your way",
@@ -179,6 +190,7 @@
     "form_title": "Send a message",
     "form_name": "Name",
     "form_email": "Email",
+    "form_phone": "Mobile number",
     "form_reply": "How should we reply?",
     "reply_email": "By email",
     "reply_text": "By text or chat",

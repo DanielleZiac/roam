@@ -247,6 +247,10 @@
     padding: clamp(1.25rem, 4vw, 2rem);
     border-radius: 1.25rem;
   }
+  /* A pale tint of the lime: one part lime to three parts white. Dark text on it is about 16:1. */
+  .review-form.scheme-panel {
+    --scheme-background: color-mix(in srgb, var(--color-panel) 25%, var(--color-background));
+  }
   .review-form h3 {
     margin-bottom: 1rem;
     font-size: 1.5rem;
@@ -343,7 +347,7 @@
     padding: 0 0.5rem;
     border: 0;
     background: none;
-    color: var(--color-action);
+    color: var(--color-foreground);
     font: inherit;
     font-size: 0.9375rem;
     text-decoration: underline;

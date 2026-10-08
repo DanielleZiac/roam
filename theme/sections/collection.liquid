@@ -42,11 +42,76 @@
 
 <div class="collection-header full-width scheme-{{ section.settings.color_scheme }}">
   <div class="collection-header__inner">
-    <p class="label">{{ eyebrow }}</p>
-    <h1>{{ heading }}</h1>
-    {% if collection.description != blank and current_tags == blank %}
-      <div class="collection-header__description">{{ collection.description }}</div>
-    {% endif %}
+    <div class="collection-header__text">
+      <p class="label">{{ eyebrow }}</p>
+      <h1>{{ heading }}</h1>
+      {% if collection.description != blank and current_tags == blank %}
+        <div class="collection-header__description">{{ collection.description }}</div>
+      {% endif %}
+    </div>
+
+    {% comment %}
+      Shop by goal: one card per goal, shown one at a time. The cards change on
+      their own every few seconds; they stop while the pointer or keyboard focus
+      is on them, and for good once the pause button or a dot is used. With
+      reduced motion on they do not move by themselves; the dots still change the
+      card. Without JavaScript the first card is shown.
+    {% endcomment %}
+    <section class="goal-slider" aria-roledescription="carousel" aria-label="{{ 'goals.slider_label' | t }}" data-goal-slider>
+      <div class="goal-slider__layout">
+      <div class="goal-slider__head">
+        <p class="label">{{ 'goals.slider_label' | t }}</p>
+        <button
+          class="goal-slider__pause"
+          type="button"
+          aria-label="{{ 'goals.slider_pause' | t }}"
+          data-goal-pause
+          data-label-pause="{{ 'goals.slider_pause' | t }}"
+          data-label-play="{{ 'goals.slider_play' | t }}"
+          hidden
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" data-icon-pause>
+            <rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" />
+          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" data-icon-play hidden>
+            <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="goal-slider__stage">
+      <div class="goal-slider__viewport">
+        <ul class="goal-slider__track" role="list" data-goal-track>
+          {% for tag in goal_tags %}
+            {% liquid
+              assign goal_key = 'goals.' | append: tag | replace: '-', '_'
+              assign goal_text_key = goal_key | append: '_text'
+              assign goal_title = goal_key | t
+            %}
+            <li
+              class="goal-slide has-goal-photo"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="{{ 'goals.slider_position' | t: position: forloop.index, total: goal_tags.size }}"
+              data-goal-slide
+              data-title="{{ goal_title | escape }}"
+            >
+              {% render 'goal-photo', goal: tag, sizes: '(min-width: 60rem) 20rem, 40vw' %}
+              {% # The number sits on the same line as the name, which keeps the card short. %}
+              <h2 class="goal-slide__title">
+                <span class="goal-slide__number" aria-hidden="true">0{{ forloop.index }}</span>
+                <a href="{{ routes.all_products_collection_url }}/{{ tag }}">{{ goal_title }}</a>
+              </h2>
+              <p class="goal-slide__text">{{ goal_text_key | t }}</p>
+              <span class="goal-slide__arrow" aria-hidden="true">&rarr;</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+        <div class="goal-slider__dots" data-goal-dots data-label="{{ 'goals.slider_show' | t: title: '[title]' }}"></div>
+      </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -175,11 +240,188 @@
   .collection-header__inner {
     max-width: var(--page-width);
     margin-inline: auto;
-    padding: clamp(2.5rem, 7vw, 5rem) var(--page-margin);
+    padding: clamp(1.25rem, 3vw, 2.25rem) var(--page-margin);
+  }
+  /*
+   * The title on the left and the Shop by goal cards on the right, always in one row.
+   * The cards' column narrows with the screen, and the cards adapt to their own width below.
+   */
+  .collection-header__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(9rem, 38vw, 27rem);
+    gap: clamp(0.75rem, 3vw, 2rem);
+    align-items: center;
+  }
+  .goal-slider {
+    container-type: inline-size;
+  }
+  /* Narrow: the label, pause button and dots sit above the card. */
+  .goal-slider__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  /* Roomy: they move to the left of the card, so the band is only as tall as the card. */
+  @container (min-width: 22rem) {
+    .goal-slider__layout {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+    /* The pause button stands above the label, both centred. */
+    .goal-slider__head {
+      flex-direction: column-reverse;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 0;
+    }
+  }
+  .goal-slider__head .label {
+    margin: 0;
+  }
+  .goal-slider__pause {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .goal-slider__pause svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+  }
+  .goal-slider__viewport {
+    overflow: hidden;
+    border-radius: 1.25rem;
+  }
+  .goal-slider__track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .goal-slide {
+    position: relative;
+    display: flex;
+    flex: 0 0 100%;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 1.25rem;
+  }
+  /* A narrow card (phones) keeps the number, the name and the arrow, and drops the description. */
+  @container (max-width: 15rem) {
+    .goal-slide {
+      padding: 0.75rem 0.875rem;
+    }
+    .goal-slide__title {
+      padding-right: 1.5rem;
+      font-size: 1.125rem;
+    }
+    .goal-slide__text {
+      display: none;
+    }
+    .goal-slide__arrow {
+      right: 0.875rem;
+      bottom: 0.75rem;
+      font-size: 1.25rem;
+    }
+    .goal-slider__pause {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
+  .goal-slide__number {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+  .goal-slide__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5rem;
+    font-size: 1.5rem;
+  }
+  .goal-slide__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* Stretch the link over the whole card. */
+  .goal-slide__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .goal-slide__title a:focus-visible {
+    outline: none;
+  }
+  .goal-slide:has(a:focus-visible) {
+    outline: 3px solid var(--color-foreground);
+    outline-offset: -3px;
+    box-shadow: inset 0 0 0 6px var(--color-background);
+  }
+  .goal-slide__text {
+    max-width: 28ch;
+    margin: 0;
+    padding-right: 1.75rem;
+  }
+  .goal-slide__arrow {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1rem;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  /* Dots: one per card. Each is a 24px target with a smaller mark inside. */
+  /* Dots sit under the card, centred on it. */
+  .goal-slider__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+  .goal-slider__dots button {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .goal-slider__dots button::before {
+    content: '';
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+  .goal-slider__dots button[aria-current='true']::before {
+    background-color: currentColor;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .goal-slider__track {
+      transition: translate 0.45s ease;
+    }
   }
   .collection-header h1 {
     max-width: 16ch;
-    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    font-size: clamp(1.75rem, 6.5vw, 4.5rem);
     line-height: 1;
   }
   .collection-header__description {
@@ -275,14 +517,21 @@
     border: 1.5px solid var(--color-foreground);
     border-radius: 50%;
   }
+  /* The filters use a pale tint of the lime: one part lime to three parts white. Dark text on it is about 16:1. */
+  .collection-sidebar {
+    --filter-tint: color-mix(in srgb, var(--color-panel) 25%, var(--color-background));
+  }
+  .collection-sidebar .chip:hover {
+    background-color: var(--filter-tint);
+  }
   .collection-sidebar .chip[aria-current='true'] {
-    background-color: var(--color-panel);
+    background-color: var(--filter-tint);
     color: var(--color-foreground);
     font-weight: 600;
   }
   .collection-sidebar .chip[aria-current='true']::before {
     background-color: var(--color-foreground);
-    box-shadow: inset 0 0 0 3px var(--color-panel);
+    box-shadow: inset 0 0 0 3px var(--filter-tint);
   }
   /* Phones and tablets: the card is a single Filters bar until it is opened. */
   @media (max-width: 59.99rem) {
@@ -347,7 +596,7 @@
   }
   .collection-sort select {
     border-radius: 999px;
-    padding-inline: 1rem;
+    padding-inline: 1rem 2.75rem;
   }
   /* Wide screens: the filter card becomes a sticky side panel beside the products. */
   @media (min-width: 60rem) {
@@ -375,6 +624,87 @@
 {% endstylesheet %}
 
 {% javascript %}
+  // Shop by goal cards in the header: change every few seconds, with a pause button and dots.
+  (() => {
+    const slider = document.querySelector('[data-goal-slider]');
+    if (!slider) return;
+    const track = slider.querySelector('[data-goal-track]');
+    const slides = [...slider.querySelectorAll('[data-goal-slide]')];
+    const dots = slider.querySelector('[data-goal-dots]');
+    const pause = slider.querySelector('[data-goal-pause]');
+    if (slides.length < 2) return;
+
+    let index = 0;
+    let timer = null;
+    // Stopped for good by the pause button or a dot; visitors who asked for reduced motion start stopped.
+    let stopped = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const dotButtons = slides.map((slide, position) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', dots.dataset.label.replace('[title]', slide.dataset.title));
+      dot.addEventListener('click', () => {
+        stop();
+        show(position);
+      });
+      dots.append(dot);
+      return dot;
+    });
+
+    function show(next) {
+      index = next;
+      track.style.translate = `${-100 * index}% 0`;
+      slides.forEach((slide, position) => {
+        // Cards that are out of view are skipped by the keyboard and by screen readers.
+        slide.inert = position !== index;
+      });
+      dotButtons.forEach((dot, position) => {
+        if (position === index) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+      });
+    }
+
+    function run() {
+      clearInterval(timer);
+      timer = null;
+      if (!stopped) timer = setInterval(() => show((index + 1) % slides.length), 4000);
+    }
+
+    function hold() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function stop() {
+      stopped = true;
+      hold();
+      syncPause();
+    }
+
+    function syncPause() {
+      pause.setAttribute('aria-label', stopped ? pause.dataset.labelPlay : pause.dataset.labelPause);
+      pause.querySelector('[data-icon-pause]').toggleAttribute('hidden', stopped);
+      pause.querySelector('[data-icon-play]').toggleAttribute('hidden', !stopped);
+      // While the cards move on their own, changes are not read out; once stopped, they are.
+      track.setAttribute('aria-live', stopped ? 'polite' : 'off');
+    }
+
+    pause.hidden = false;
+    pause.addEventListener('click', () => {
+      stopped = !stopped;
+      syncPause();
+      run();
+    });
+    slider.addEventListener('mouseenter', hold);
+    slider.addEventListener('mouseleave', run);
+    slider.addEventListener('focusin', hold);
+    slider.addEventListener('focusout', run);
+
+    show(0);
+    syncPause();
+    run();
+  })();
+
   // Catalog search and sort: both redraw the product grid in place, so shoppers never leave this page.
   (() => {
     const searchForm = document.querySelector('[data-catalog-search]');
@@ -472,9 +802,9 @@
       "id": "color_scheme",
       "label": "Header colour block",
       "options": [
-        { "value": "panel", "label": "Soft lilac" },
+        { "value": "panel", "label": "Lime" },
         { "value": "highlight", "label": "Bright teal" },
-        { "value": "action", "label": "Violet" },
+        { "value": "action", "label": "Lime accent" },
         { "value": "dark", "label": "Dark" }
       ],
       "default": "panel"

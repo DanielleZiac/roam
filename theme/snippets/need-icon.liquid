@@ -1,0 +1,32 @@
+{% comment %}
+  The icon of a need group, the same five the admin app uses. Decorative: it is
+  always shown beside the group's name, so it is hidden from screen readers.
+
+  Accepts:
+  - group: a collection handle or a product type, e.g. "mobility" or
+    "Deaf and hard of hearing". Anything else renders nothing.
+
+  Usage:
+  {% render 'need-icon', group: collection.handle %}
+{% endcomment %}
+
+{%- liquid
+  assign need_key = group | handleize
+  case need_key
+    when 'mobility'
+      assign need_icon = 'icon-accessibility.svg'
+    when 'hands-and-dexterity'
+      assign need_icon = 'icon-hand.svg'
+    when 'deaf-and-hard-of-hearing'
+      assign need_icon = 'icon-ear.svg'
+    when 'nonspeaking'
+      assign need_icon = 'icon-message-circle.svg'
+    when 'blind-and-low-vision'
+      assign need_icon = 'icon-eye.svg'
+    else
+      assign need_icon = blank
+  endcase
+-%}
+{%- if need_icon != blank -%}
+  <span class="need-icon" aria-hidden="true">{{ need_icon | inline_asset_content }}</span>
+{%- endif -%}

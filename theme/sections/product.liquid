@@ -215,7 +215,7 @@
     {% endform %}
 
     {% if app_facts != blank and app_facts.size > 0 %}
-      <section class="key-facts scheme-panel" aria-labelledby="KeyFacts-{{ section.id }}">
+      <section class="key-facts" aria-labelledby="KeyFacts-{{ section.id }}">
         <h2 id="KeyFacts-{{ section.id }}" class="key-facts__title" data-read>{{ 'products.key_facts' | t }}</h2>
         <div class="rte">
           <ul>
@@ -232,7 +232,7 @@
         </div>
       </section>
     {% elsif facts != blank %}
-      <section class="key-facts scheme-panel" aria-labelledby="KeyFacts-{{ section.id }}">
+      <section class="key-facts" aria-labelledby="KeyFacts-{{ section.id }}">
         <h2 id="KeyFacts-{{ section.id }}" class="key-facts__title" data-read>{{ 'products.key_facts' | t }}</h2>
         <div class="rte">{{ facts }}</div>
       </section>
@@ -359,9 +359,12 @@
     min-width: 12rem;
     min-height: 3.5rem;
   }
+  /* A pale tint of the teal: one part teal to three parts white. Dark text on it is about 15:1. */
   .key-facts {
     padding: 1.5rem;
     border-radius: 1.25rem;
+    background-color: color-mix(in srgb, var(--color-highlight) 25%, var(--color-background));
+    color: var(--color-foreground);
   }
   .key-facts__title {
     margin-bottom: 0.75rem;
@@ -373,8 +376,7 @@
     list-style: none;
   }
   .key-facts li {
-    padding-block: 0.625rem;
-    border-top: 1.5px solid var(--color-foreground);
+    padding-block: 0.375rem;
   }
   /* Phones: quantity, Add to cart and Save share one row. */
   @media (max-width: 35.99rem) {

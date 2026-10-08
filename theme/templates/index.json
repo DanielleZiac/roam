@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
@@ -59,6 +68,7 @@
     "featured": {
       "type": "featured-products",
       "settings": {
+        "color_scheme": "panel",
         "collection": "frontpage"
       }
     },
@@ -140,11 +150,14 @@
         "word-8",
         "word-9"
       ],
-      "settings": {}
+      "settings": {
+        "color_scheme": "muted"
+      }
     },
     "callout": {
       "type": "callout",
       "settings": {
+        "color_scheme": "action",
         "button_link": "/pages/find-my-gear"
       }
     },
@@ -166,7 +179,8 @@
           "type": "need",
           "settings": {
             "collection": "hands-and-dexterity",
-            "text": "Easy-press keys, wearable mice and handles you don't have to squeeze."
+            "text": "Easy-press keys, wearable mice and handles you don't have to squeeze.",
+            "product": "roam-finger-mouse"
           }
         },
         "deaf-hoh": {
@@ -207,12 +221,12 @@
   },
   "order": [
     "hero",
+    "ticker",
     "picked",
     "needs",
     "callout",
     "featured",
     "recent",
-    "goals",
-    "ticker"
+    "goals"
   ]
 }

@@ -5,11 +5,17 @@
 
 <div class="callout full-width scheme-{{ section.settings.color_scheme }}">
   <div class="callout__inner">
-    <div>
+    <div class="callout__main">
       {% if section.settings.eyebrow != blank %}
         <p class="label">{{ section.settings.eyebrow }}</p>
       {% endif %}
-      <h2 class="callout__heading">{{ section.settings.heading }}</h2>
+      {% # One span per sentence, so each sentence of the headline keeps to its own line. %}
+      {% assign heading_sentences = section.settings.heading | split: '. ' %}
+      <h2 class="callout__heading">
+        {%- for sentence in heading_sentences -%}
+          <span>{{ sentence }}{% unless forloop.last %}.{% endunless %}</span>{% unless forloop.last %} {% endunless %}
+        {%- endfor -%}
+      </h2>
     </div>
 
     <div class="callout__side">
@@ -28,26 +34,28 @@
 {% stylesheet %}
   .callout__inner {
     display: grid;
-    gap: 2rem;
-    align-items: end;
+    gap: 1.25rem;
     max-width: var(--page-width);
     margin-inline: auto;
-    padding: clamp(3.5rem, 8vw, 6.5rem) var(--page-margin);
+    padding: clamp(2rem, 4vw, 3rem) var(--page-margin);
+  }
+  /* The headline is sized from its own column, so each sentence fits on one line and never breaks mid-sentence. */
+  .callout__main {
+    container-type: inline-size;
   }
   .callout__heading {
-    max-width: 14ch;
-    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-size: clamp(1.5rem, 8.8cqi, 5.5rem);
     line-height: 1;
   }
-  .callout__text {
-    max-width: 34ch;
-    margin-bottom: 1.5rem;
-    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  .callout__heading span {
+    display: block;
+    white-space: nowrap;
   }
-  @media (min-width: 60rem) {
-    .callout__inner {
-      grid-template-columns: 1.4fr 1fr;
-    }
+  /* The text and button sit under the headline and use the full width, so the text runs in long lines. */
+  .callout__text {
+    max-width: 70ch;
+    margin-bottom: 1.25rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
   }
 {% endstylesheet %}
 
@@ -61,9 +69,10 @@
       "id": "color_scheme",
       "label": "Colour block",
       "options": [
-        { "value": "action", "label": "Violet" },
+        { "value": "action", "label": "Lime accent" },
+        { "value": "muted", "label": "White, grey text" },
         { "value": "highlight", "label": "Bright teal" },
-        { "value": "panel", "label": "Soft lilac" },
+        { "value": "panel", "label": "Lime" },
         { "value": "dark", "label": "Dark" }
       ],
       "default": "action"

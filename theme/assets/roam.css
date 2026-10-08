@@ -45,9 +45,9 @@ ol {
   margin-block: 0 1rem;
 }
 
-/* Links use the violet accent: 7.7:1 on white, 5.5:1 on lilac panels. */
+/* Links are dark and underlined: the lime accent is too light to read as text. */
 a {
-  color: var(--color-action);
+  color: var(--color-foreground);
   text-decoration-thickness: 0.09em;
   text-underline-offset: 0.18em;
 }
@@ -174,11 +174,74 @@ select {
   color: var(--color-foreground);
 }
 
+/*
+ * Dropdowns draw their own arrow (the Lucide chevron), so it sits a fixed distance
+ * in from the right edge in every browser, instead of hugging the border.
+ */
+select {
+  appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23101418' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  background-size: 1.25rem;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .button,
   a {
     transition: background-color 0.15s, color 0.15s;
   }
+}
+
+/*
+ * Goal photos: the picture fills its card behind the text. A dark wash over it
+ * keeps white text readable on any photo (at least 4.5:1 against the wash alone).
+ */
+.goal-photo {
+  position: absolute;
+  inset: 0;
+  /* Behind the card's text, but still in front of the card's own background. */
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.goal-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.goal-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgb(16 20 24 / 55%), rgb(16 20 24 / 82%));
+}
+
+/* A card with a photo: white text in front of the picture. */
+.has-goal-photo {
+  --scheme-text: var(--color-background);
+  --color-focus: var(--color-background);
+  isolation: isolate;
+  background-color: var(--color-dark);
+  color: var(--color-background);
+}
+
+.has-goal-photo :is(h1, h2, h3, .heading, a) {
+  color: inherit;
+}
+
+/* Need group icons: sized to the text they sit beside. */
+.need-icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.need-icon svg {
+  width: 1.25em;
+  height: 1.25em;
 }
 
 /* Product grid: used on the home page, collection pages and suggestions. */
@@ -245,9 +308,10 @@ select {
 /*
  * Colour blocks. Each scheme sets a background, a text colour and an accent,
  * and adjusts buttons, links and the focus ring so every pairing passes AA.
- *   plain:     dark on white 18.5:1     panel:  dark on lilac 13.2:1
- *   highlight: dark on teal 9.8:1       action: white on violet 7.7:1
- *   dark:      white on dark 18.5:1
+ *   plain:     dark on white 18.5:1     panel:  dark on lime 12.3:1
+ *   highlight: dark on teal 9.8:1       action: dark on lime 12.3:1
+ *   dark:      white on dark 18.5:1     muted:  grey on white 6.0:1
+ *   violet:    white on violet 7.7:1
  */
 [class*='scheme-'] {
   --scheme-background: var(--color-background);
@@ -261,6 +325,16 @@ select {
   --scheme-background: var(--color-panel);
 }
 
+/* White with grey text: #5f646b on white is 6.0:1. */
+.scheme-muted {
+  --scheme-text: #5f646b;
+}
+
+/* Product cards keep their dark text on a muted block. */
+.scheme-muted .product-card {
+  color: var(--color-foreground);
+}
+
 .scheme-highlight {
   --scheme-background: var(--color-highlight);
   --scheme-accent: var(--color-foreground);
@@ -268,8 +342,7 @@ select {
 
 .scheme-action {
   --scheme-background: var(--color-action);
-  --scheme-text: var(--color-background);
-  --color-focus: var(--color-background);
+  --scheme-accent: var(--color-foreground);
 }
 
 .scheme-dark {
@@ -278,40 +351,47 @@ select {
   --color-focus: var(--color-background);
 }
 
+/* The second accent: white on violet is 7.7:1. */
+.scheme-violet {
+  --scheme-background: var(--color-violet);
+  --scheme-text: var(--color-background);
+  --color-focus: var(--color-background);
+}
+
 [class*='scheme-'] :is(h1, h2, h3, .heading) {
   color: inherit;
 }
 
-:is(.scheme-highlight, .scheme-action, .scheme-dark) a:not(.button) {
+:is(.scheme-highlight, .scheme-action, .scheme-dark, .scheme-violet) a:not(.button) {
   color: inherit;
 }
 
 /* Buttons on colour blocks */
-.scheme-highlight .button:hover {
+:is(.scheme-highlight, .scheme-action) .button:hover {
   background-color: var(--color-background);
 }
 
-:is(.scheme-action, .scheme-dark) .button {
+:is(.scheme-dark, .scheme-violet) .button {
   border-color: var(--color-background);
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
 
-:is(.scheme-action, .scheme-dark) .button:hover {
+:is(.scheme-dark, .scheme-violet) .button:hover {
   border-color: var(--color-highlight);
   background-color: var(--color-highlight);
 }
 
-:is(.scheme-action, .scheme-dark) .button--secondary {
+:is(.scheme-dark, .scheme-violet) .button--secondary {
   background-color: transparent;
   color: var(--color-background);
 }
 
-:is(.scheme-action, .scheme-dark) .button--secondary:hover {
+:is(.scheme-dark, .scheme-violet) .button--secondary:hover {
   color: var(--color-foreground);
 }
 
-:is(.scheme-highlight, .scheme-panel) .button--secondary {
+:is(.scheme-highlight, .scheme-panel, .scheme-action) .button--secondary {
   background-color: transparent;
 }
 
@@ -484,7 +564,7 @@ select {
 }
 
 /* Moving text is harder to read, so the scrolling words and the wheel hold still. */
-.a11y-dyslexia .hero__wheel {
+.a11y-dyslexia .hero__wheels svg {
   animation-play-state: paused;
 }
 
@@ -585,9 +665,20 @@ select {
   height: 3.5rem;
 }
 
-/* A saved product: the heart fills in. aria-pressed tells screen readers the same thing. */
-.icon-button[aria-pressed='true'] {
-  background-color: var(--color-highlight);
+/*
+ * The save button: a dark outlined heart on a white circle. A saved product has a
+ * filled violet heart (7.7:1), and aria-pressed tells screen readers the same thing.
+ * Hover turns the circle violet and the heart white.
+ */
+.icon-button[data-save][aria-pressed='true'] {
+  color: var(--color-violet);
+}
+
+.icon-button[data-save]:hover,
+.icon-button[data-save][aria-pressed='true']:hover {
+  border-color: var(--color-violet);
+  background-color: var(--color-violet);
+  color: var(--color-background);
 }
 
 .icon-button[aria-pressed='true'] svg {

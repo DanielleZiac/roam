@@ -2,7 +2,10 @@
   "Shop by need": the store's need groups as large cards, each linking to its
   collection. This is the clearest statement of who Roam is for, so it sits
   directly under the hero. Each card is a block that points at a collection;
-  the title and product count come from the collection itself.
+  the title and product count come from the collection itself. The picture is
+  the block's own image, or its chosen product's photo, or the collection's
+  image, or the collection's first product's photo. Hovering
+  a card turns it violet and swaps the picture for the short description.
 {% endcomment %}
 
 <div class="needs" id="shop-by-need">
@@ -17,13 +20,33 @@
     {% for block in section.blocks %}
       {% assign need = block.settings.collection %}
       {% if need.url %}
-        <li class="need" {{ block.shopify_attributes }}>
+        {% assign need_image = block.settings.image | default: block.settings.product.featured_image | default: need.featured_image | default: need.products.first.featured_image %}
+        <li class="need{% if block.settings.text != blank %} need--has-text{% endif %}" {{ block.shopify_attributes }}>
           <h3 class="need__title">
-            <a href="{{ need.url }}">{{ block.settings.title | default: need.title }}</a>
+            <a href="{{ need.url }}">
+              {%- render 'need-icon', group: need.handle -%}
+              {{ block.settings.title | default: need.title }}
+            </a>
           </h3>
-          {% if block.settings.text != blank %}
-            <p class="need__text">{{ block.settings.text }}</p>
-          {% endif %}
+          <div class="need__body">
+            {% if need_image %}
+              {% # Decorative: the title already names the group, so the picture has no alt text. %}
+              <div class="need__media">
+                {{
+                  need_image
+                  | image_url: width: 600
+                  | image_tag: loading: 'lazy', alt: '', sizes: '(min-width: 64rem) 16vw, (min-width: 36rem) 40vw, 3rem', widths: '100, 200, 400, 600'
+                }}
+              </div>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              {% # Shown in place of the picture on hover: the description, with the group's icon centred below it. %}
+              <div class="need__reveal">
+                <p class="need__text">{{ block.settings.text }}</p>
+                <div class="need__reveal-icon">{% render 'need-icon', group: need.handle %}</div>
+              </div>
+            {% endif %}
+          </div>
           <p class="need__count">
             {{ 'collections.count' | t: count: need.products_count }}
             <span aria-hidden="true">&rarr;</span>
@@ -58,7 +81,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    min-height: 13rem;
     padding: 1.5rem;
     border: 2px solid var(--color-foreground);
     border-radius: 1.25rem;
@@ -67,9 +89,20 @@
   .need__title {
     font-size: clamp(1.5rem, 2.4vw, 2rem);
   }
+  /* The title follows the card's text colour, so it turns white with the card on hover. */
+  .need__title {
+    color: inherit;
+  }
   .need__title a {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
     color: inherit;
     text-decoration: none;
+  }
+  /* The icon lines up with the first line of the name. */
+  .need__title .need-icon {
+    margin-top: 0.1em;
   }
   /* Stretch the link over the whole card. */
   .need__title a::after {
@@ -84,8 +117,43 @@
     outline: 3px solid var(--color-focus);
     outline-offset: 3px;
   }
+  /* The middle of the card: the picture, with the description lying over it, unseen until the card is hovered. */
+  .need__body {
+    position: relative;
+    display: grid;
+    flex: 1;
+    place-items: center;
+  }
+  .need__media {
+    display: grid;
+    width: 100%;
+    place-items: center;
+  }
+  .need__reveal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+  }
   .need__text {
     margin: 0;
+  }
+  /* The icon takes the space left under the description, centred in it. */
+  .need__reveal-icon {
+    display: grid;
+    flex: 1;
+    place-items: center;
+    font-size: 2.75rem;
+  }
+  /* Multiply blending drops a white photo background, so the product sits on the card itself. */
+  .need__media img {
+    width: 100%;
+    max-width: 12rem;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    mix-blend-mode: multiply;
   }
   .need__count {
     display: flex;
@@ -102,11 +170,29 @@
     font-size: 1.5rem;
     line-height: 1;
   }
-  /* Hover fills the card teal: dark text on teal is 9.8:1. */
-  .need:hover {
-    background-color: var(--color-highlight);
+  /*
+   * Hover or keyboard focus turns the card violet with white text (7.7:1) and nudges the arrow.
+   * A card with a description shows it in place of the picture.
+   */
+  .need:hover,
+  .need:has(a:focus-visible) {
+    border-color: var(--color-violet);
+    background-color: var(--color-violet);
+    color: var(--color-background);
   }
-  /* Phones: each need is one compact row with its name on the left and the count on the right. */
+  .need:is(:hover, :has(a:focus-visible)) .need__count {
+    border-top-color: currentColor;
+  }
+  .need--has-text:is(:hover, :has(a:focus-visible)) .need__media {
+    opacity: 0;
+  }
+  .need:is(:hover, :has(a:focus-visible)) .need__reveal {
+    opacity: 1;
+  }
+  .need:hover .need__count span {
+    translate: 0.3rem 0;
+  }
+  /* Phones: each need is one compact row: icon and name, then the count on the right. */
   @media (max-width: 35.99rem) {
     .need {
       flex-direction: row;
@@ -119,7 +205,11 @@
     .need__title {
       font-size: 1.25rem;
     }
-    .need__text {
+    .need__title {
+      flex: 1;
+    }
+    /* No picture on phones: the icon beside the name stands for the group. */
+    .need__body {
       display: none;
     }
     .need__count {
@@ -141,8 +231,11 @@
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
     .need {
-      min-height: 16rem;
       padding: 1.25rem;
+    }
+    /* Big screens: no icon beside the name. It appears on hover, under the description. */
+    .need__title .need-icon {
+      display: none;
     }
     /* Five narrow cards: the title steps down so one-word names like "Nonspeaking" stay on one line. */
     .need__title {
@@ -151,7 +244,17 @@
   }
   @media (prefers-reduced-motion: no-preference) {
     .need {
-      transition: background-color 0.15s;
+      transition:
+        background-color 0.15s,
+        color 0.15s,
+        border-color 0.15s;
+    }
+    .need__media,
+    .need__reveal {
+      transition: opacity 0.15s;
+    }
+    .need__count span {
+      transition: translate 0.25s;
     }
   }
 {% endstylesheet %}
@@ -193,7 +296,20 @@
         {
           "type": "text",
           "id": "text",
-          "label": "Short description"
+          "label": "Short description",
+          "info": "Shown when the card is hovered."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Picture",
+          "info": "Leave empty to use the product chosen below."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product to picture",
+          "info": "Its main photo is shown. Leave empty to use the collection's image, or its first product's photo."
         }
       ]
     }

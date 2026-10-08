@@ -31,6 +31,22 @@
     });
   }
 
+  // A visible confirmation that slides up for a few seconds. Screen readers hear it as well.
+  const toast = document.querySelector('[data-shop-toast]');
+  let toastTimer = null;
+
+  // `action` picks the link shown beside the message: "cart", "saved", or none.
+  function showToast(message, action) {
+    if (!toast) return announce(message);
+    toast.querySelector('[data-shop-toast-text]').textContent = message;
+    toast.querySelectorAll('[data-toast-action]').forEach((link) => {
+      link.hidden = link.dataset.toastAction !== action;
+    });
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 4000);
+  }
+
   function readList(key) {
     try {
       const value = JSON.parse(localStorage.getItem(key));
@@ -58,6 +74,19 @@
     if (className) element.className = className;
     if (content) element.textContent = content;
     return element;
+  }
+
+  // The need group's label with its icon in front, as the product-card snippet renders it.
+  function typeLabel(type) {
+    const label = node('p', 'product-card__type');
+    const key = String(type || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    const template = document.querySelector(`template[data-need-icon="${key}"]`);
+    if (template) label.append(template.content.cloneNode(true));
+    label.append(type || '');
+    return label;
   }
 
   // Builds the same card the product-card snippet renders, from saved product details.
@@ -112,7 +141,7 @@
     }
 
     footer.append(node('p', 'product-card__price', product.price), actions);
-    content.append(node('p', 'product-card__type', product.type), title, footer);
+    content.append(typeLabel(product.type), title, footer);
     article.append(content);
     item.append(article);
     return item;
@@ -159,12 +188,16 @@
     const product = JSON.parse(button.dataset.product);
     const saved = readList(SAVED_KEY);
     const index = saved.findIndex((entry) => entry.handle === product.handle);
+    // The wishlist panel covers the page, so a change made inside it is only announced, not shown.
+    const insidePanel = savedPanel && savedPanel.contains(button);
     if (index === -1) {
       saved.unshift(product);
-      announce(text('savedMessage', product.title));
+      if (insidePanel) announce(text('savedMessage', product.title));
+      else showToast(text('savedMessage', product.title), 'saved');
     } else {
       saved.splice(index, 1);
-      announce(text('unsavedMessage', product.title));
+      if (insidePanel) announce(text('unsavedMessage', product.title));
+      else showToast(text('unsavedMessage', product.title));
     }
     writeList(SAVED_KEY, saved);
     // Inside the saved panel, keep the card until the panel is reopened so focus is not lost.
@@ -180,6 +213,15 @@
         savedPanel.showModal();
       });
     });
+    // "View wishlist" in the confirmation message opens the same panel.
+    const toastSaved = toast && toast.querySelector('[data-toast-action="saved"]');
+    if (toastSaved) {
+      toastSaved.addEventListener('click', () => {
+        toast.classList.remove('is-visible');
+        renderSaved();
+        savedPanel.showModal();
+      });
+    }
     savedPanel.querySelectorAll('[data-saved-close]').forEach((button) => {
       button.addEventListener('click', () => savedPanel.close());
     });
@@ -225,7 +267,7 @@
         response.json()
       );
       updateCartCount(cart.item_count);
-      announce(text('addedMessage', item.product_title));
+      showToast(text('addedMessage', item.product_title), 'cart');
       reportCartAdd(form.dataset.handle);
       button.classList.add('is-done');
       setTimeout(() => button.classList.remove('is-done'), 1500);

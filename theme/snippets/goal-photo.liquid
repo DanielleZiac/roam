@@ -1,0 +1,28 @@
+{% comment %}
+  The photo behind a "shop by goal" card, with a dark wash over it so the white
+  text on top stays readable. Decorative: the card's own text names the goal.
+
+  Accepts:
+  - goal: one of the goal tags: get-around, sports, travel, everyday. Anything
+    else renders nothing, and the card keeps its plain colour.
+  - sizes: the image's "sizes" attribute.
+
+  Usage:
+  {% render 'goal-photo', goal: 'sports', sizes: '(min-width: 60rem) 25vw, 50vw' %}
+{% endcomment %}
+
+{%- liquid
+  assign goal_photos = 'get-around,sports,travel,everyday' | split: ','
+  assign goal_file = 'goal-' | append: goal | append: '.jpg'
+-%}
+{%- if goal_photos contains goal -%}
+  <span class="goal-photo" aria-hidden="true">
+    <img
+      src="{{ goal_file | asset_img_url: '700x' }}"
+      srcset="{{ goal_file | asset_img_url: '400x' }} 400w, {{ goal_file | asset_img_url: '700x' }} 700w, {{ goal_file | asset_img_url: '1000x' }} 1000w, {{ goal_file | asset_img_url: '1400x' }} 1400w"
+      sizes="{{ sizes | default: '50vw' }}"
+      alt=""
+      loading="lazy"
+    >
+  </span>
+{%- endif -%}

@@ -1,73 +1,115 @@
 {% comment %}
-  Home page hero: one huge headline, a supporting line and up to two buttons
-  on a full-width colour block. Without a photo it shows a large wheel graphic.
+  Home page hero: a colour band with one huge headline and a supporting line,
+  the buttons on white below it, and a photo collage that runs down the right
+  side across both. On phones the collage sits between the headline and the
+  supporting line.
 {% endcomment %}
 
-<div class="hero full-width scheme-{{ section.settings.color_scheme }}{% if section.settings.image %} hero--with-image{% endif %}">
-  <div class="hero__inner">
-    <div class="hero__text">
-      {% if section.settings.eyebrow != blank %}
-        <p class="hero__eyebrow">{{ section.settings.eyebrow }}</p>
-      {% endif %}
+{% comment %}
+  The collage is printed twice: between the headline and the supporting line for
+  phones, and beside the text for wider screens. Only one is shown at a time.
+  Both use the same file, so the browser's cache covers the hidden copy.
+{% endcomment %}
+{% capture collage_image %}
+    {% if section.settings.image %}
+      {{
+        section.settings.image
+        | image_url: width: 1400
+        | image_tag: loading: 'eager', sizes: '(min-width: 60rem) 48vw, 100vw', widths: '500, 700, 1000, 1400'
+      }}
+    {% else %}
+      <img
+        src="{{ 'hero-collage.png' | asset_img_url: '1000x' }}"
+        srcset="
+          {{ 'hero-collage.png' | asset_img_url: '500x' }} 500w,
+          {{ 'hero-collage.png' | asset_img_url: '700x' }} 700w,
+          {{ 'hero-collage.png' | asset_img_url: '1000x' }} 1000w,
+          {{ 'hero-collage.png' | asset_img_url: '1376x' }} 1376w
+        "
+        sizes="(min-width: 60rem) 48vw, 100vw"
+        width="1376"
+        height="1846"
+        alt="{{ section.settings.image_alt | escape }}"
+        loading="eager"
+      >
+    {% endif %}
+{% endcapture %}
 
-      <h1 class="hero__heading">
-        {{ section.settings.heading }}
-        {% if section.settings.heading_accent != blank %}
-          <span class="hero__accent">{{ section.settings.heading_accent }}</span>
+<div class="hero full-width">
+  <div class="hero__band scheme-{{ section.settings.color_scheme }}">
+    {% # Decorative wheels, cropped by the edges of the band. %}
+    <div class="hero__wheels" aria-hidden="true">
+      {{ 'hero-wheel.svg' | inline_asset_content }}
+      {{ 'hero-wheel.svg' | inline_asset_content }}
+      {{ 'hero-wheel.svg' | inline_asset_content }}
+    </div>
+
+    <div class="hero__inner">
+      <div class="hero__text">
+        {% if section.settings.eyebrow != blank %}
+          <p class="hero__eyebrow">{{ section.settings.eyebrow }}</p>
         {% endif %}
-      </h1>
 
-      {% if section.settings.text != blank %}
-        <p class="hero__lead">{{ section.settings.text }}</p>
-      {% endif %}
+        <h1 class="hero__heading">
+          {{ section.settings.heading }}
+          {% if section.settings.heading_accent != blank %}
+            <span class="hero__accent">{{ section.settings.heading_accent }}</span>
+          {% endif %}
+        </h1>
 
-      <div class="hero__buttons">
-        {% if section.settings.button_label != blank %}
-          <a class="button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
-            {{ section.settings.button_label }}
-          </a>
-        {% endif %}
-        {% if section.settings.button_2_label != blank %}
-          <a class="button button--secondary" href="{{ section.settings.button_2_link | default: routes.collections_url }}">
-            {{ section.settings.button_2_label }}
-          </a>
+        <div class="hero__collage hero__collage--inline">
+          {{ collage_image }}
+        </div>
+
+        {% if section.settings.text != blank %}
+          {% # One span per sentence, so tablets and wider can keep each sentence on its own line. %}
+          {% assign lead_sentences = section.settings.text | split: '. ' %}
+          <p class="hero__lead">
+            {%- for sentence in lead_sentences -%}
+              <span>{{ sentence }}{% unless forloop.last %}.{% endunless %}</span>{% unless forloop.last %} {% endunless %}
+            {%- endfor -%}
+          </p>
         {% endif %}
       </div>
     </div>
+  </div>
 
-    {% if section.settings.image %}
-      <div class="hero__media">
-        {{
-          section.settings.image
-          | image_url: width: 1600
-          | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 60rem) 50vw, 100vw', widths: '600, 900, 1200, 1600'
-        }}
-      </div>
-    {% else %}
-      {% # Decorative wheel: three rings and a hub, cropped by the edge of the hero. %}
-      <div class="hero__wheel" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
-    {% endif %}
+  <div class="hero__collage hero__collage--side">
+    {{ collage_image }}
+  </div>
+
+  <div class="hero__below">
+    <div class="hero__buttons">
+      {% if section.settings.button_label != blank %}
+        <a class="button hero__button-main" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+      {% if section.settings.button_2_label != blank %}
+        <a class="button hero__button-outline" href="{{ section.settings.button_2_link | default: routes.collections_url }}">
+          {{ section.settings.button_2_label }}
+        </a>
+      {% endif %}
+    </div>
   </div>
 </div>
 
 {% stylesheet %}
   .hero {
+    position: relative;
     overflow: hidden;
   }
+  .hero__band {
+    position: relative;
+    overflow: hidden;
+  }
+  /* The text sits above the collage, so a long line may run over its edge instead of wrapping. */
   .hero__inner {
     position: relative;
-    display: grid;
-    gap: 2rem;
-    align-items: center;
+    z-index: 2;
     max-width: var(--page-width);
     margin-inline: auto;
-    padding: clamp(3.5rem, 10vw, 8rem) var(--page-margin);
-  }
-  .hero__text {
-    position: relative;
-    z-index: 1;
+    padding: clamp(2.5rem, 7vw, 5.5rem) var(--page-margin) clamp(1.5rem, 4vw, 3rem);
   }
   .hero__eyebrow {
     font-family: var(--font-mono);
@@ -75,9 +117,13 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+  /* The headline is sized from the width of its own column, so its longest word always fits on one line. */
+  .hero__text {
+    container-type: inline-size;
+  }
   .hero__heading {
     max-width: 12ch;
-    font-size: clamp(3rem, 10vw, 7.5rem);
+    font-size: clamp(2.5rem, 13cqi, 6.5rem);
     line-height: 0.98;
   }
   /* The last word sits in an inverted block: background and text colours swap. */
@@ -91,62 +137,198 @@
     transform: rotate(-2deg);
   }
   .hero__lead {
-    max-width: 30ch;
-    margin-block: 1.75rem 2rem;
-    font-size: clamp(1.125rem, 2vw, 1.5rem);
+    max-width: 34ch;
+    margin-block: 1.75rem 0;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
     font-weight: 500;
+  }
+
+  /* Wheels: pale shapes behind the text. */
+  .hero__wheels svg {
+    position: absolute;
+    width: clamp(9rem, 24vw, 19rem);
+    aspect-ratio: 1;
+    fill: var(--color-background);
+    opacity: 0.35;
+  }
+  /* Phones: a quarter of a wheel at the top left, half of one at the top right, and one at the left edge, above the supporting line so the two never overlap. */
+  .hero__wheels svg:nth-child(1) {
+    top: -3rem;
+    left: -3.5rem;
+  }
+  .hero__wheels svg:nth-child(2) {
+    top: -4.5rem;
+    left: 56%;
+  }
+  .hero__wheels svg:nth-child(3) {
+    bottom: 8.5rem;
+    left: -6.75rem;
+    width: 11.5rem;
+  }
+
+  /*
+   * Phones: the whole collage stands at the bottom right of the band, never
+   * cropped, its foot on the band's bottom edge. It is large, so it overlaps the
+   * text: its tall right panel rises beside the last lines of the headline, and
+   * the supporting line lies over its empty lower left. The text stays in front.
+   */
+  .hero__collage--side {
+    display: none;
+  }
+  .hero__inner {
+    padding-bottom: 0;
+  }
+  .hero__collage--inline {
+    position: relative;
+    z-index: 0;
+    /* Rises less on the narrowest phones, where the headline's second line reaches further right. */
+    margin-top: max(-6.5rem, -24vw);
+    margin-right: calc(var(--page-margin) * -0.5);
+    pointer-events: none;
+  }
+  .hero__collage--inline img {
+    display: block;
+    width: 82%;
+    height: auto;
+    margin-left: auto;
+  }
+  .hero__eyebrow,
+  .hero__heading,
+  .hero__lead {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__lead {
+    position: absolute;
+    bottom: 1.75rem;
+    left: var(--page-margin);
+    max-width: 60%;
+    margin: 0;
+    /* A touch smaller on the narrowest phones, so it stays below the middle panel. */
+    font-size: clamp(0.875rem, 4.2vw, 1rem);
+    line-height: 1.4;
+  }
+
+  .hero__below {
+    position: relative;
+    z-index: 2;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: 1.5rem var(--page-margin);
   }
   .hero__buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
   }
-  .hero__media img {
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    border-radius: 1.5rem;
+  /* Slimmer buttons on phones, so the two fit side by side. */
+  .hero__buttons .button {
+    padding-inline: 1.25rem;
   }
-  .hero__wheel {
-    position: absolute;
-    top: 50%;
-    right: -12rem;
-    width: clamp(22rem, 55vw, 46rem);
-    aspect-ratio: 1;
-    translate: 0 -50%;
+  /* The main button is lime with dark text (12.3:1) and turns dark with white text on hover. */
+  .hero__button-main {
+    border-color: var(--color-foreground);
+    background-color: var(--color-action);
+    color: var(--color-foreground);
   }
-  .hero__wheel span {
-    position: absolute;
-    inset: 0;
-    border: clamp(1.25rem, 3vw, 2.5rem) solid var(--scheme-text);
-    border-radius: 50%;
-    opacity: 0.14;
+  .hero__button-main:hover {
+    background-color: var(--color-dark);
+    color: var(--color-background);
   }
-  .hero__wheel span:nth-child(2) {
-    inset: 22%;
-    border-style: dashed;
+  /* The second button is an outline, and fills teal on hover (dark text on teal is 9.8:1). */
+  .hero__button-outline {
+    border-color: var(--color-foreground);
+    background-color: transparent;
+    color: var(--color-foreground);
   }
-  .hero__wheel span:nth-child(3) {
-    inset: 42%;
-    background-color: var(--scheme-text);
+  .hero__button-outline:hover {
+    background-color: var(--color-highlight);
+    color: var(--color-foreground);
   }
-  @media (max-width: 47.99rem) {
-    .hero__wheel {
-      top: auto;
-      right: -9rem;
-      bottom: -11rem;
-      translate: none;
+
+  /* Tablets and wider: text on the left, the collage down the right, across the band and the white below it. */
+  @media (min-width: 40rem) {
+    .hero__inner {
+      padding-bottom: clamp(1.5rem, 4vw, 3rem);
+    }
+    .hero__wheels svg:nth-child(1) {
+      top: -22%;
+      left: -3rem;
+    }
+    .hero__wheels svg:nth-child(2) {
+      top: -30%;
+      left: 48%;
+    }
+    .hero__wheels svg:nth-child(3) {
+      right: -5rem;
+      bottom: -35%;
+      left: auto;
+      width: clamp(12rem, 30vw, 24rem);
+    }
+    .hero__text {
+      max-width: 52%;
+    }
+    .hero__collage--inline {
+      display: none;
+    }
+    /* Sized from the text column, so the longer sentence stays on one line and stops about where the collage starts. */
+    .hero__buttons {
+      gap: 1rem;
+    }
+    .hero__buttons .button {
+      padding-inline: 1.75rem;
+    }
+    .hero__lead {
+      position: relative;
+      bottom: auto;
+      left: auto;
+      max-width: none;
+      margin-block: 1.75rem 0;
+      line-height: inherit;
+      font-size: clamp(0.875rem, 3.85cqi, 1.25rem);
+    }
+    .hero__lead span {
+      display: block;
+      white-space: nowrap;
+    }
+    /*
+     * The collage is sized to the hero's height and never cropped: the whole
+     * image fits between the top of the band and the bottom of the buttons row.
+     */
+    .hero__collage--side {
+      position: absolute;
+      z-index: 1;
+      display: block;
+      pointer-events: none;
+      top: 0;
+      bottom: 0;
+      right: calc(max(0px, (100% - var(--page-width)) / 2) + var(--page-margin));
+      width: 44%;
+      height: auto;
+    }
+    .hero__collage--side img {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      object-fit: contain;
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      translate: 0 -50%;
     }
   }
-  @media (min-width: 60rem) {
-    .hero--with-image .hero__inner {
-      grid-template-columns: 1.1fr 0.9fr;
+
+  /* Very wide screens: the collage grows a little past the hero, so its top and the foot of the cane are trimmed by the edges. */
+  @media (min-width: 90rem) {
+    .hero__collage--side img {
+      height: 114%;
     }
   }
-  /* The wheel turns slowly, only for visitors who have not asked for reduced motion. */
+
+  /* The wheels turn slowly, only for visitors who have not asked for reduced motion. */
   @media (prefers-reduced-motion: no-preference) {
-    .hero__wheel {
-      animation: hero-wheel 90s linear infinite;
+    .hero__wheels svg {
+      animation: hero-wheel 120s linear infinite;
     }
   }
   @keyframes hero-wheel {
@@ -167,8 +349,8 @@
       "label": "Colour block",
       "options": [
         { "value": "highlight", "label": "Bright teal" },
-        { "value": "action", "label": "Violet" },
-        { "value": "panel", "label": "Soft lilac" },
+        { "value": "action", "label": "Lime accent" },
+        { "value": "panel", "label": "Lime" },
         { "value": "dark", "label": "Dark" },
         { "value": "plain", "label": "White" }
       ],
@@ -197,7 +379,7 @@
       "type": "text",
       "id": "text",
       "label": "Supporting line",
-      "default": "Mobility and sports gear, configured to fit you."
+      "default": "Gear for moving, hearing, seeing, speaking and gripping. Built to look as good as it works."
     },
     {
       "type": "text",
@@ -225,7 +407,14 @@
       "type": "image_picker",
       "id": "image",
       "label": "Photo",
-      "info": "Optional. Add alt text to the image in Files so screen readers can describe it."
+      "info": "Optional. Replaces the built-in collage. Add alt text to the image in Files so screen readers can describe it."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Description of the built-in collage",
+      "info": "Read out by screen readers.",
+      "default": "A wheelchair racer leaning into a turn, a person with a prosthetic arm using a tablet with headphones on, and a hand gripping a wooden cane."
     }
   ],
   "presets": [

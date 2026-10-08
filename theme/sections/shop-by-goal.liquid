@@ -13,7 +13,21 @@
 
   <ul class="goals__list" role="list">
     {% for block in section.blocks %}
-      <li class="goal scheme-{% cycle 'panel', 'highlight', 'dark', 'action' %}" {{ block.shopify_attributes }}>
+      {% liquid
+        # A card whose link ends in a goal tag (e.g. /collections/all/sports) gets that goal's photo.
+        assign goal_tag = block.settings.link | split: '/' | last
+        assign goal_tags = 'get-around,sports,travel,everyday' | split: ','
+        assign has_photo = false
+        if goal_tags contains goal_tag
+          assign has_photo = true
+        endif
+      %}
+      {% # A card with a photo drops its colour block; the cycle still advances so the rest keep their colours. %}
+      {% capture goal_scheme %}{% cycle 'panel', 'highlight', 'dark', 'violet' %}{% endcapture %}
+      <li class="goal {% if has_photo %}has-goal-photo{% else %}scheme-{{ goal_scheme }}{% endif %}" {{ block.shopify_attributes }}>
+        {% if has_photo %}
+          {% render 'goal-photo', goal: goal_tag, sizes: '(min-width: 64rem) 25vw, 50vw' %}
+        {% endif %}
         <span class="goal__number" aria-hidden="true">{{ forloop.index | prepend: '0' }}</span>
         <h3 class="goal__title">
           <a href="{{ block.settings.link | default: routes.all_products_collection_url }}">{{ block.settings.title }}</a>

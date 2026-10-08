@@ -9,7 +9,14 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<div class="page-header full-width scheme-{{ section.settings.color_scheme }}">
+{% liquid
+  # The contact page is always teal, whatever colour the other pages' headers use.
+  assign header_scheme = section.settings.color_scheme
+  if page.handle == 'contact'
+    assign header_scheme = 'highlight'
+  endif
+%}
+<div class="page-header full-width scheme-{{ header_scheme }}">
   <div class="page-header__inner">
     <h1>{{ page.title }}</h1>
     {% if page.handle == 'contact' and section.settings.contact_intro != blank %}
@@ -72,7 +79,7 @@
         </ul>
       </section>
 
-      <section class="contact__form scheme-panel" aria-labelledby="ContactForm">
+      <section class="contact__form scheme-highlight" aria-labelledby="ContactForm">
         <h2 id="ContactForm">{{ 'contact.form_title' | t }}</h2>
 
         {% form 'contact', class: 'contact-form' %}
@@ -91,7 +98,8 @@
             <input id="ContactName" type="text" name="contact[name]" autocomplete="name" value="{{ form.name }}">
           </div>
 
-          <div class="field">
+          {% # Email or mobile number: only the one that matches the chosen way to reply is shown and required. %}
+          <div class="field" data-contact-email>
             <label for="ContactEmail">{{ 'contact.form_email' | t }}</label>
             <input
               id="ContactEmail"
@@ -103,12 +111,25 @@
             >
           </div>
 
+          <div class="field" data-contact-phone hidden>
+            <label for="ContactPhone">{{ 'contact.form_phone' | t }}</label>
+            <input
+              id="ContactPhone"
+              type="tel"
+              name="contact[phone]"
+              autocomplete="tel"
+              inputmode="tel"
+              disabled
+              value="{{ form.phone }}"
+            >
+          </div>
+
           <div class="field">
             <label for="ContactReply">{{ 'contact.form_reply' | t }}</label>
-            <select id="ContactReply" name="contact[{{ 'contact.form_reply' | t }}]">
-              <option>{{ 'contact.reply_email' | t }}</option>
-              <option>{{ 'contact.reply_text' | t }}</option>
-              <option>{{ 'contact.reply_call' | t }}</option>
+            <select id="ContactReply" name="contact[{{ 'contact.form_reply' | t }}]" data-contact-reply>
+              <option data-needs="email">{{ 'contact.reply_email' | t }}</option>
+              <option data-needs="phone">{{ 'contact.reply_text' | t }}</option>
+              <option data-needs="phone">{{ 'contact.reply_call' | t }}</option>
             </select>
           </div>
 
@@ -249,6 +270,32 @@
   }
 {% endstylesheet %}
 
+{% javascript %}
+  // Contact form: a reply by text, chat or call needs a mobile number, not an email address.
+  (() => {
+    const reply = document.querySelector('[data-contact-reply]');
+    const email = document.querySelector('[data-contact-email]');
+    const phone = document.querySelector('[data-contact-phone]');
+    if (!reply || !email || !phone) return;
+
+    // A hidden field is also switched off, so it is neither required nor sent.
+    const use = (field, on) => {
+      const input = field.querySelector('input');
+      field.hidden = !on;
+      input.disabled = !on;
+      input.required = on;
+    };
+    const update = () => {
+      const needsPhone = reply.selectedOptions[0].dataset.needs === 'phone';
+      use(phone, needsPhone);
+      use(email, !needsPhone);
+    };
+
+    reply.addEventListener('change', update);
+    update();
+  })();
+{% endjavascript %}
+
 {% schema %}
 {
   "name": "t:general.page",
@@ -258,9 +305,9 @@
       "id": "color_scheme",
       "label": "Header colour block",
       "options": [
-        { "value": "panel", "label": "Soft lilac" },
+        { "value": "panel", "label": "Lime" },
         { "value": "highlight", "label": "Bright teal" },
-        { "value": "action", "label": "Violet" },
+        { "value": "action", "label": "Lime accent" },
         { "value": "dark", "label": "Dark" }
       ],
       "default": "panel"

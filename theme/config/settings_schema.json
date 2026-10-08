@@ -94,15 +94,22 @@
       {
         "type": "color",
         "id": "panel_color",
-        "default": "#DCD6F7",
-        "label": "Panels (soft lilac)"
+        "default": "#A3E635",
+        "label": "Panels (lime)"
       },
       {
         "type": "color",
         "id": "action_color",
+        "default": "#A3E635",
+        "label": "Accent (lime)",
+        "info": "Accent blocks, dots and hover rings. Too light for text: use it behind dark text only."
+      },
+      {
+        "type": "color",
+        "id": "violet_color",
         "default": "#4B2BE0",
-        "label": "Accent (violet)",
-        "info": "Links and hover states. Readable as text on white and on panels."
+        "label": "Second accent (violet)",
+        "info": "Hover colour of the Shop by need cards. White text on it is 7.7:1."
       },
       {
         "type": "range",

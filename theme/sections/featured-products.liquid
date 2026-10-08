@@ -25,7 +25,8 @@
   .featured__inner {
     max-width: var(--page-width);
     margin-inline: auto;
-    padding: clamp(3rem, 7vw, 5rem) var(--page-margin);
+    /* Less space on top: on the home page this row follows a banner of the same colour. */
+    padding: clamp(1rem, 2vw, 1.5rem) var(--page-margin) clamp(3rem, 7vw, 5rem);
   }
   .featured__header {
     display: flex;
@@ -59,8 +60,9 @@
       "id": "color_scheme",
       "label": "Colour block",
       "options": [
-        { "value": "panel", "label": "Soft lilac" },
+        { "value": "panel", "label": "Lime" },
         { "value": "plain", "label": "White" },
+        { "value": "muted", "label": "White, grey text" },
         { "value": "highlight", "label": "Bright teal" }
       ],
       "default": "panel"

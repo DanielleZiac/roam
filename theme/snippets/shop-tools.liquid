@@ -26,8 +26,21 @@
 
 <template data-icon="heart">{{ 'icon-heart.svg' | inline_asset_content }}</template>
 <template data-icon="plus">{{ 'icon-shopping-cart.svg' | inline_asset_content }}</template>
+{% # Need group icons, for cards that scripts build: the wishlist, recently viewed and quiz results. %}
+{% assign need_groups = 'mobility,hands-and-dexterity,deaf-and-hard-of-hearing,nonspeaking,blind-and-low-vision' | split: ',' %}
+{% for need_group in need_groups %}
+  <template data-need-icon="{{ need_group }}">{% render 'need-icon', group: need_group %}</template>
+{% endfor %}
 
 <p class="visually-hidden" role="status" data-shop-status></p>
+
+{% # A short message that slides up after a quick add or a save. It is a live region, so screen readers hear it too. %}
+<div class="shop-toast" role="status" data-shop-toast>
+  {{ 'icon-badge-check.svg' | inline_asset_content }}
+  <span data-shop-toast-text></span>
+  <a href="{{ routes.cart_url }}" data-toast-action="cart" hidden>{{ 'cart.view' | t }}</a>
+  <button type="button" data-toast-action="saved" hidden>{{ 'saved.view' | t }}</button>
+</div>
 
 <script type="application/json" data-shop-strings>
   {
@@ -48,6 +61,60 @@
 </script>
 
 {% stylesheet %}
+  .shop-toast {
+    position: fixed;
+    z-index: 50;
+    bottom: 1.5rem;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: max-content;
+    max-width: calc(100% - 2rem);
+    padding: 0.875rem 1.25rem;
+    border-radius: 1rem;
+    background-color: var(--color-dark);
+    color: var(--color-background);
+    font-weight: 500;
+    translate: -50% 1rem;
+    visibility: hidden;
+    opacity: 0;
+  }
+  .shop-toast.is-visible {
+    translate: -50% 0;
+    visibility: visible;
+    opacity: 1;
+  }
+  .shop-toast svg {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-highlight);
+  }
+  /* White on dark is 18.5:1; the link is underlined so it does not rely on colour. */
+  .shop-toast :is(a, button) {
+    flex: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .shop-toast :is(a, button):focus-visible {
+    outline: 3px solid var(--color-background);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .shop-toast {
+      transition:
+        translate 0.2s,
+        opacity 0.2s,
+        visibility 0.2s;
+    }
+  }
   .saved-panel {
     width: min(60rem, calc(100% - 2rem));
     max-height: calc(100dvh - 2rem);
