@@ -67,18 +67,18 @@
         <span class="header__cart-count" aria-hidden="true" hidden data-saved-count></span>
       </button>
 
-      {% if shop.customer_accounts_enabled %}
-        <a class="header__wide-only" href="{{ routes.account_url }}" aria-label="{{ 'accessibility.account' | t }}">
-          {{ 'icon-user.svg' | inline_asset_content }}
-        </a>
-      {% endif %}
-
       <a class="header__cart header__wide-only" href="{{ routes.cart_url }}" aria-label="{{ cart_label }}" data-cart-link>
         {{ 'icon-shopping-bag.svg' | inline_asset_content }}
         {% if cart.item_count > 0 %}
           <span class="header__cart-count" aria-hidden="true" data-cart-count>{{ cart.item_count }}</span>
         {% endif %}
       </a>
+
+      {% if shop.customer_accounts_enabled %}
+        <a class="header__wide-only" href="{{ routes.account_url }}" aria-label="{{ 'accessibility.account' | t }}">
+          {{ 'icon-user.svg' | inline_asset_content }}
+        </a>
+      {% endif %}
 
       <button
         class="header__menu-button"
@@ -97,14 +97,6 @@
 
     <div class="header__panel" id="HeaderPanel" hidden data-menu-panel>
       <ul class="header__panel-list" role="list">
-        {% if shop.customer_accounts_enabled %}
-          <li>
-            <a href="{{ routes.account_url }}">
-              {{ 'icon-user.svg' | inline_asset_content }}
-              {{ 'accessibility.account' | t }}
-            </a>
-          </li>
-        {% endif %}
         <li>
           <a class="header__cart" href="{{ routes.cart_url }}" aria-label="{{ cart_label }}" data-cart-link>
             {{ 'icon-shopping-bag.svg' | inline_asset_content }}
@@ -114,6 +106,14 @@
             {% endif %}
           </a>
         </li>
+        {% if shop.customer_accounts_enabled %}
+          <li>
+            <a href="{{ routes.account_url }}">
+              {{ 'icon-user.svg' | inline_asset_content }}
+              {{ 'accessibility.account' | t }}
+            </a>
+          </li>
+        {% endif %}
         <li>
           <button type="button" aria-haspopup="dialog" data-saved-open>
             {{ 'icon-heart.svg' | inline_asset_content }}
