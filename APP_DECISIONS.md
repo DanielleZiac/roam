@@ -4,12 +4,12 @@ This document explains what I built for the take-home and why: the store concept
 
 ## Store concept
 
-**Roam** sells assistive technology to disabled people aged 18 to 35 in the Philippines, with families and carers as the second audience.
+**Roam** sells assistive technology (AT) to disabled people initially set the Philippines, with their families as the second audience.
 
 - **The gap:** existing assistive technology stores are catalogs for schools, hospitals and government buyers. They read like procurement lists. Nobody sells this gear the way sportswear is sold: to the person who will use it, with pride.
 - **The position:** bold and active, never clinical or pitying. Copy is specs first, in plain words, with no medical promises.
 - **The catalog:** 48 products across five need groups (Mobility, Hands and dexterity, Deaf and hard of hearing, Nonspeaking, Blind and low vision), from a ₱279 writing pad to a ₱289,000 prosthetic arm. Prices are in pesos.
-- **The look:** white, bright teal and lime, with Space Grotesk headings. Teal and lime are only used behind dark text, and links are dark and underlined, so contrast stays above WCAG AA.
+- **The look:** white, bright teal, lime and violet, with Space Grotesk headings. Teal and lime are only used behind dark text, and links are dark and underlined, so contrast stays above WCAG AA.
 
 ### The standout feature: "Tell us about you"
 
@@ -30,21 +30,16 @@ The quiz produces something no normal store has: a record of what shoppers say t
 
 | Requirement | What the app does |
 |---|---|
-| Dashboard | A summary for a period the merchant picks (7, 30 or 90 days, or all time), what needs the merchant's attention, how much of the catalog serves each need, and a searchable table of how every suggested product performs |
+| Dashboard | A summary for a period the merchant picks, what needs the merchant's attention, how much of the catalog serves each need, and a searchable table of how every suggested product performs |
 | Create and update | The merchant edits each product's need tags, key facts and summary. Saving writes metafields that the quiz and product page read |
 | History | Every merchant edit, review decision and alert is written to an activity log |
 | Logic | Unmet-need alerts, low-conversion alerts, a smoothed ranking and a coverage verdict |
 
 The app and the theme form a loop. The quiz sends anonymous results to the app. The app shows where the catalog is thin. The merchant retags or adds products. The quiz then suggests differently.
 
-### Why it does not repeat Shopify Analytics
-
-I considered putting orders and sales on the dashboard, built a first version, and removed it.
-
-- **Shopify already does it.** The admin's Analytics page reports sales, orders and top products. A second copy inside the app would add nothing.
 - **The app's value is the data Shopify does not have.** Shopify sees what sold. It cannot see the shopper who wanted a visual doorbell, found none, and left. The quiz records what people wanted before they bought, so the app can show demand that never became an order.
 
-In one line: Shopify tells the merchant what sold, and Roam Insights tells them what they should be selling.
+- Shopify tells the merchant what sold, and Roam Insights tells them what they should be selling.
 
 ### How the dashboard is laid out
 

@@ -16,15 +16,15 @@ The reasoning behind the store concept, the app and the schema is in [APP_DECISI
 
 - **Storefront:** https://roam-igo4wyyh.myshopify.com
 - **Storefront password:** `roamaround`
-- **Admin app:** installed on the `roam-dev` development store as "roam-insights". It runs from a local server, so it is shown live in the demo.
+- **Admin app:** installed on the `roam` development store as "roam-insights". It runs from a local server, so it is shown live in the demo.
 
 ## What to look at
 
 ### Theme
 
 - **Pages:** home, catalog and collection, product, cart, contact, and the "Find my gear" quiz.
-- **Custom sections:** hero with a photo collage, shop by need, shop by goal, scrolling category band, quiz call-out, picked for you, recently viewed, featured products, product reviews. The catalog header also carries a sliding "Shop by goal" card with pause and dot controls.
-- **Standout feature, "Tell us about you":** an optional four-question quiz at `/pages/find-my-gear`. It scores every product against the shopper's answers in the browser, shows the top four with the reason each was picked, and keeps the answers on the device.
+- **Standout feature, 
+ - "Tell us about you":** an optional four-question quiz at `/pages/find-my-gear`. It scores every product against the shopper's answers in the browser, shows the top four with the reason each was picked, and keeps the answers on the device.
 - **Accessibility panel:** dyslexia-friendly text and "Read it to me" (the browser's own speech), remembered between visits. The base theme is built to WCAG 2.2 AA; these modes sit on top.
 - **Shopping helpers:** catalog filters by category, in-place search and price sort, wishlist, quick add (each with an on-screen confirmation), photo gallery, key facts card, buyers-only reviews with photos.
 
@@ -130,11 +130,11 @@ shop_settings    (one row per shop)
 
 No table stores anything that identifies a quiz taker: a suggestion event is the need tags chosen and the products suggested.
 
-## What is sample data
+## Sample data
 
 Everything in the catalog is invented for this project. Roam is not a real business.
 
-- **Products, specs and prices** are made up. Prices were set a little below comparable listings where I could find them, and are estimates otherwise.
+- **Products, specs and prices** are made up. Prices were set a little below comparable listings, and are estimates.
 - **Quiz results** on the dashboard come from `npm run db:seed`, not from real shoppers.
 - **Reviews** signed "Sample shopper" come from the same script. Real reviews can only be written by a signed-in customer who bought the product.
 - **Contact details** in the footer and on the contact page are placeholders.
@@ -143,12 +143,12 @@ Everything in the catalog is invented for this project. Roam is not a real busin
 
 - **Theme base:** Shopify's [Skeleton theme](https://github.com/Shopify/skeleton-theme).
 - **App base:** Shopify's React Router app template.
-- **Icons:** [Lucide](https://lucide.dev), ISC licence, in the theme and in the app. The TikTok icon is drawn for this project.
-- **Hero wheel graphic:** the wheel icon from [MingCute](https://www.mingcute.com), Apache License 2.0, recropped.
+- **Icons:** [Lucide](https://lucide.dev), ISC licence, in the theme and in the app.
+- **Hero wheel graphic:** the wheel icon from [MingCute](https://www.mingcute.com), Apache License 2.0.
 - **Shop by goal photos:** the four photos behind the goal cards are AI-generated.
-- **Hero collage:** three stock photos, cut out and arranged by me. Their sources are still to be added here.
+- **Hero collage:** three stock photos, cut out and arranged in Figma. 
 - **Fonts:** Space Grotesk and Inter, from Shopify's font library.
-- **Logo:** my own wordmark.
+- **Logo:** my own wordmark arranged in Figma.
 
 ### Product photos
 
