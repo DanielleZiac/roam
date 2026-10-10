@@ -12,6 +12,8 @@
  *      ├──< alerts
  *      └──< activity_log >── alerts
  *
+ *   timed_discounts   (when to put a discount on products, and when to take it off)
+ *
  * No table stores anything that identifies a shopper. A suggestion event is
  * only the need tags chosen and the products suggested.
  */
@@ -19,6 +21,7 @@ import { relations } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  decimal,
   index,
   int,
   json,
@@ -240,6 +243,38 @@ export const shopSettings = mysqlTable("shop_settings", {
   autoPublishReviews: boolean("auto_publish_reviews").notNull().default(false),
   updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow().onUpdateNow(),
 });
+
+// --- Timed discounts -------------------------------------------------------------
+// A discount with a start or an end. The discount itself lives on the products
+// in Shopify, as a lower price. This table is only the app's reminder of when
+// to put that price on and when to take it off again.
+//
+//   scheduled  the start has not come yet; no price has changed
+//   active     the prices are lowered and the end has not come yet
+//   finished   the app has nothing left to do for it
+//   cancelled  stopped by the merchant before it started
+
+export const discountKinds = ["percent", "amount"] as const;
+export const timedDiscountStatuses = ["scheduled", "active", "finished", "cancelled"] as const;
+
+export const timedDiscounts = mysqlTable(
+  "timed_discounts",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    shop: varchar("shop", { length: 255 }).notNull(),
+    kind: mysqlEnum("kind", discountKinds).notNull(),
+    // A percentage, or an amount of money in the shop's currency.
+    value: decimal("value", { precision: 12, scale: 2 }).notNull(),
+    // Shopify product ids. Once the discount starts, only the products it was actually put on.
+    productIds: json("product_ids").$type<string[]>().notNull(),
+    startsAt: timestamp("starts_at", { mode: "date" }).notNull(),
+    // Null means the discount stays until the merchant removes it.
+    endsAt: timestamp("ends_at", { mode: "date" }),
+    status: mysqlEnum("status", timedDiscountStatuses).notNull().default("scheduled"),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (table) => [index("timed_discounts_status_idx").on(table.status, table.shop)],
+);
 
 // --- Relations ----------------------------------------------------------------
 // These let queries fetch related rows together, e.g. an event with its needs and picks.

@@ -83,6 +83,12 @@
         {% else %}
           {{ product.price | money }}
         {% endif %}
+        {% if product.compare_at_price > product.price %}
+          <s class="product-card__compare">
+            <span class="visually-hidden">{{ 'products.was' | t }}</span>
+            {{ product.compare_at_price | money }}
+          </s>
+        {% endif %}
         {% unless product.available %}
           <span class="product-card__badge">{{ 'products.sold_out' | t }}</span>
         {% endunless %}
@@ -223,6 +229,11 @@
   .product-card__price {
     font-size: 1.125rem;
     font-weight: bold;
+  }
+  .product-card__compare {
+    margin-left: 0.375rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
   }
   .product-card__badge {
     margin-left: 0.5rem;

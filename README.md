@@ -38,6 +38,7 @@ The reasoning behind the store concept, the app and the schema is in [APP_DECISI
   - **Do you stock what shoppers ask for?** One row per need, comparing the share of shoppers with that need against the share of the catalog that serves it.
   - **Which suggestions do shoppers act on?** Every suggested product, with search, a performance filter and sorting by rate, times suggested or cart adds.
 - **Products:** edit each product's need tags, key facts and plain-language summary. Saving writes them to product metafields that the theme reads.
+- **Discounts:** the catalog in a table with search, a category filter and a discount filter. The form discounts the products you tick, a whole category, a price range or the whole catalog, by a percentage or a fixed amount, straight away or between a start and an end date. The lower price shows to every shopper with the old price crossed out, so nobody needs a code.
 - **Reviews:** approve or reject customer reviews, with an option to publish without approval.
 - **Activity:** a log of every change made by the merchant or by the app itself.
 - **Logic:** unmet-need alerts, low-conversion alerts, a smoothed product ranking and a coverage verdict per need. The rules are explained in [APP_DECISIONS.md](APP_DECISIONS.md).
@@ -114,8 +115,8 @@ Reviews are for buyers only. Sign in as a customer on the storefront's own addre
 
 ## Database
 
-- **Schema:** [roam-insights/app/db/schema.ts](roam-insights/app/db/schema.ts), ten tables.
-- **Migrations:** [roam-insights/drizzle/](roam-insights/drizzle/), four SQL files, generated from the schema with `npm run db:generate` and applied with `npm run db:migrate`.
+- **Schema:** [roam-insights/app/db/schema.ts](roam-insights/app/db/schema.ts), eleven tables.
+- **Migrations:** [roam-insights/drizzle/](roam-insights/drizzle/), five SQL files, generated from the schema with `npm run db:generate` and applied with `npm run db:migrate`.
 
 ```
 products ──< event_picks >── suggestion_events ──< event_needs
@@ -126,6 +127,7 @@ products ──< event_picks >── suggestion_events ──< event_needs
 
 session          (Shopify sessions)
 shop_settings    (one row per shop)
+timed_discounts  (discounts with a start or an end)
 ```
 
 No table stores anything that identifies a quiz taker: a suggestion event is the need tags chosen and the products suggested.

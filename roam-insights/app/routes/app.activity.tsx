@@ -25,6 +25,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const ACTION_LABELS: Record<string, string> = {
   "product.matching_updated": "Product edited",
   "product.removed": "Product removed",
+  "product.discounted": "Discount applied",
+  "product.discount_removed": "Discount removed",
+  "discount.scheduled": "Discount scheduled",
+  "discount.cancelled": "Discount cancelled",
+  "discount.started": "Discount started",
+  "discount.ended": "Discount ended",
+  "discount.missed": "Discount missed",
   "storefront.page_created": "Page created",
   "review.approved": "Review approved",
   "review.rejected": "Review rejected",

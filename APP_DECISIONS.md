@@ -70,6 +70,16 @@ I added reviews because a shop for expensive, personal equipment needs proof fro
 - **Moderated by default**, with a switch to publish straight away.
 - **Approved reviews are written to product metafields**, so product pages show them with no request to the app.
 
+### Discounts
+
+The merchant can put products on sale from the app, one at a time or many at once.
+
+- **A discount is a sale price, not a discount code.** The app lowers the variant's price and keeps the old one in Shopify's "compare at" price. Every shopper sees and pays the lower price, with nothing to enter at checkout. It also needs no new permission: the app can already write products.
+- **Discounts replace, they do not stack.** A new discount is worked out from the price before any discount. Removing a discount puts that price back.
+- **Prices are read from Shopify each time,** so the app keeps no copy of a price that could go stale. Each change is written to the activity log with the before and after prices.
+- **A discount can have a start and an end.** The app writes the period down in `timed_discounts`, and a timer on the server checks once a minute whether a discount is due to start or end, then changes the prices.
+- **The limit:** the timer only runs while the app's server does. If the server is off when a discount should end, the lower price stays until the server is back, when it is caught up at once. A deployed app would not have this gap. Shopify's own automatic discounts keep time themselves, but they only show in the cart, not as a crossed-out price on the product, and they need a wider permission.
+
 ## Architecture
 
 ```
@@ -95,7 +105,7 @@ summary, reviews
 
 ## Schema decisions
 
-Ten tables. The schema is one file, [roam-insights/app/db/schema.ts](roam-insights/app/db/schema.ts), and the four migrations are generated from it.
+Eleven tables. The schema is one file, [roam-insights/app/db/schema.ts](roam-insights/app/db/schema.ts), and the five migrations are generated from it.
 
 | Table | Holds | Why it is shaped this way |
 |---|---|---|
@@ -107,6 +117,7 @@ Ten tables. The schema is one file, [roam-insights/app/db/schema.ts](roam-insigh
 | `activity_log` | Who did what and when, linked to a product or alert | One table for every kind of change keeps the Activity page a single query |
 | `reviews`, `review_photos` | Reviews and their photos | Photos are a separate table so listing reviews never loads image data |
 | `shop_settings` | Per-shop switches, such as publishing reviews without approval | One row per shop |
+| `timed_discounts` | Discounts with a start or an end: what, which products, when, and whether it is waiting, running or finished | The discount itself is a price in Shopify. This is only the reminder of when to change it |
 | `session` | Shopify sessions | The shape is fixed by Shopify's adapter |
 
 - **No personal data from the quiz.** An event is tags and product handles. The free-text answer never leaves the browser.
